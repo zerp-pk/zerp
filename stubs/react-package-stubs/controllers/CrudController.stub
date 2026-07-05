@@ -1,0 +1,87 @@
+<?php
+
+namespace $NAMESPACE$\Http\Controllers;
+
+use Illuminate\Http\Request;
+use Illuminate\Routing\Controller;
+use Illuminate\Support\Facades\Auth;
+use Inertia\Inertia;
+use $NAMESPACE$\Models\$PACKAGE_NAME$Item;
+use $NAMESPACE$\Http\Requests\Store$PACKAGE_NAME$ItemRequest;
+use $NAMESPACE$\Http\Requests\Update$PACKAGE_NAME$ItemRequest;
+
+class $PACKAGE_NAME$ItemController extends Controller
+{
+    public function index()
+    {
+        if(Auth::user()->can('manage-$PACKAGE_KEBAB$')){
+            $items = $PACKAGE_NAME$Item::select('id', 'name', 'description', 'is_active', 'created_at')
+                ->where(function($q) {
+                    if(Auth::user()->can('manage-any-$PACKAGE_KEBAB$')) {
+                        $q->where('created_by', creatorId());
+                    } elseif(Auth::user()->can('manage-own-$PACKAGE_KEBAB$')) {
+                        $q->where('creator_id', Auth::id());
+                    } else {
+                        $q->whereRaw('1 = 0');
+                    }
+                })
+                ->when(request('name'), fn($q) => $q->where('name', 'like', '%' . request('name') . '%'))
+                ->when(request('is_active') !== null, fn($q) => $q->where('is_active', request('is_active')))
+                ->when(request('sort'), fn($q) => $q->orderBy(request('sort'), request('direction', 'asc')), fn($q) => $q->latest())
+                ->paginate(request('per_page', 10))
+                ->withQueryString();
+
+            return Inertia::render('$PACKAGE_NAME$/Items/Index', [
+                'items' => $items,
+            ]);
+        }
+        return back()->with('error', __('Permission denied'));
+    }
+
+    public function store(Store$PACKAGE_NAME$ItemRequest $request)
+    {
+        if(Auth::user()->can('create-$PACKAGE_KEBAB$')){
+            $validated = $request->validated();
+
+            $validated['is_active'] = $request->boolean('is_active', true);
+
+            $item = new $PACKAGE_NAME$Item();
+            $item->name = $validated['name'];
+            $item->description = $validated['description'];
+            $item->is_active = $validated['is_active'];
+            $item->creator_id = Auth::id();
+            $item->created_by = creatorId();
+            $item->save();
+
+            return redirect()->route('$PACKAGE_KEBAB$.items.index')->with('success', __('Item created successfully.'));
+        }
+        return redirect()->route('$PACKAGE_KEBAB$.items.index')->with('error', __('Permission denied'));
+    }
+
+    public function update(Update$PACKAGE_NAME$ItemRequest $request, $PACKAGE_NAME$Item $item)
+    {
+        if(Auth::user()->can('edit-$PACKAGE_KEBAB$')){
+            $validated = $request->validated();
+
+            $validated['is_active'] = $request->boolean('is_active', true);
+
+            $item->name = $validated['name'];
+            $item->description = $validated['description'];
+            $item->is_active = $validated['is_active'];
+            $item->save();
+
+            return back()->with()->with('success', __('Item updated successfully.'));
+        }
+        return redirect()->route('$PACKAGE_KEBAB$.items.index')->with('error', __('Permission denied'));
+    }
+
+    public function destroy($PACKAGE_NAME$Item $item)
+    {
+        if(Auth::user()->can('delete-$PACKAGE_KEBAB$')){
+            $item->delete();
+
+            return back()->with()->with('success', __('Item deleted successfully.'));
+        }
+        return redirect()->route('$PACKAGE_KEBAB$.items.index')->with('error', __('Permission denied'));
+    }
+}

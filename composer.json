@@ -1,0 +1,337 @@
+{
+    "name": "laravel/laravel",
+    "type": "project",
+    "description": "The skeleton application for the Laravel framework.",
+    "keywords": [
+        "laravel",
+        "framework"
+    ],
+    "license": "MIT",
+    "repositories": [
+        {
+            "type": "path",
+            "url": "../ZerpPackages/google-captcha",
+            "options": {
+                "symlink": true
+            }
+        },
+        {
+            "type": "path",
+            "url": "../ZerpPackages/aiassistant",
+            "options": {
+                "symlink": true
+            }
+        },
+        {
+            "type": "path",
+            "url": "../ZerpPackages/landing-page",
+            "options": {
+                "symlink": true
+            }
+        },
+        {
+            "type": "path",
+            "url": "../ZerpPackages/hrm",
+            "options": {
+                "symlink": true
+            }
+        },
+        {
+            "type": "path",
+            "url": "../ZerpPackages/paypal",
+            "options": {
+                "symlink": true
+            }
+        },
+        {
+            "type": "path",
+            "url": "../ZerpPackages/product-service",
+            "options": {
+                "symlink": true
+            }
+        },
+        {
+            "type": "path",
+            "url": "../ZerpPackages/pos",
+            "options": {
+                "symlink": true
+            }
+        },
+        {
+            "type": "path",
+            "url": "../ZerpPackages/stripe",
+            "options": {
+                "symlink": true
+            }
+        },
+        {
+            "type": "path",
+            "url": "../ZerpPackages/contract",
+            "options": {
+                "symlink": true
+            }
+        },
+        {
+            "type": "path",
+            "url": "../ZerpPackages/taskly",
+            "options": {
+                "symlink": true
+            }
+        },
+        {
+            "type": "path",
+            "url": "../ZerpPackages/zoom-meeting",
+            "options": {
+                "symlink": true
+            }
+        },
+        {
+            "type": "path",
+            "url": "../ZerpPackages/support-ticket",
+            "options": {
+                "symlink": true
+            }
+        },
+        {
+            "type": "path",
+            "url": "../ZerpPackages/account",
+            "options": {
+                "symlink": true
+            }
+        },
+        {
+            "type": "path",
+            "url": "../ZerpPackages/lead",
+            "options": {
+                "symlink": true
+            }
+        },
+        {
+            "type": "path",
+            "url": "../ZerpPackages/recruitment",
+            "options": {
+                "symlink": true
+            }
+        },
+        {
+            "type": "path",
+            "url": "../ZerpPackages/performance",
+            "options": {
+                "symlink": true
+            }
+        },
+        {
+            "type": "path",
+            "url": "../ZerpPackages/timesheet",
+            "options": {
+                "symlink": true
+            }
+        },
+        {
+            "type": "path",
+            "url": "../ZerpPackages/training",
+            "options": {
+                "symlink": true
+            }
+        },
+        {
+            "type": "path",
+            "url": "../ZerpPackages/budget-planner",
+            "options": {
+                "symlink": true
+            }
+        },
+        {
+            "type": "path",
+            "url": "../ZerpPackages/calendar",
+            "options": {
+                "symlink": true
+            }
+        },
+        {
+            "type": "path",
+            "url": "../ZerpPackages/double-entry",
+            "options": {
+                "symlink": true
+            }
+        },
+        {
+            "type": "path",
+            "url": "../ZerpPackages/form-builder",
+            "options": {
+                "symlink": true
+            }
+        },
+        {
+            "type": "path",
+            "url": "../ZerpPackages/goal",
+            "options": {
+                "symlink": true
+            }
+        },
+        {
+            "type": "path",
+            "url": "../ZerpPackages/quotation",
+            "options": {
+                "symlink": true
+            }
+        },
+        {
+            "type": "path",
+            "url": "../ZerpPackages/telegram",
+            "options": {
+                "symlink": true
+            }
+        },
+        {
+            "type": "path",
+            "url": "../ZerpPackages/twilio",
+            "options": {
+                "symlink": true
+            }
+        },
+        {
+            "type": "path",
+            "url": "../ZerpPackages/webhook",
+            "options": {
+                "symlink": true
+            }
+        },
+        {
+            "type": "path",
+            "url": "../ZerpPackages/slack",
+            "options": {
+                "symlink": true
+            }
+        },
+        {
+            "type": "path",
+            "url": "../ZerpPackages/google-meet",
+            "options": {
+                "symlink": true
+            }
+        },
+        {
+            "type": "path",
+            "url": "../ZerpPackages/jitsi",
+            "options": {
+                "symlink": true
+            }
+        }
+    ],
+    "require": {
+        "zerp/google-captcha": "@dev",
+        "php": "^8.2",
+        "anhskohbo/no-captcha": "^3.7",
+        "bacon/bacon-qr-code": "^3.0",
+        "google/apiclient": "^2.18",
+        "inertiajs/inertia-laravel": "^2.0",
+        "larabug/larabug": "^3.5",
+        "laravel/framework": "^12.0",
+        "laravel/sanctum": "^4.2",
+        "laravel/socialite": "^5.23",
+        "laravel/tinker": "^2.9",
+        "league/flysystem-aws-s3-v3": "^3.31",
+        "league/oauth2-client": "^2.8",
+        "mailchimp/marketing": "^3.0",
+        "microsoft/microsoft-graph": "^2.49",
+        "phpoffice/phpspreadsheet": "^5.1",
+        "pragmarx/google2fa-laravel": "^2.3",
+        "pusher/pusher-php-server": "^7.2",
+        "salla/zatca": "^3.0",
+        "spatie/laravel-google-calendar": "^3.8",
+        "spatie/laravel-medialibrary": "^11.14",
+        "spatie/laravel-permission": "^6.21",
+        "srmklive/paypal": "^3.0",
+        "stripe/stripe-php": "^17.6",
+        "tightenco/ziggy": "^2.0",
+        "twilio/sdk": "^8.8",
+        "webklex/laravel-imap": "^6.2",
+        "zerp/aiassistant": "@dev",
+        "zerp/landing-page": "@dev",
+        "zerp/hrm": "@dev",
+        "zerp/paypal": "@dev",
+        "zerp/product-service": "@dev",
+        "zerp/pos": "@dev",
+        "zerp/stripe": "@dev",
+        "zerp/contract": "@dev",
+        "zerp/taskly": "@dev",
+        "zerp/zoom-meeting": "@dev",
+        "zerp/support-ticket": "@dev",
+        "zerp/account": "@dev",
+        "zerp/lead": "@dev",
+        "zerp/recruitment": "@dev",
+        "zerp/performance": "@dev",
+        "zerp/timesheet": "@dev",
+        "zerp/training": "@dev",
+        "zerp/budget-planner": "@dev",
+        "zerp/calendar": "@dev",
+        "zerp/double-entry": "@dev",
+        "zerp/form-builder": "@dev",
+        "zerp/goal": "@dev",
+        "zerp/quotation": "@dev",
+        "zerp/telegram": "@dev",
+        "zerp/twilio": "@dev",
+        "zerp/webhook": "@dev",
+        "zerp/slack": "@dev",
+        "zerp/google-meet": "@dev",
+        "zerp/jitsi": "@dev"
+    },
+    "require-dev": {
+        "barryvdh/laravel-debugbar": "^3.9",
+        "fakerphp/faker": "^1.23",
+        "laravel/breeze": "^2.0",
+        "laravel/pint": "^1.13",
+        "laravel/sail": "^1.26",
+        "mockery/mockery": "^1.6",
+        "nunomaduro/collision": "^8.0",
+        "phpunit/phpunit": "^11.0",
+        "spatie/laravel-ignition": "^2.4"
+    },
+    "autoload": {
+        "psr-4": {
+            "App\\": "app/",
+            "Database\\Factories\\": "database/factories/",
+            "Database\\Seeders\\": "database/seeders/"
+        },
+        "files": [
+            "app/Helpers/Helper.php"
+        ]
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Tests\\": "tests/"
+        }
+    },
+    "scripts": {
+        "post-autoload-dump": [
+            "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",
+            "@php artisan package:discover --ansi"
+        ],
+        "post-root-package-install": [
+            "@php -r \"file_exists('.env') || copy('.env.example', '.env');\""
+        ],
+        "post-create-project-cmd": [
+            "@php artisan key:generate --ansi",
+            "@php -r \"file_exists('database/database.sqlite') || touch('database/database.sqlite');\"",
+            "@php artisan migrate --graceful --ansi"
+        ]
+    },
+    "extra": {
+        "laravel": {
+            "dont-discover": []
+        }
+    },
+    "config": {
+        "optimize-autoloader": true,
+        "preferred-install": "dist",
+        "sort-packages": true,
+        "allow-plugins": {
+            "pestphp/pest-plugin": true,
+            "php-http/discovery": true,
+            "tbachert/spi": true
+        }
+    },
+    "minimum-stability": "stable",
+    "prefer-stable": true
+}

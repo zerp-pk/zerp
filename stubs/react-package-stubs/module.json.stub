@@ -1,0 +1,10 @@
+{
+    "name": "$PACKAGE_NAME$",
+    "alias": "$PACKAGE_NAME$",
+    "description": "",
+    "priority": 10,
+    "version": 1.0,
+    "monthly_price": 0,
+    "yearly_price": 0,
+    "package_name": "$PACKAGE_KEBAB$"
+}

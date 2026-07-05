@@ -1,0 +1,16 @@
+<?php
+
+namespace $NAMESPACE$;
+
+use Closure;
+use Illuminate\Http\Request;
+
+class $CLASS$
+{
+    public function handle(Request $request, Closure $next)
+    {
+        // Middleware logic here
+        
+        return $next($request);
+    }
+}

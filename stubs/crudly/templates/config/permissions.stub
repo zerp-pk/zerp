@@ -1,0 +1,10 @@
+// Add these permissions to database/seeders/PermissionRoleSeeder.php
+
+// {{NAME_DISPLAY}} management
+['name' => 'manage-{{NAME_KEBAB}}', 'module' => '{{NAME_KEBAB}}', 'label' => 'Manage {{NAME_PLURAL_DISPLAY}}'],
+['name' => 'manage-any-{{NAME_KEBAB}}', 'module' => '{{NAME_KEBAB}}', 'label' => 'Manage All {{NAME_PLURAL_DISPLAY}}'],
+['name' => 'manage-own-{{NAME_KEBAB}}', 'module' => '{{NAME_KEBAB}}', 'label' => 'Manage Own {{NAME_PLURAL_DISPLAY}}'],
+['name' => 'view-{{NAME_KEBAB}}', 'module' => '{{NAME_KEBAB}}', 'label' => 'View {{NAME_PLURAL_DISPLAY}}'],
+['name' => 'create-{{NAME_KEBAB}}', 'module' => '{{NAME_KEBAB}}', 'label' => 'Create {{NAME_PLURAL_DISPLAY}}'],
+['name' => 'edit-{{NAME_KEBAB}}', 'module' => '{{NAME_KEBAB}}', 'label' => 'Edit {{NAME_PLURAL_DISPLAY}}'],
+['name' => 'delete-{{NAME_KEBAB}}', 'module' => '{{NAME_KEBAB}}', 'label' => 'Delete {{NAME_PLURAL_DISPLAY}}'],

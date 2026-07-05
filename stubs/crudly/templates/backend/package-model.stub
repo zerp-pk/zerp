@@ -1,0 +1,29 @@
+<?php
+
+namespace {{PACKAGE_NAMESPACE}}\Models;
+
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+{{RELATIONSHIP_IMPORTS}}
+
+class {{NAME}} extends Model
+{
+    use HasFactory;
+
+    protected $fillable = [
+        '{{FILLABLE}}',
+        'creator_id',
+        'created_by',
+    ];
+
+    protected function casts(): array
+    {
+        return [
+            {{CASTS}}
+        ];
+    }
+
+{{NAME_ACCESSOR}}
+
+{{RELATIONSHIP_METHODS}}
+}

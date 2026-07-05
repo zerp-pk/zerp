@@ -1,0 +1,13 @@
+import { Shield } from 'lucide-react';
+
+declare global {
+    function route(name: string): string;
+}
+
+export const $PACKAGE_LOWER$SuperAdminMenu = (t: (key: string) => string) => ({
+    title: t('$PACKAGE_NAME$ Dashboard'),
+    href: route('$PACKAGE_KEBAB$.index'),
+    permission: 'manage-$PACKAGE_KEBAB$',
+    parent: 'dashboard',
+    order: 10,
+});

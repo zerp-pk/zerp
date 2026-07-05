@@ -1,0 +1,84 @@
+[
+    {
+        "code": "en",
+        "name": "English",
+        "countryCode": "GB"
+    },
+    {
+        "code": "es",
+        "name": "Español",
+        "countryCode": "ES",
+        "enabled": true
+    },
+    {
+        "code": "ar",
+        "name": "العربية",
+        "countryCode": "SA",
+        "enabled": true
+    },
+    {
+        "code": "da",
+        "name": "Dansk",
+        "countryCode": "DK"
+    },
+    {
+        "code": "de",
+        "name": "Deutsch",
+        "countryCode": "DE"
+    },
+    {
+        "code": "fr",
+        "name": "Français",
+        "countryCode": "FR"
+    },
+    {
+        "code": "he",
+        "name": "עברית",
+        "countryCode": "IL"
+    },
+    {
+        "code": "it",
+        "name": "Italiano",
+        "countryCode": "IT"
+    },
+    {
+        "code": "ja",
+        "name": "日本語",
+        "countryCode": "JP"
+    },
+    {
+        "code": "nl",
+        "name": "Nederlands",
+        "countryCode": "NL"
+    },
+    {
+        "code": "pl",
+        "name": "Polski",
+        "countryCode": "PL"
+    },
+    {
+        "code": "pt",
+        "name": "Português",
+        "countryCode": "PT"
+    },
+    {
+        "code": "pt-BR",
+        "name": "Português do Brasil",
+        "countryCode": "BR"
+    },
+    {
+        "code": "ru",
+        "name": "Русский",
+        "countryCode": "RU"
+    },
+    {
+        "code": "tr",
+        "name": "Türkçe",
+        "countryCode": "TR"
+    },
+    {
+        "code": "zh",
+        "name": "中文",
+        "countryCode": "CN"
+    }
+]

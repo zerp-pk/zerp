@@ -1,0 +1,8 @@
+<?php
+
+use Illuminate\Support\Facades\Route;
+use $NAMESPACE$\Http\Controllers\$PACKAGE_NAME$Controller;
+
+Route::middleware(['web', 'auth', 'verified', 'PlanModuleCheck:$PACKAGE_NAME$'])->group(function () {
+    Route::get('/$PACKAGE_KEBAB$', [$PACKAGE_NAME$Controller::class, 'index'])->name('$PACKAGE_KEBAB$.index');
+});

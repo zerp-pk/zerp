@@ -1,0 +1,76 @@
+import { Head } from '@inertiajs/react';
+import { useTranslation } from 'react-i18next';
+import AuthenticatedLayout from "@/layouts/authenticated-layout";
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Package, Users, CheckCircle, XCircle } from 'lucide-react';
+
+interface $PACKAGE_NAME$Props {
+    message: string;
+    stats?: {
+        total_items: number;
+        active_items: number;
+        inactive_items: number;
+    };
+    recent_items?: Array<{
+        id: number;
+        name: string;
+        created_at: string;
+    }>;
+}
+
+export default function $PACKAGE_NAME$Index({ message, stats, recent_items }: $PACKAGE_NAME$Props) {
+    const { t } = useTranslation();
+    
+    return (
+        <AuthenticatedLayout
+            breadcrumbs={[{label: t('$PACKAGE_NAME$')}]}
+            pageTitle={t('$PACKAGE_NAME$ Dashboard')}
+        >
+            <Head title={t('$PACKAGE_NAME$')} />
+            
+            {stats && (
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+                    <Card>
+                        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                            <CardTitle className="text-sm font-medium">{t('Total Items')}</CardTitle>
+                            <Users className="h-4 w-4 text-muted-foreground" />
+                        </CardHeader>
+                        <CardContent>
+                            <div className="text-2xl font-bold">{stats.total_items}</div>
+                        </CardContent>
+                    </Card>
+                    <Card>
+                        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                            <CardTitle className="text-sm font-medium">{t('Active Items')}</CardTitle>
+                            <CheckCircle className="h-4 w-4 text-green-600" />
+                        </CardHeader>
+                        <CardContent>
+                            <div className="text-2xl font-bold text-green-600">{stats.active_items}</div>
+                        </CardContent>
+                    </Card>
+                    <Card>
+                        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                            <CardTitle className="text-sm font-medium">{t('Inactive Items')}</CardTitle>
+                            <XCircle className="h-4 w-4 text-red-600" />
+                        </CardHeader>
+                        <CardContent>
+                            <div className="text-2xl font-bold text-red-600">{stats.inactive_items}</div>
+                        </CardContent>
+                    </Card>
+                </div>
+            )}
+            
+            <Card>
+                <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                        <Package className="h-5 w-5" />
+                        {t('$PACKAGE_NAME$')}
+                    </CardTitle>
+                </CardHeader>
+                <CardContent>
+                    <p>{message || t('Welcome to $PACKAGE_NAME$')}</p>
+                </CardContent>
+            </Card>
+        </AuthenticatedLayout>
+    );
+}

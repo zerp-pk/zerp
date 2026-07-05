@@ -1,0 +1,46 @@
+import { Head, usePage } from '@inertiajs/react';
+import { useTranslation } from 'react-i18next';
+import AuthenticatedLayout from "@/layouts/authenticated-layout";
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { {{ICON}} } from 'lucide-react';
+import { {{NAME}}, {{NAME}}ShowProps } from './types';
+
+export default function Show() {
+    const { t } = useTranslation();
+    const { {{NAME_LOWER}} } = usePage<{{NAME}}ShowProps>().props;
+
+    return (
+        <AuthenticatedLayout
+            breadcrumbs={[
+                {label: t('{{NAME_PLURAL_DISPLAY}}'), url: route('{{ROUTE_PREFIX}}.index')},
+                {label: {{NAME_LOWER}}.name}
+            ]}
+            pageTitle={t('View {{NAME_DISPLAY}}')}
+
+        >
+            <Head title={`${t('View {{NAME_DISPLAY}}')} - ${{{NAME_LOWER}}.name}`} />
+
+            <Card className="shadow-sm">
+                <CardHeader className="pb-4 border-b">
+                    <div className="flex items-center gap-3">
+                        <div className="p-2 bg-primary/10 rounded-lg">
+                            <{{ICON}} className="h-5 w-5 text-primary" />
+                        </div>
+                        <div>
+                            <h1 className="text-xl font-semibold">{t('{{NAME_DISPLAY}} Details')}</h1>
+                            <p className="text-sm text-muted-foreground">{{{NAME_LOWER}}.name}</p>
+                        </div>
+                    </div>
+                </CardHeader>
+                
+                <CardContent className="p-6">
+                    <div className="text-center py-8">
+                        <h3 className="text-lg font-medium text-gray-900 mb-2">Hello World</h3>
+                        <p className="text-gray-500">Page view functionality is ready for customization</p>
+                    </div>
+                </CardContent>
+            </Card>
+        </AuthenticatedLayout>
+    );
+}

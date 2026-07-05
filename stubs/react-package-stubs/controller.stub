@@ -1,0 +1,48 @@
+<?php
+
+namespace $CLASS_NAMESPACE$;
+
+use Illuminate\Http\Request;
+use Illuminate\Routing\Controller;
+use Inertia\Inertia;
+
+class $CLASS$ extends Controller
+{
+    public function index()
+    {
+        return Inertia::render('$PACKAGE_NAME$/Index');
+    }
+
+    public function create()
+    {
+        return Inertia::render('$PACKAGE_NAME$/Create');
+    }
+
+    public function store(Request $request)
+    {
+        // Store logic here
+        return redirect()->route('$PACKAGE_NAME$.index');
+    }
+
+    public function show($id)
+    {
+        return Inertia::render('$PACKAGE_NAME$/Show', compact('id'));
+    }
+
+    public function edit($id)
+    {
+        return Inertia::render('$PACKAGE_NAME$/Edit', compact('id'));
+    }
+
+    public function update(Request $request, $id)
+    {
+        // Update logic here
+        return back()->with();
+    }
+
+    public function destroy($id)
+    {
+        // Delete logic here
+        return back()->with();
+    }
+}

@@ -1,0 +1,29 @@
+{
+    "name": "zerp/$PACKAGE_KEBAB$",
+    "description": "Description for $PACKAGE_KEBAB$ package",
+    "type": "library",
+    "license": "MIT",
+    "require": {},
+    "autoload": {
+        "psr-4": {
+            "Zerp\\$PACKAGE_NAME$\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "ZAWAT OFFICIALS PVT LTD",
+            "email": "zawatofficials@gmail.com"
+        },
+        {
+            "name": "HafizMMoaz",
+            "email": "hafizmoazkhalid@gmail.com"
+        }
+    ],
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Zerp\\$PACKAGE_NAME$\\Providers\\$PACKAGE_NAME$ServiceProvider"
+            ]
+        }
+    }
+}

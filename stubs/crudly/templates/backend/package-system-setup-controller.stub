@@ -1,0 +1,93 @@
+<?php
+
+namespace {{PACKAGE_NAMESPACE}}\Http\Controllers;
+
+use {{PACKAGE_NAMESPACE}}\Models\{{NAME}};
+use {{PACKAGE_NAMESPACE}}\Http\Requests\Store{{NAME}}Request;
+use {{PACKAGE_NAMESPACE}}\Http\Requests\Update{{NAME}}Request;
+use Illuminate\Routing\Controller;
+use Illuminate\Support\Facades\Auth;
+use Inertia\Inertia;
+{{RELATIONSHIP_CONTROLLER_IMPORTS}}
+
+class {{NAME}}Controller extends Controller
+{
+    public function index()
+    {
+        if(Auth::user()->can('manage-{{NAME_KEBAB}}')){
+            ${{NAME_PLURAL_LOWER}} = {{NAME}}::select('id', {{SYSTEM_SETUP_SELECT_FIELDS}}, 'created_at')
+                ->where(function($q) {
+                    if(Auth::user()->can('manage-any-{{NAME_KEBAB}}')) {
+                        $q->where('created_by', creatorId());
+                    } elseif(Auth::user()->can('manage-own-{{NAME_KEBAB}}')) {
+                        $q->where('creator_id', Auth::id());
+                    } else {
+                        $q->whereRaw('1 = 0');
+                    }
+                })
+                ->latest()
+                ->get();
+
+            return Inertia::render('{{INERTIA_PATH}}/Index', [
+                '{{NAME_PLURAL_LOWER}}' => ${{NAME_PLURAL_LOWER}},
+{{RELATIONSHIP_DATA}}
+            ]);
+        }
+        else{
+            return back()->with('error', __('Permission denied'));
+        }
+    }
+
+    public function store(Store{{NAME}}Request $request)
+    {
+        if(Auth::user()->can('create-{{NAME_KEBAB}}')){
+            $validated = $request->validated();
+{{STORE_IS_ACTIVE}}
+{{STORE_SWITCH_FIELDS}}
+
+            ${{NAME_LOWER}} = new {{NAME}}();
+{{STORE_ASSIGNMENTS}}
+{{STORE_IS_ACTIVE_ASSIGNMENT}}
+            ${{NAME_LOWER}}->creator_id = Auth::id();
+            ${{NAME_LOWER}}->created_by = creatorId();
+            ${{NAME_LOWER}}->save();
+
+            return redirect()->route('{{ROUTE_PREFIX}}.index')->with('success', __('The {{NAME_LOWER}} has been created successfully.'));
+        }
+        else{
+            return redirect()->route('{{ROUTE_PREFIX}}.index')->with('error', __('Permission denied'));
+        }
+    }
+
+    public function update(Update{{NAME}}Request $request, {{NAME}} ${{NAME_LOWER}})
+    {
+        if(Auth::user()->can('edit-{{NAME_KEBAB}}')){
+            $validated = $request->validated();
+{{UPDATE_IS_ACTIVE}}
+{{UPDATE_SWITCH_FIELDS}}
+
+{{UPDATE_ASSIGNMENTS}}
+{{UPDATE_IS_ACTIVE_ASSIGNMENT}}
+            ${{NAME_LOWER}}->save();
+
+            return redirect()->route('{{ROUTE_PREFIX}}.index')->with('success', __('The {{NAME_LOWER}} details are updated successfully.'));
+        }
+        else{
+            return redirect()->route('{{ROUTE_PREFIX}}.index')->with('error', __('Permission denied'));
+        }
+    }
+
+    public function destroy({{NAME}} ${{NAME_LOWER}})
+    {
+        if(Auth::user()->can('delete-{{NAME_KEBAB}}')){
+            ${{NAME_LOWER}}->delete();
+
+            return redirect()->route('{{ROUTE_PREFIX}}.index')->with('success', __('The {{NAME_LOWER}} has been deleted.'));
+        }
+        else{
+            return redirect()->route('{{ROUTE_PREFIX}}.index')->with('error', __('Permission denied'));
+        }
+    }
+
+{{DEPENDENT_DROPDOWN_METHODS}}
+}

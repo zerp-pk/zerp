@@ -1,0 +1,9 @@
+// Add this to resources/js/utils/menus/company-menu.ts
+
+{
+    title: t('{{NAME_PLURAL_DISPLAY}}'),
+    href: route('{{NAME_KEBAB}}.index'),
+    icon: Tag,
+    permission: 'manage-{{NAME_KEBAB}}',
+    order: 70,
+},

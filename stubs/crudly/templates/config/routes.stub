@@ -1,0 +1,3 @@
+// Add this to routes/web.php
+
+Route::resource('{{NAME_KEBAB}}', {{NAME}}Controller::class);

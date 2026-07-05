@@ -1,0 +1,47 @@
+<?php
+
+namespace $NAMESPACE$\Database\Seeders;
+
+use Spatie\Permission\Models\Role;
+use Spatie\Permission\Models\Permission;
+use Illuminate\Database\Seeder;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Artisan;
+
+class PermissionTableSeeder extends Seeder
+{
+    public function run()
+    {
+        Model::unguard();
+        Artisan::call('cache:clear');
+
+        $permission = [
+            ['name' => 'manage-$PACKAGE_KEBAB$', 'module' => '$PACKAGE_KEBAB$', 'label' => 'Manage $PACKAGE_NAME$'],
+            ['name' => 'manage-any-$PACKAGE_KEBAB$', 'module' => '$PACKAGE_KEBAB$', 'label' => 'Manage All $PACKAGE_NAME$'],
+            ['name' => 'manage-own-$PACKAGE_KEBAB$', 'module' => '$PACKAGE_KEBAB$', 'label' => 'Manage Own $PACKAGE_NAME$'],
+            ['name' => 'view-$PACKAGE_KEBAB$', 'module' => '$PACKAGE_KEBAB$', 'label' => 'View $PACKAGE_NAME$'],
+            ['name' => 'create-$PACKAGE_KEBAB$', 'module' => '$PACKAGE_KEBAB$', 'label' => 'Create $PACKAGE_NAME$'],
+            ['name' => 'edit-$PACKAGE_KEBAB$', 'module' => '$PACKAGE_KEBAB$', 'label' => 'Edit $PACKAGE_NAME$'],
+            ['name' => 'delete-$PACKAGE_KEBAB$', 'module' => '$PACKAGE_KEBAB$', 'label' => 'Delete $PACKAGE_NAME$'],
+        ];
+
+        $company_role = Role::where('name', 'company')->first();
+
+        foreach ($permission as $perm) {
+            $permission_obj = Permission::firstOrCreate(
+                ['name' => $perm['name'], 'guard_name' => 'web'],
+                [
+                    'module' => $perm['module'],
+                    'label' => $perm['label'],
+                    'add_on' => '$PACKAGE_NAME$',
+                    'created_at' => now(),
+                    'updated_at' => now()
+                ]
+            );
+
+            if ($company_role && !$company_role->hasPermissionTo($permission_obj)) {
+                $company_role->givePermissionTo($permission_obj);
+            }
+        }
+    }
+}

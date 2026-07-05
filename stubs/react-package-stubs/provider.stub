@@ -1,0 +1,19 @@
+<?php
+
+namespace $NAMESPACE$;
+
+use Illuminate\Support\ServiceProvider;
+
+class $CLASS$ extends ServiceProvider
+{
+    public function register()
+    {
+        //
+    }
+
+    public function boot()
+    {
+        $this->loadRoutesFrom(__DIR__.'/../Routes/web.php');
+        $this->loadViewsFrom(__DIR__.'/../Resources/views', 'package');
+    }
+}

@@ -1,0 +1,18 @@
+<?php
+
+use Illuminate\Support\Facades\Route;
+use $NAMESPACE$\Http\Controllers\DashboardController;
+use $NAMESPACE$\Http\Controllers\$PACKAGE_NAME$ItemController;
+
+Route::middleware(['web', 'auth', 'verified', 'PlanModuleCheck:$PACKAGE_NAME$'])->group(function () {
+    Route::get('/$PACKAGE_KEBAB$', [DashboardController::class, 'index'])->name('$PACKAGE_KEBAB$.index');
+
+    Route::prefix('$PACKAGE_KEBAB$/items')->name('$PACKAGE_KEBAB$.items.')->group(function () {
+        Route::get('/', [$PACKAGE_NAME$ItemController::class, 'index'])->name('index');
+        Route::get('/create', [$PACKAGE_NAME$ItemController::class, 'create'])->name('create');
+        Route::post('/', [$PACKAGE_NAME$ItemController::class, 'store'])->name('store');
+        Route::get('/{item}/edit', [$PACKAGE_NAME$ItemController::class, 'edit'])->name('edit');
+        Route::put('/{item}', [$PACKAGE_NAME$ItemController::class, 'update'])->name('update');
+        Route::delete('/{item}', [$PACKAGE_NAME$ItemController::class, 'destroy'])->name('destroy');
+    });
+});

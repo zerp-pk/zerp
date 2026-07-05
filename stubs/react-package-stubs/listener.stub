@@ -1,0 +1,19 @@
+<?php
+
+namespace $NAMESPACE$;
+
+use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Queue\InteractsWithQueue;
+
+class $CLASS$
+{
+    public function __construct()
+    {
+        //
+    }
+
+    public function handle($event)
+    {
+        //
+    }
+}

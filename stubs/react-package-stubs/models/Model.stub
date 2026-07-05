@@ -1,0 +1,28 @@
+<?php
+
+namespace $NAMESPACE$\Models;
+
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+
+class $PACKAGE_NAME$Item extends Model
+{
+    use HasFactory;
+
+    protected $table = '$TABLE_NAME$';
+
+    protected $fillable = [
+        'name',
+        'description',
+        'is_active',
+        'creator_id',
+        'created_by',
+    ];
+
+    protected function casts(): array
+    {
+        return [
+            'is_active' => 'boolean',
+        ];
+    }
+}

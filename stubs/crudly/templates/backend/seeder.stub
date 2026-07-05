@@ -1,0 +1,30 @@
+<?php
+
+namespace Database\Seeders;
+
+use App\Models\{{NAME}};
+{{SEEDER_RELATIONSHIP_IMPORTS}}
+{{SEEDER_DYNAMIC_MODEL_IMPORTS}}
+use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use Illuminate\Database\Seeder;
+use Faker\Factory as Faker;
+
+class {{NAME}}Seeder extends Seeder
+{
+    public function run($userId): void
+    {
+        echo "\n\033[32m[INFO]\033[0m {{NAME}}Seeder running...\n";
+        
+        $faker = Faker::create();
+        
+        for ($i = 0; $i < 25; $i++) {
+            {{NAME}}::create([
+{{SEEDER_FIELDS}},
+                'creator_id' => $userId,
+                'created_by' => $userId,
+            ]);
+        }
+        
+        echo "\033[32m✓\033[0m {{NAME}}Seeder completed\n";
+    }
+}

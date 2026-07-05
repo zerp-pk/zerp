@@ -1,0 +1,37 @@
+<?php
+
+namespace $NAMESPACE$\Database\Seeders;
+
+use $NAMESPACE$\Models\$PACKAGE_NAME$Item;
+use Illuminate\Database\Seeder;
+
+class Demo$PACKAGE_NAME$ItemSeeder extends Seeder
+{
+    public function run($userId): void
+    {
+        $items = [
+            ['name' => 'Premium Service Package', 'description' => 'Comprehensive service package with advanced features and priority support for enterprise clients.', 'is_active' => true],
+            ['name' => 'Standard Business Solution', 'description' => 'Complete business solution designed for medium-sized companies with essential features and tools.', 'is_active' => true],
+            ['name' => 'Starter Plan Bundle', 'description' => 'Entry-level package perfect for small businesses and startups looking to establish their presence.', 'is_active' => true],
+            ['name' => 'Professional Consulting', 'description' => 'Expert consulting services to help optimize business processes and improve operational efficiency.', 'is_active' => true],
+            ['name' => 'Custom Integration Service', 'description' => 'Tailored integration solutions to connect existing systems with new platforms and technologies.', 'is_active' => true],
+            ['name' => 'Analytics Dashboard Pro', 'description' => 'Advanced analytics platform with real-time reporting and business intelligence capabilities.', 'is_active' => true],
+            ['name' => 'Security Audit Package', 'description' => 'Comprehensive security assessment and vulnerability testing for web applications and systems.', 'is_active' => true],
+            ['name' => 'Cloud Migration Service', 'description' => 'Complete cloud migration solution with data transfer, system setup, and ongoing support.', 'is_active' => true],
+            ['name' => 'Mobile App Development', 'description' => 'Full-stack mobile application development for iOS and Android platforms with modern UI/UX.', 'is_active' => true],
+            ['name' => 'E-commerce Platform Setup', 'description' => 'Complete e-commerce solution with payment processing, inventory management, and customer portal.', 'is_active' => true],
+            ['name' => 'API Development Kit', 'description' => 'RESTful API development with documentation, testing tools, and integration support.', 'is_active' => true],
+            ['name' => 'Database Optimization', 'description' => 'Performance tuning and optimization services for database systems and query improvements.', 'is_active' => true],
+            ['name' => 'Training Workshop Series', 'description' => 'Comprehensive training programs for teams to learn new technologies and best practices.', 'is_active' => true],
+            ['name' => 'Maintenance Support Plan', 'description' => 'Ongoing maintenance and support services with regular updates and technical assistance.', 'is_active' => true],
+            ['name' => 'Digital Marketing Suite', 'description' => 'Complete digital marketing solution with SEO, social media management, and campaign analytics.', 'is_active' => true],
+        ];
+
+        foreach ($items as $item) {
+            $PACKAGE_NAME$Item::create(array_merge($item, [
+                'creator_id' => $userId,
+                'created_by' => $userId,
+            ]));
+        }
+    }
+}

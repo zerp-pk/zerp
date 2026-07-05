@@ -1,0 +1,26 @@
+import { PaginatedData, ModalState, AuthContext, CreateProps, EditProps } from '@/types/common';
+
+export interface {{NAME}} {
+    id: number;
+{{INTERFACE_FIELDS}}
+    created_at: string;
+}
+
+export interface {{NAME}}FormData {
+{{CREATE_FORM_INTERFACE_FIELDS}}
+}
+
+export interface Create{{NAME}}Props extends CreateProps {{{RELATIONSHIP_PAGE_DATA_PROPS}}
+}
+
+export interface Edit{{NAME}}Props extends EditProps<{{NAME}}> {{{RELATIONSHIP_PAGE_DATA_PROPS}}
+}
+
+export type Paginated{{NAME_PLURAL}} = PaginatedData<{{NAME}}>;
+export type {{NAME}}ModalState = ModalState<{{NAME}}>;
+
+export interface {{NAME_PLURAL}}IndexProps {
+    {{NAME_PLURAL_LOWER}}: Paginated{{NAME_PLURAL}};
+    auth: AuthContext;{{RELATIONSHIP_PAGE_DATA_PROPS}}
+    [key: string]: unknown;
+}

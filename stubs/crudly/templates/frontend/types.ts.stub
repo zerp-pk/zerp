@@ -1,0 +1,44 @@
+import { PaginatedData, ModalState, AuthContext } from '@/types/common';
+
+{{RELATIONSHIP_IMPORTS_FOR_TYPES}}
+
+export interface {{NAME}} {
+    id: number;
+{{INTERFACE_FIELDS}}
+    created_at: string;
+}
+
+export interface Create{{NAME}}FormData {
+{{CREATE_FORM_INTERFACE_FIELDS}}
+}
+
+export interface Edit{{NAME}}FormData {
+{{EDIT_FORM_INTERFACE_FIELDS}}
+}
+
+export interface {{NAME}}Filters {
+{{FILTER_INTERFACE_FIELDS}}
+}
+
+export type Paginated{{NAME_PLURAL}} = PaginatedData<{{NAME}}>;
+export type {{NAME}}ModalState = ModalState<{{NAME}}>;
+
+export interface {{NAME_PLURAL}}IndexProps {
+    {{NAME_PLURAL_LOWER}}: Paginated{{NAME_PLURAL}};
+    auth: AuthContext;{{RELATIONSHIP_PAGE_DATA_PROPS}}
+    [key: string]: unknown;
+}
+
+export interface Create{{NAME}}Props {
+    onSuccess: () => void;
+}
+
+export interface Edit{{NAME}}Props {
+    {{NAME_LOWER}}: {{NAME}};
+    onSuccess: () => void;
+}
+
+export interface {{NAME}}ShowProps {
+    {{NAME_LOWER}}: {{NAME}};
+    [key: string]: unknown;
+}

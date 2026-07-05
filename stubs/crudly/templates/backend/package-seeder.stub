@@ -1,0 +1,24 @@
+<?php
+
+namespace {{PACKAGE_NAMESPACE}}\Database\Seeders;
+
+use {{PACKAGE_NAMESPACE}}\Models\{{NAME}};
+use Illuminate\Database\Seeder;
+{{SEEDER_RELATIONSHIP_IMPORTS}}
+{{SEEDER_DYNAMIC_MODEL_IMPORTS}}
+
+class Demo{{NAME}}Seeder extends Seeder
+{
+    public function run($userId): void
+    {
+        $faker = \Faker\Factory::create();
+
+        for ($i = 0; $i < 25; $i++) {
+            {{NAME}}::create([
+{{SEEDER_FIELDS}},
+                'creator_id' => $userId,
+                'created_by' => $userId,
+            ]);
+        }
+    }
+}
