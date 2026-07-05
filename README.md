@@ -26,14 +26,41 @@ The CLI `memory_limit` also needs to be reasonably high (this app's
 class map is large) — 512M is safe:
 `php -d memory_limit=512M artisan ...`.
 
-## 1. Install dependencies
+## 1. Get the module packages
+
+Feature modules (HRM, CRM, Accounting, POS, Recruitment, Support
+Ticket, etc.) are **not** part of this repo — each is its own Composer
+package, referenced in `composer.json` as a local `path` repository
+pointing at a **sibling** directory:
+
+```json
+{ "type": "path", "url": "../ZerpPackages/hrm", "options": { "symlink": true } }
+```
+
+So before installing, lay out the two repos next to each other:
+
+```
+some-folder/
+├── zerp/            (this repo)
+└── ZerpPackages/
+    ├── hrm/
+    ├── account/
+    ├── pos/
+    └── ...           (one directory per module, matching composer.json)
+```
+
+Clone/place every module listed in `composer.json`'s `repositories`
+array under `ZerpPackages/`. `composer install` (next step) symlinks
+each one into `vendor/zerp/<module>/`.
+
+## 2. Install dependencies
 
 ```bash
 composer install
 npm install
 ```
 
-## 2. Configure environment
+## 3. Configure environment
 
 ```bash
 cp .env.example .env   # if .env doesn't already exist
@@ -71,7 +98,7 @@ Generate an app key if `.env` doesn't already have one:
 php artisan key:generate
 ```
 
-## 3. Install the application
+## 4. Install the application
 
 Use the app's own installer command — **do not** run `migrate` +
 `db:seed` manually instead of this, it also registers every feature
@@ -95,7 +122,7 @@ Then link storage for public file access:
 php artisan storage:link
 ```
 
-## 4. Run the app
+## 5. Run the app
 
 Backend (Laravel):
 
@@ -111,7 +138,7 @@ npm run dev
 
 Visit `http://localhost:8000`.
 
-## 5. Log in
+## 6. Log in
 
 Default seeded company/super-admin account:
 
@@ -130,13 +157,12 @@ Default seeded company/super-admin account:
   already migrated/seeded and you just need to skip the wizard,
   `touch storage/installed` (only do this if you're sure the DB is in
   a complete, installed state, including module registration — see
-  step 3).
-- **Plans page shows no features for any plan** — the `add_ons` table
-  is empty because the app was set up without running
-  `php artisan app:install` (e.g. `migrate` + `db:seed` were run
-  manually instead). Re-run `php artisan app:install --force` on a
-  disposable DB, or register modules without wiping data by running,
-  for each module, `php artisan package:seed <ModuleName>` and
-  inserting a matching row into `add_ons` (module, name/alias,
-  monthly_price, yearly_price, package_name, priority, is_enable=1)
-  from that module's `module.json`.
+  step 4).
+- **Plans page shows no features for any plan** — `db:seed` (which
+  `app:install` runs) registers every module found under
+  `packages/local/*` and `vendor/zerp/*` into the `add_ons` table via
+  `PackageSeeder`. If it's still empty, confirm the module packages
+  are actually present under `vendor/zerp/` (see step 1 — `composer
+  install` symlinks them from the sibling `ZerpPackages/` directory;
+  if that directory is missing, nothing gets installed) and re-run
+  `php artisan db:seed --force` or `php artisan app:install --force`.

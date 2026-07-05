@@ -20,10 +20,19 @@ class PackageSeeder extends Seeder
         if(empty($userId)){
           $userId = User::where('email', 'company@example.com')->first()->id;
         }
-        $path = base_path('packages/local');
-        $devPackagePath = \Illuminate\Support\Facades\File::directories($path);
+        // Modules live either under packages/local/<name> (legacy, in-repo,
+        // for active local development) or vendor/zerp/<slug> (installed as
+        // a real Composer package) — scan both.
+        $packagePaths = array_merge(
+            \Illuminate\Support\Facades\File::isDirectory(base_path('packages/local'))
+                ? \Illuminate\Support\Facades\File::directories(base_path('packages/local'))
+                : [],
+            \Illuminate\Support\Facades\File::isDirectory(base_path('vendor/zerp'))
+                ? \Illuminate\Support\Facades\File::directories(base_path('vendor/zerp'))
+                : []
+        );
 
-        foreach ($devPackagePath as $package) {
+        foreach ($packagePaths as $package) {
             $filePath = $package.'/module.json';
             if (!file_exists($filePath)) {
                 continue;
@@ -58,9 +67,10 @@ class PackageSeeder extends Seeder
         foreach ($allEnabled as $key => $value) {
             try {
                 Artisan::call('package:seed', ['packageName' => $value]);
-                $this->command->info("{$value} Seeder Run Successfully!");
+                $this->command?->info("{$value} Seeder Run Successfully!");
             } catch (\Throwable $th) {
-                $this->command->error("Failed to seed package '{$value}': " . $th->getMessage());
+                $this->command?->error("Failed to seed package '{$value}': " . $th->getMessage());
+                \Log::error("Failed to seed package '{$value}': " . $th->getMessage());
             }
         }
 

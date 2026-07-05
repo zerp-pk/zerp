@@ -73,7 +73,7 @@ class InstallCommand extends Command
             foreach ($modules as $module) {
                 $this->info("Installing module: {$module['alias']}");
                 try {
-                    $this->enableModule($module['name']);
+                    $this->enableModule($module['name'], $module['module_json_path']);
                     $this->info("✓ Module {$module['alias']} installed successfully");
                 } catch (\Exception $e) {
                     $this->error("✗ Failed to install {$module['alias']}: " . $e->getMessage());
@@ -89,13 +89,14 @@ class InstallCommand extends Command
     private function getAllAvailableModules()
     {
         $modules = [];
-        $packagesPath = base_path('packages/local');
 
-        if (!File::exists($packagesPath)) {
-            return $modules;
-        }
-
-        $directories = File::directories($packagesPath);
+        // Modules live either under packages/local/<name> (legacy, in-repo,
+        // for active local development) or vendor/zerp/<slug> (installed as
+        // a real Composer package) — scan both.
+        $directories = array_merge(
+            File::isDirectory(base_path('packages/local')) ? File::directories(base_path('packages/local')) : [],
+            File::isDirectory(base_path('vendor/zerp')) ? File::directories(base_path('vendor/zerp')) : []
+        );
 
         foreach ($directories as $directory) {
             $moduleName = basename($directory);
@@ -109,6 +110,7 @@ class InstallCommand extends Command
                         'alias' => $moduleData['alias'],
                         'description' => $moduleData['description'] ?? '',
                         'priority' => $moduleData['priority'] ?? 10,
+                        'module_json_path' => $moduleJsonPath,
                     ];
                 }
             }
@@ -121,18 +123,16 @@ class InstallCommand extends Command
         return $modules;
     }
 
-    private function enableModule($moduleName)
+    private function enableModule($moduleName, ?string $moduleJsonPath = null)
     {
         // Validate module name to prevent path traversal
         if (!preg_match('/^[a-zA-Z0-9_-]+$/', $moduleName)) {
             throw new \Exception('Invalid module name');
         }
 
-        (new Module())->publishAssets($moduleName);
-
         $addon = AddOn::where('module', $moduleName)->first();
         if (empty($addon)) {
-            $filePath = base_path('packages/local/' . $moduleName . '/module.json');
+            $filePath = $moduleJsonPath ?? base_path('packages/local/' . $moduleName . '/module.json');
 
             if (!file_exists($filePath)) {
                 throw new \Exception('Module configuration not found');
@@ -164,6 +164,10 @@ class InstallCommand extends Command
             $addon->is_enable = 1;
             $addon->save();
         }
+
+        // Called after the AddOn row exists so publishAssets() can resolve
+        // the vendor/zerp/<package_name> fallback path on first bootstrap.
+        (new Module())->publishAssets($moduleName);
     }
 
     private function isInstalled(): bool
