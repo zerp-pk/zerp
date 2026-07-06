@@ -51,6 +51,12 @@ export default defineConfig({
         alias: {
             'ziggy-js': resolve(__dirname, 'vendor/tightenco/ziggy'),
         },
+        // vendor/zerp/* are symlinks to sibling ../ZerpPackages/* dirs. Without
+        // this, Vite/Rollup resolve imports (e.g. @inertiajs/react) against the
+        // symlink's realpath and walk up from ZerpPackages/ for node_modules,
+        // never reaching this project's node_modules since ZerpPackages is a
+        // sibling, not an ancestor, of this repo.
+        preserveSymlinks: true,
     },
     build: {
         rollupOptions: {
