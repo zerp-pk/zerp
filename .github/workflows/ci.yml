@@ -38,10 +38,14 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: "20"
-          cache: "npm"
+          # No npm cache: package-lock.json isn't committed in this repo
+          # (see .gitignore), and setup-node's cache needs a lock file to
+          # key on.
 
       - name: Install frontend dependencies
-        run: npm ci
+        # Not npm ci — that requires an existing package-lock.json, which
+        # isn't committed here.
+        run: npm install
 
       - name: Build frontend (type-check + bundle core app)
         run: npm run build
