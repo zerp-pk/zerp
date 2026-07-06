@@ -1,0 +1,17 @@
+.git
+.github
+vendor
+node_modules
+storage/logs/*
+storage/framework/cache/*
+storage/framework/sessions/*
+storage/framework/views/*
+storage/installed
+storage/app/cookie_data.csv
+.env
+.env.backup
+.env.production
+npm-debug.log
+public/build
+public/hot
+public/storage

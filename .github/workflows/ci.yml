@@ -1,0 +1,47 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  lint-and-build:
+    runs-on: ubuntu-latest
+
+    # This repo's composer.json references feature modules as path
+    # repositories under a sibling ../ZerpPackages/ directory, which
+    # doesn't exist in an isolated checkout of just this repo. CI
+    # therefore only lints/builds the core app itself — it does not
+    # run `composer install` or the PHPUnit suite, since both need
+    # the module packages present. See README "Get the module
+    # packages" for the full local dev setup.
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.2"
+          extensions: pdo_mysql, mbstring, exif, pcntl, bcmath, gd, zip, intl
+          coverage: none
+
+      - name: Validate composer.json
+        run: composer validate --no-check-publish
+
+      - name: PHP lint
+        run: find app -name "*.php" -print0 | xargs -0 -n1 -P4 php -l
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - name: Install frontend dependencies
+        run: npm ci
+
+      - name: Build frontend (type-check + bundle core app)
+        run: npm run build

@@ -7,7 +7,6 @@
 /storage/*.key
 /storage/app/cookie_data.csv
 /vendor
-.env
 .env.backup
 .env.production
 .phpactor.json
