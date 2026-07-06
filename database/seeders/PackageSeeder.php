@@ -20,6 +20,11 @@ class PackageSeeder extends Seeder
         if(empty($userId)){
           $userId = User::where('email', 'company@example.com')->first()->id;
         }
+
+        // Set by app:install to a package_name slug list; null means
+        // "select all" (e.g. a standalone `php artisan db:seed`).
+        $selected = app()->bound('zerp.selected_modules') ? app('zerp.selected_modules') : null;
+
         // Modules live either under packages/local/<name> (legacy, in-repo,
         // for active local development) or vendor/zerp/<slug> (installed as
         // a real Composer package) — scan both.
@@ -40,6 +45,8 @@ class PackageSeeder extends Seeder
             $jsonContent = file_get_contents($filePath);
             $data = json_decode($jsonContent, true);
 
+            $isSelected = is_null($selected) || in_array($data['package_name'], $selected, true);
+
             $addon = AddOn::where('module', $data['name'])->first();
             if (empty($addon)) {
                 $addon = new AddOn();
@@ -48,10 +55,14 @@ class PackageSeeder extends Seeder
                 $addon->monthly_price = $data['monthly_price'] ?? 0;
                 $addon->yearly_price = $data['yearly_price'] ?? 0;
                 $addon->package_name = $data['package_name'];
-                $addon->is_enable = true;
+                $addon->is_enable = $isSelected;
                 $addon->for_admin = $data['for_admin'] ?? false;
                 $addon->priority = $data['priority'] ?? 0;
                 $addon->save();
+            }
+
+            if (!$isSelected) {
+                continue;
             }
 
             $activePackage = UserActiveModule::where('module', $data['name'])->where('user_id', $userId)->first();

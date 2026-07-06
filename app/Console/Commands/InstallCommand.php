@@ -12,9 +12,17 @@ use Illuminate\Support\Facades\DB;
 class InstallCommand extends Command
 {
     protected $signature = 'app:install
-                            {--force : Force installation even if already installed}';
+                            {--force : Force installation even if already installed}
+                            {--preset= : Install a named module preset non-interactively (see config/module-presets.php)}
+                            {--modules= : Comma-separated list of package_name slugs to enable, non-interactively}';
 
     protected $description = 'Install the application';
+
+    // Packages other modules rely on without reliably declaring it in
+    // module.json — always enabled regardless of selection.
+    private const FOUNDATION_PACKAGES = ['account', 'hrm', 'product-service'];
+
+    private bool $interactiveSelectionMade = false;
 
     public function handle()
     {
@@ -24,6 +32,14 @@ class InstallCommand extends Command
         }
 
         $this->info('Starting application installation...');
+
+        $selectedPackageNames = $this->resolveModuleSelection();
+        $this->printModuleSummary($selectedPackageNames);
+
+        if ($this->interactiveSelectionMade && !$this->confirm('Proceed with this module selection?', true)) {
+            $this->info('Installation cancelled.');
+            return 0;
+        }
 
         // Generate app key if not exists
         if (empty(config('app.key'))) {
@@ -44,10 +60,13 @@ class InstallCommand extends Command
            DB::statement('SET FOREIGN_KEY_CHECKS=1');
        }
 
+       // PackageSeeder (fired via DatabaseSeeder) reads this binding to
+       // decide which modules to enable/seed; null means "all".
+       app()->instance('zerp.selected_modules', $selectedPackageNames);
        Artisan::call('db:seed', ['--force' => true]);
 
         // Install packages
-        $this->installPackages();
+        $this->installPackages($selectedPackageNames);
 
         // Create installed file
         $this->createInstalledFile();
@@ -56,14 +75,130 @@ class InstallCommand extends Command
         return 0;
     }
 
+    /**
+     * Resolve which modules (package_name slugs) to install, or null for
+     * "all". Priority: --modules flag > --preset flag > interactive prompt
+     * > non-interactive default (all, preserves prior behavior).
+     */
+    private function resolveModuleSelection(): ?array
+    {
+        $presets = config('module-presets', []);
 
+        if ($modulesOpt = $this->option('modules')) {
+            return $this->applyDependencySafetyNet(
+                array_values(array_filter(array_map('trim', explode(',', $modulesOpt))))
+            );
+        }
+
+        if ($presetOpt = $this->option('preset')) {
+            if (!isset($presets[$presetOpt])) {
+                $this->error("Unknown preset '{$presetOpt}'. Available: " . implode(', ', array_keys($presets)));
+                $this->warn('Falling back to installing all modules.');
+                return null;
+            }
+            $modulesList = $presets[$presetOpt]['modules'];
+            return is_null($modulesList) ? null : $this->applyDependencySafetyNet($modulesList);
+        }
+
+        if (!$this->input->isInteractive()) {
+            return null;
+        }
+
+        $this->interactiveSelectionMade = true;
+
+        $presetKeys = array_keys($presets);
+        $choices = array_values(array_map(fn ($p) => $p['label'], $presets));
+        $choices[] = 'Custom selection';
+
+        $answer = $this->choice('How would you like to install modules?', $choices, 0);
+        $answerIndex = array_search($answer, $choices, true);
+
+        if ($answerIndex !== false && $answerIndex < count($presetKeys)) {
+            $modulesList = $presets[$presetKeys[$answerIndex]]['modules'];
+            return is_null($modulesList) ? null : $this->applyDependencySafetyNet($modulesList);
+        }
+
+        // Custom selection
+        $modules = $this->getAllAvailableModules();
+        $optionLabels = array_map(fn ($m) => "{$m['alias']} ({$m['package_name']})", $modules);
+        $picked = (array) $this->choice(
+            'Select modules to enable (comma-separated numbers, e.g. 1,3,4)',
+            $optionLabels,
+            null,
+            null,
+            true
+        );
+        $labelToPackage = array_combine($optionLabels, array_column($modules, 'package_name'));
+
+        return $this->applyDependencySafetyNet(
+            array_values(array_map(fn ($label) => $labelToPackage[$label], $picked))
+        );
+    }
+
+    /**
+     * Force-include foundation packages and any declared module.json
+     * parent_module dependency that wasn't itself selected. Best-effort:
+     * parent_module declarations are known to be incomplete for some
+     * packages, this is a safety net, not a guarantee.
+     */
+    private function applyDependencySafetyNet(array $selected): array
+    {
+        foreach (self::FOUNDATION_PACKAGES as $package) {
+            if (!in_array($package, $selected, true)) {
+                $selected[] = $package;
+                $this->line("  <fg=yellow>note:</> auto-including '{$package}' (foundation module required by other packages)");
+            }
+        }
+
+        $modules = $this->getAllAvailableModules();
+        $nameToPackage = array_column($modules, 'package_name', 'name');
+        $byPackage = array_column($modules, null, 'package_name');
+
+        // Fixed-point iteration: a newly auto-included module might itself
+        // declare a parent, so keep walking until nothing changes.
+        $changed = true;
+        while ($changed) {
+            $changed = false;
+            foreach ($selected as $package) {
+                $module = $byPackage[$package] ?? null;
+                if (!$module) {
+                    continue;
+                }
+                foreach ($module['parent_module'] as $parentName) {
+                    $parentPackage = $nameToPackage[$parentName] ?? null;
+                    if ($parentPackage && !in_array($parentPackage, $selected, true)) {
+                        $selected[] = $parentPackage;
+                        $this->line("  <fg=yellow>note:</> auto-including '{$parentPackage}' (required by '{$package}')");
+                        $changed = true;
+                    }
+                }
+            }
+        }
+
+        return array_values(array_unique($selected));
+    }
+
+    private function printModuleSummary(?array $selected): void
+    {
+        if (is_null($selected)) {
+            $this->info('Installing all available modules.');
+            return;
+        }
+
+        $rows = array_map(fn ($m) => [
+            $m['alias'],
+            in_array($m['package_name'], $selected, true) ? 'Enabled' : 'Skipped',
+        ], $this->getAllAvailableModules());
+
+        $this->table(['Module', 'Status'], $rows);
+    }
 
     private function createInstalledFile()
     {
         File::put(storage_path('installed'), 'install ' . date('Y-m-d H:i:s'));
     }
 
-    private function installPackages()
+    private function installPackages(?array $selectedPackageNames)
     {
         $this->info('Installing packages...');
 
@@ -71,6 +206,11 @@ class InstallCommand extends Command
             $modules = $this->getAllAvailableModules();
 
             foreach ($modules as $module) {
+                if (!is_null($selectedPackageNames) && !in_array($module['package_name'], $selectedPackageNames, true)) {
+                    $this->line("Skipping module: {$module['alias']}");
+                    continue;
+                }
+
                 $this->info("Installing module: {$module['alias']}");
                 try {
                     $this->enableModule($module['name'], $module['module_json_path']);
@@ -110,6 +250,8 @@ class InstallCommand extends Command
                         'alias' => $moduleData['alias'],
                         'description' => $moduleData['description'] ?? '',
                         'priority' => $moduleData['priority'] ?? 10,
+                        'package_name' => $moduleData['package_name'] ?? null,
+                        'parent_module' => $moduleData['parent_module'] ?? [],
                         'module_json_path' => $moduleJsonPath,
                     ];
                 }
