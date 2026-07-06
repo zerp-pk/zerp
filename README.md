@@ -91,8 +91,8 @@ Pick one of three ways to get a running instance.
 
 ### Option A — Automatic (recommended)
 
-The fastest path: one command runs migrations, seeds the database,
-and registers/enables every module.
+The fastest path: one command runs migrations, seeds the database, and
+walks you through which modules to enable.
 
 ```bash
 composer install
@@ -109,6 +109,13 @@ you'll serve on (e.g. `http://localhost:8000`). Generate a key if
 php artisan app:install --force
 php artisan storage:link
 ```
+
+`app:install` prompts for a module preset (`Full Suite`, `HR Only`,
+`Sales & CRM`, or a `Custom selection` picker) — see
+`config/module-presets.php` for the bundle definitions. For scripted/
+non-interactive installs, skip the prompt with `--preset=<name>` or
+`--modules=account,hrm,pos` (comma-separated `package_name` slugs); with
+neither flag and no TTY it defaults to installing everything.
 
 ⚠️ `app:install` runs `migrate:fresh`, which **drops all tables**.
 Only run it on a fresh/disposable database.
@@ -142,6 +149,11 @@ docker compose up -d --build
 docker compose exec app php artisan app:install --force
 docker compose exec app php artisan storage:link
 ```
+
+Add `-it` to the `exec` command above (`docker compose exec -it app ...`)
+to get the interactive module picker; without it, `app:install` has no
+TTY and installs every module by default. To choose modules without a
+TTY, pass `--preset=<name>` or `--modules=account,hrm,pos` instead.
 
 The app is served at `http://localhost:8000`. MySQL and Redis run as
 their own containers (`db`, `redis`); `docker-compose.yml` wires
