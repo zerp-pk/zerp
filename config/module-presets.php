@@ -27,4 +27,11 @@ return [
             'quotation', 'form-builder',
         ],
     ],
+    'real-estate' => [
+        'label' => 'Real Estate Brokerage',
+        'modules' => [
+            'account', 'product-service', 'hrm', 'lead',
+            'quotation', 'contract', 'real-estate',
+        ],
+    ],
 ];

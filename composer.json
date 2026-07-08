@@ -217,6 +217,13 @@
             "options": {
                 "symlink": true
             }
+        },
+        {
+            "type": "path",
+            "url": "../ZerpPackages/real-estate",
+            "options": {
+                "symlink": true
+            }
         }
     ],
     "require": {
@@ -275,7 +282,8 @@
         "zerp/webhook": "@dev",
         "zerp/slack": "@dev",
         "zerp/google-meet": "@dev",
-        "zerp/jitsi": "@dev"
+        "zerp/jitsi": "@dev",
+        "zerp/real-estate": "@dev"
     },
     "require-dev": {
         "barryvdh/laravel-debugbar": "^3.9",
