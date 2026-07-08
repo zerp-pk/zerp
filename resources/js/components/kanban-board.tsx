@@ -15,6 +15,7 @@ export interface KanbanColumn {
   id: string
   title: string
   color: string
+  subtitle?: string
 }
 
 export interface KanbanBoardProps {
@@ -98,6 +99,9 @@ function KanbanColumnComponent({
             </div>
             {typeof kanbanActions === 'function' ? kanbanActions(column.id) : kanbanActions}
           </div>
+          {column.subtitle && (
+            <p className="mt-1 text-xs font-medium opacity-80" style={{ color: column.color }}>{column.subtitle}</p>
+          )}
         </div>
         
         <div className="p-2 min-h-[700px] max-h-[calc(100vh-200px)] overflow-y-auto">
