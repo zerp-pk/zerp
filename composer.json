@@ -10,6 +10,13 @@
     "repositories": [
         {
             "type": "path",
+            "url": "../ZerpPackages/restaurant",
+            "options": {
+                "symlink": true
+            }
+        },
+        {
+            "type": "path",
             "url": "../ZerpPackages/google-captcha",
             "options": {
                 "symlink": true
@@ -267,6 +274,7 @@
         "zerp/support-ticket": "@dev",
         "zerp/account": "@dev",
         "zerp/lead": "@dev",
+        "zerp/restaurant": "@dev",
         "zerp/recruitment": "@dev",
         "zerp/performance": "@dev",
         "zerp/timesheet": "@dev",

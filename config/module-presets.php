@@ -34,4 +34,10 @@ return [
             'quotation', 'contract', 'real-estate',
         ],
     ],
+    'restaurant' => [
+        'label' => 'Restaurant',
+        'modules' => [
+            'account', 'product-service', 'pos', 'restaurant',
+        ],
+    ],
 ];
