@@ -1,0 +1,4 @@
+# Default reviewers for every change in this repo.
+# Outside contributors: fork the repo and open a PR against the default branch —
+# you do NOT need write access. A code owner below must approve before merge.
+* @HafizMMoaz
