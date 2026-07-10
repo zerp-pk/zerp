@@ -6,6 +6,7 @@ import { useFavicon } from '@/hooks/use-favicon';
 import { getImagePath } from '@/utils/helpers';
 import ApplicationLogo from '@/components/application-logo';
 import CookieConsent from '@/components/cookie-consent';
+import PoweredByZerp from '@/components/powered-by-zerp';
 import { usePage } from '@inertiajs/react';
 
 interface AuthLayoutProps {
@@ -123,6 +124,7 @@ export default function AuthSimpleLayout({
                             <div className="inline-flex items-center space-x-2 bg-white dark:bg-slate-800/80 backdrop-blur-sm rounded-md px-4 py-2 border border-gray-200 dark:border-slate-700">
                                 <p className="text-sm text-gray-500 dark:text-gray-400">{settings.footerText || `© ${new Date().getFullYear()} Zerp. All rights reserved.`}</p>
                             </div>
+                            <PoweredByZerp />
                     </div>
                 </div>
             </div>

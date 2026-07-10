@@ -20,6 +20,7 @@ import { useTranslation } from 'react-i18next';
 import { Button } from "@/components/ui/button";
 import { UserX, ArrowLeft } from "lucide-react";
 import { useFlashMessages } from "@/hooks/useFlashMessages";
+import PoweredByZerp from "@/components/powered-by-zerp";
 
 function AuthenticatedLayoutContent({
     header,
@@ -151,6 +152,7 @@ function AuthenticatedLayoutContent({
                     )}
                     {children}
                 </main>
+                <PoweredByZerp className="border-t mt-auto" />
             </SidebarInset>
         </SidebarProvider>
         <CookieConsent settings={adminAllSetting || {}} />

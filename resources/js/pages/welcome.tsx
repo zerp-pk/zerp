@@ -1,10 +1,9 @@
 import { Link, Head } from "@inertiajs/react";
 import { PageProps } from "@/types";
+import PoweredByZerp from "@/components/powered-by-zerp";
 
 export default function Welcome({
     auth,
-    laravelVersion,
-    phpVersion,
 }: PageProps<{ laravelVersion: string; phpVersion: string }>) {
     const handleImageError = () => {
         document
@@ -355,8 +354,8 @@ export default function Welcome({
                             </div>
                         </main>
 
-                        <footer className="py-16 text-center text-sm text-black dark:text-white/70">
-                            Laravel v{laravelVersion} (PHP v{phpVersion})
+                        <footer className="py-16 text-center">
+                            <PoweredByZerp className="text-sm" />
                         </footer>
                     </div>
                 </div>
