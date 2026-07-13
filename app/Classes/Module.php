@@ -275,23 +275,44 @@ class Module
         $publicPath = public_path('packages/local/' . $moduleName);
         File::ensureDirectoryExists($publicPath);
 
-        $favicon = $sourcePath . '/favicon.png';
-        $faviconLink = $publicPath . '/favicon.png';
-        if (is_link($faviconLink) && !file_exists($faviconLink)) {
-            @unlink($faviconLink); // stale symlink left over from before the module moved
-        }
-        if (File::exists($favicon) && !file_exists($faviconLink) && !is_link($faviconLink)) {
-            @symlink($favicon, $faviconLink);
+        $this->linkAsset($sourcePath . '/favicon.png', $publicPath . '/favicon.png');
+        $this->linkAsset($sourcePath . '/src/Resources/assets', $publicPath . '/src/Resources/assets');
+    }
+
+    /**
+     * Symlink an asset into public/ using a path relative to the link itself, so the
+     * links survive the whole tree being moved or re-cloned elsewhere. Absolute links
+     * from an older publish are replaced, as are ones left dangling by a move.
+     */
+    private function linkAsset(string $target, string $linkPath): void
+    {
+        if (is_link($linkPath) && (!file_exists($linkPath) || str_starts_with((string) readlink($linkPath), '/'))) {
+            @unlink($linkPath);
         }
 
-        $assets = $sourcePath . '/src/Resources/assets';
-        $assetsLink = $publicPath . '/src/Resources/assets';
-        if (is_link($assetsLink) && !file_exists($assetsLink)) {
-            @unlink($assetsLink);
+        if (!file_exists($target) || file_exists($linkPath) || is_link($linkPath)) {
+            return;
         }
-        if (File::isDirectory($assets) && !file_exists($assetsLink) && !is_link($assetsLink)) {
-            File::ensureDirectoryExists($publicPath . '/src/Resources');
-            @symlink($assets, $assetsLink);
+
+        File::ensureDirectoryExists(dirname($linkPath));
+        @symlink(self::relativeSymlinkTarget($target, $linkPath), $linkPath);
+    }
+
+    /**
+     * Path from the directory holding $linkPath to $target, e.g.
+     * ("/app/vendor/zerp/lead/favicon.png", "/app/public/packages/local/Lead/favicon.png")
+     * => "../../../../vendor/zerp/lead/favicon.png". Both paths must be absolute.
+     */
+    public static function relativeSymlinkTarget(string $target, string $linkPath): string
+    {
+        $from = explode('/', trim(dirname($linkPath), '/'));
+        $to = explode('/', trim($target, '/'));
+
+        while ($from && $to && $from[0] === $to[0]) {
+            array_shift($from);
+            array_shift($to);
         }
+
+        return str_repeat('../', count($from)) . implode('/', $to);
     }
 }
