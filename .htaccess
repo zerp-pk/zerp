@@ -10,6 +10,17 @@
 
     RewriteEngine On
 
+    # On shared hosting the app is cloned straight into the document root
+    # (public_html), so the backend tree sits under the webroot and is otherwise
+    # fetchable: /.git/config exposes the whole source, /storage/logs/laravel.log
+    # exposes stack traces. Block it before anything else runs.
+    #
+    # Deliberately NOT blocked: /packages/... and /storage/media/..., which the
+    # rewrite below maps into public/ to serve module and uploaded images.
+    RewriteRule ^(\.git|\.github|app|bootstrap|config|database|node_modules|resources|routes|stubs|tests)(/|$) - [F,L]
+    RewriteRule ^storage/(app|framework|logs)(/|$) - [F,L]
+    RewriteRule ^(composer\.(json|lock)|package(-lock)?\.json|artisan|deploy\.sh|phpunit\.xml|docker-compose\.yml|Dockerfile|vite\.config\.js|tailwind\.config\.js|postcss\.config\.js|tsconfig\.json|components\.json|extract-translations\.php|.*\.md)$ - [F,L]
+
     # Handle Authorization Header
     RewriteCond %{HTTP:Authorization} .
     RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
