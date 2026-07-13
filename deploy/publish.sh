@@ -16,7 +16,7 @@ set -euo pipefail
 # it ever changes, or you'll ship a lock the server can't install.
 PHP_PLATFORM="${PHP_PLATFORM:-8.2.0}"
 
-RELEASE_REPO="git@github.com:zerp-pk/zerp-release.git"
+RELEASE_REPO="https://github.com/zerp-pk/zerp-release.git"
 MODULE_CONSTRAINT="^1.0"
 
 APP="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
@@ -47,6 +47,10 @@ cp -r public/build "$STAGE/repo/public/build"
 cd "$STAGE/repo"
 rm -rf tests .github phpunit.xml           # not needed to serve the app
 
+# .env is tracked in the source repo, so `git archive` hands us one. The server
+# keeps its own; never publish this machine's.
+rm -f .env
+
 # The server gets deploy.sh at the root; the build tooling itself doesn't ship.
 cp "$APP/deploy/deploy.sh" deploy.sh
 chmod +x deploy.sh
@@ -72,8 +76,11 @@ json.dump(c, open('composer.json', 'w'), indent=4)
 open('composer.json', 'a').write('\n')
 PY
 
-# public/build is gitignored in the source repo; it is the whole point here.
-sed -i '\#^/public/build$#d' .gitignore
+# The source repo ignores both of these; the release repo exists to carry them.
+# composer.lock especially: the server installs from the lock, so resolution
+# happens here, not on a memory-capped shared host.
+sed -i -e '\#^/public/build$#d' -e '/^composer\.lock$/d' .gitignore
+grep -qxF '.env' .gitignore || printf '\n.env\n' >> .gitignore
 
 echo "==> Resolving dependencies from Packagist (writing composer.lock)"
 composer update --no-install --no-interaction --quiet
