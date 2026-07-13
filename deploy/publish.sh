@@ -42,7 +42,13 @@ cd "$APP"
 # Tracked files only — never node_modules/ or vendor/. -x preserves the relative
 # symlinks under public/packages, which resolve once composer install has run.
 git archive HEAD | tar -x -C "$STAGE/repo"
+
+# Must be removed first: `git ls-files | rm` above deletes tracked files but
+# leaves the directory behind, and `cp -r src dst` on an EXISTING dst copies
+# *into* it — producing public/build/build/... and a 500 on the server.
+rm -rf "$STAGE/repo/public/build"
 cp -r public/build "$STAGE/repo/public/build"
+[ -f "$STAGE/repo/public/build/manifest.json" ] || { echo "!! manifest not at public/build/manifest.json"; exit 1; }
 
 cd "$STAGE/repo"
 rm -rf tests .github phpunit.xml           # not needed to serve the app
