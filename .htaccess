@@ -18,7 +18,13 @@
     # Deliberately NOT blocked: /packages/... and /storage/media/..., which the
     # rewrite below maps into public/ to serve module and uploaded images.
     RewriteRule ^(\.git|\.github|app|bootstrap|config|database|node_modules|resources|routes|stubs|tests)(/|$) - [F,L]
-    RewriteRule ^storage/(app|framework|logs)(/|$) - [F,L]
+
+    # storage/ is two things at once: the backend directory (logs, framework caches,
+    # the `installed` marker) AND the /storage/media/... URL prefix for uploaded
+    # files, which is not a real path here — it falls through to the rewrite below
+    # and lands on public/storage. media/ is the only public prefix; deny the rest.
+    RewriteCond %{REQUEST_URI} !^/storage/media/
+    RewriteRule ^storage/ - [F,L]
     RewriteRule ^(composer\.(json|lock)|package(-lock)?\.json|artisan|deploy\.sh|phpunit\.xml|docker-compose\.yml|Dockerfile|vite\.config\.js|tailwind\.config\.js|postcss\.config\.js|tsconfig\.json|components\.json|extract-translations\.php|.*\.md)$ - [F,L]
 
     # Handle Authorization Header
