@@ -95,4 +95,4 @@ if git diff --cached --quiet; then
 fi
 git -c user.email=hafizmoazkhalid@gmail.com commit --quiet -m "$MSG"
 git push --quiet origin HEAD
-echo "==> Pushed. On Hostinger:  cd ~/zerp && git pull && ./deploy.sh"
+echo "==> Pushed. On Hostinger:  cd ~/public_html && ./deploy.sh"
