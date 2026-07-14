@@ -25,6 +25,14 @@ class TenantScopeTest extends TestCase
         \Zerp\Hrm\Models\Department::class,
         \Zerp\Hrm\Models\Payroll::class,
         \Zerp\Hrm\Models\LeaveApplication::class,
+        \Zerp\Account\Models\ChartOfAccount::class,
+        \Zerp\Account\Models\AccountCategory::class,
+        \Zerp\Account\Models\Expense::class,
+    ];
+
+    /** Rows with no created_by column; the boundary comes from their parent. */
+    private array $childModels = [
+        \Zerp\Account\Models\CreditNoteItem::class => 'credit_notes',
     ];
 
     private function actAsCompany(int $id): void
@@ -83,5 +91,18 @@ class TenantScopeTest extends TestCase
         $sql = \Zerp\Hrm\Models\Branch::withoutGlobalScope('tenant')->toSql();
 
         $this->assertStringNotContainsString('created_by', $sql);
+    }
+
+    public function test_child_rows_inherit_the_boundary_through_their_parent(): void
+    {
+        $this->actAsCompany(7);
+
+        foreach ($this->childModels as $model => $parentTable) {
+            $sql = $model::query()->toSql();
+
+            $this->assertStringContainsString('exists', strtolower($sql), $model);
+            $this->assertStringContainsString($parentTable, $sql, $model);
+            $this->assertStringContainsString('created_by', $sql, $model);
+        }
     }
 }
