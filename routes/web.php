@@ -11,6 +11,8 @@ use App\Http\Controllers\WarehouseController;
 use App\Http\Controllers\SettingController;
 use App\Http\Controllers\TranslationController;
 use App\Http\Controllers\ModuleController;
+use App\Http\Controllers\ModulePreferenceController;
+use App\Http\Controllers\MenuPreferenceController;
 use App\Http\Controllers\BankTransferPaymentController;
 
 use App\Http\Controllers\CouponController;
@@ -112,6 +114,14 @@ Route::middleware(['auth', 'verified', 'PlanModuleCheck'])->group(function () {
     Route::post('add-on/{name}/enable', [ModuleController::class, 'enable'])->name('add-on.enable');
     Route::get('user/active-modules', [ModuleController::class, 'getUserActiveModules'])->name('user.active-modules');
     Route::delete('user/active-modules/{moduleId}', [ModuleController::class, 'removeUserActiveModule'])->name('user.active-modules.remove');
+
+    // Which modules the company uses, and how the sidebar is arranged.
+    Route::get('settings/modules', [ModulePreferenceController::class, 'index'])->name('settings.modules');
+    Route::put('settings/modules', [ModulePreferenceController::class, 'update'])->name('settings.modules.update');
+
+    Route::get('settings/menu', [MenuPreferenceController::class, 'index'])->name('settings.menu');
+    Route::put('settings/menu', [MenuPreferenceController::class, 'update'])->name('settings.menu.update');
+    Route::delete('settings/menu', [MenuPreferenceController::class, 'destroy'])->name('settings.menu.reset');
 
     // Settings management routes
     Route::get('settings', [SettingController::class, 'index'])->name('settings.index');

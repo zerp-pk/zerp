@@ -7,6 +7,7 @@ use App\Events\DefaultData;
 use App\Events\GivePermissionToRole;
 use App\Models\Setting;
 use App\Models\User;
+use App\Models\DisabledModule;
 use App\Models\UserActiveModule;
 use App\Models\UserCoupon;
 use App\Models\AddOn;
@@ -242,6 +243,16 @@ if (!function_exists('ActivatedModule')) {
                     $active_module = UserActiveModule::where('user_id', $user->id)->pluck('module')->toArray();
                     $user_active_module = array_values(array_intersect($available_modules, $active_module));
                     $user_active_module = array_values(array_unique(array_merge($activated_module,$user_active_module)));
+
+                    // Modules the company has switched off for itself. Subtracted here,
+                    // at the single place that answers "what is active", so a disabled
+                    // module disappears from the sidebar AND its routes stop resolving
+                    // (PlanModuleCheck reads this). The entitlement itself is untouched,
+                    // so switching it back on costs nothing.
+                    $disabled = DisabledModule::forCompany($user->id);
+                    if ($disabled) {
+                        $user_active_module = array_values(array_diff($user_active_module, $disabled));
+                    }
                 }
             }
         } else {
