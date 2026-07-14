@@ -33,13 +33,18 @@ use Illuminate\Support\Facades\Auth;
  * and so are NOT covered by this scope. They must be scoped by hand:
  *
  *     'employee_id' => 'required|exists:employees,id,created_by,' . creatorId()
+ *
+ * Public per-company portals (the support-ticket help centre, the recruitment job
+ * board) serve one company's data to the world, addressed by a slug in the URL —
+ * a visitor logged in to a different company must still see it. Their middleware
+ * calls TenantScope::standDownForThisRequest().
  */
 trait TenantScoped
 {
     public static function bootTenantScoped(): void
     {
         static::addGlobalScope('tenant', function (Builder $query) {
-            if (!Auth::check()) {
+            if (!Auth::check() || TenantScope::isStoodDown()) {
                 return;
             }
 
