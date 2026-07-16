@@ -19,7 +19,7 @@ class InstallCommand extends Command
     protected $description = 'Install the application';
 
     // Packages other modules rely on without reliably declaring it in
-    // module.json — always enabled regardless of selection.
+    // module.json - always enabled regardless of selection.
     private const FOUNDATION_PACKAGES = ['account', 'hrm', 'product-service'];
 
     private bool $interactiveSelectionMade = false;
@@ -232,7 +232,7 @@ class InstallCommand extends Command
 
         // Modules live either under packages/local/<name> (legacy, in-repo,
         // for active local development) or vendor/zerp/<slug> (installed as
-        // a real Composer package) — scan both.
+        // a real Composer package) - scan both.
         $directories = array_merge(
             File::isDirectory(base_path('packages/local')) ? File::directories(base_path('packages/local')) : [],
             File::isDirectory(base_path('vendor/zerp')) ? File::directories(base_path('vendor/zerp')) : []

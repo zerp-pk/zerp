@@ -42,7 +42,7 @@ package.
 
 Each module is referenced in this repo's `composer.json` as a local
 `path` repository pointing at a **sibling** directory (see "Get the
-module packages" below) — `composer install` symlinks them into
+module packages" below) - `composer install` symlinks them into
 `vendor/zerp/<module>/`.
 
 ## Prerequisites
@@ -63,7 +63,7 @@ If missing, enable it in `/etc/php/php.ini` (or your distro's
 `php -d extension=pdo_mysql artisan ...`.
 
 The CLI `memory_limit` also needs to be reasonably high (this app's
-class map is large) — 512M is safe:
+class map is large) - 512M is safe:
 `php -d memory_limit=512M artisan ...`.
 
 ## Get the module packages
@@ -89,7 +89,7 @@ Docker.
 
 Pick one of three ways to get a running instance.
 
-### Option A — Automatic (recommended)
+### Option A - Automatic (recommended)
 
 The fastest path: one command runs migrations, seeds the database, and
 walks you through which modules to enable.
@@ -111,7 +111,7 @@ php artisan storage:link
 ```
 
 `app:install` prompts for a module preset (`Full Suite`, `HR Only`,
-`Sales & CRM`, or a `Custom selection` picker) — see
+`Sales & CRM`, or a `Custom selection` picker) - see
 `config/module-presets.php` for the bundle definitions. For scripted/
 non-interactive installs, skip the prompt with `--preset=<name>` or
 `--modules=account,hrm,pos` (comma-separated `package_name` slugs); with
@@ -122,10 +122,10 @@ Only run it on a fresh/disposable database.
 
 Then skip to "Run the app" below.
 
-### Option B — Manual
+### Option B - Manual
 
 Same as Option A up through generating `APP_KEY`, then run the steps
-`app:install` would otherwise do yourself — useful if you already have
+`app:install` would otherwise do yourself - useful if you already have
 data and don't want `migrate:fresh` to wipe it:
 
 ```bash
@@ -135,9 +135,9 @@ php artisan storage:link
 touch storage/installed       # marks the app as installed, skips the /install wizard
 ```
 
-### Option C — Docker
+### Option C - Docker
 
-No local PHP/Composer/Node/MySQL setup needed — everything runs in
+No local PHP/Composer/Node/MySQL setup needed - everything runs in
 containers. Still requires the sibling `ZerpPackages/` layout above,
 since the image is built with the **parent** directory as build
 context (so both `zerp/` and `ZerpPackages/` are visible to
@@ -162,7 +162,7 @@ automatically.
 
 ## Run the app
 
-(Skip this if you used Option C — Docker already runs everything.)
+(Skip this if you used Option C - Docker already runs everything.)
 
 Backend (Laravel):
 
@@ -187,22 +187,22 @@ Default seeded company/super-admin account:
 
 ## Troubleshooting
 
-- **`could not find driver` on any DB command** — `pdo_mysql` isn't
+- **`could not find driver` on any DB command** - `pdo_mysql` isn't
   loaded; see Prerequisites above.
 - **`Allowed memory size exhausted` running `artisan tinker` or other
-  commands** — bump CLI memory limit: `php -d memory_limit=512M artisan ...`.
+  commands** - bump CLI memory limit: `php -d memory_limit=512M artisan ...`.
 - **Redirected to `/install` in the browser after already
-  installing** — the `storage/installed` marker file is missing;
+  installing** - the `storage/installed` marker file is missing;
   either re-run `php artisan app:install --force` or, if the DB is
   already migrated/seeded and you just need to skip the wizard,
   `touch storage/installed` (only do this if you're sure the DB is in
   a complete, installed state, including module registration).
-- **Plans page shows no features for any plan** — `db:seed` (which
+- **Plans page shows no features for any plan** - `db:seed` (which
   `app:install` runs) registers every module found under
   `packages/local/*` and `vendor/zerp/*` into the `add_ons` table via
   `PackageSeeder`. If it's still empty, confirm the module packages
   are actually present under `vendor/zerp/` (see "Get the module
-  packages" above — `composer install` symlinks them from the sibling
+  packages" above - `composer install` symlinks them from the sibling
   `ZerpPackages/` directory; if that directory is missing, nothing
   gets installed) and re-run `php artisan db:seed --force` or
   `php artisan app:install --force`.

@@ -27,7 +27,7 @@ class PackageSeeder extends Seeder
 
         // Modules live either under packages/local/<name> (legacy, in-repo,
         // for active local development) or vendor/zerp/<slug> (installed as
-        // a real Composer package) — scan both.
+        // a real Composer package) - scan both.
         $packagePaths = array_merge(
             \Illuminate\Support\Facades\File::isDirectory(base_path('packages/local'))
                 ? \Illuminate\Support\Facades\File::directories(base_path('packages/local'))

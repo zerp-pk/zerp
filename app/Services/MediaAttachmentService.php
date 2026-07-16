@@ -12,7 +12,7 @@ use Spatie\MediaLibrary\MediaCollections\Models\Media;
  * files end up as real rows in the shared `media` table (visible/manageable
  * in the Media Library), regardless of which package's feature uploaded them.
  *
- * Files are always stored flat under media/{file_name} on the active disk —
+ * Files are always stored flat under media/{file_name} on the active disk,
  * never through Spatie's own addMedia()/conversion pipeline, since the
  * registered MediaPathGenerator (media/{model_id}/...) is not what anything
  * here actually writes to, and 35+ frontend consumers reconstruct URLs

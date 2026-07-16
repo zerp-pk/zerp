@@ -12,7 +12,7 @@
 set -euo pipefail
 
 # The PHP version Hostinger runs. The lockfile is resolved against this, NOT
-# against your local PHP — check it on the server with `php -v` and fix here if
+# against your local PHP - check it on the server with `php -v` and fix here if
 # it ever changes, or you'll ship a lock the server can't install.
 PHP_PLATFORM="${PHP_PLATFORM:-8.2.0}"
 
@@ -39,13 +39,13 @@ cd "$STAGE/repo"
 git ls-files -z | xargs -0 -r rm -f
 cd "$APP"
 
-# Tracked files only — never node_modules/ or vendor/. -x preserves the relative
+# Tracked files only - never node_modules/ or vendor/. -x preserves the relative
 # symlinks under public/packages, which resolve once composer install has run.
 git archive HEAD | tar -x -C "$STAGE/repo"
 
 # Must be removed first: `git ls-files | rm` above deletes tracked files but
 # leaves the directory behind, and `cp -r src dst` on an EXISTING dst copies
-# *into* it — producing public/build/build/... and a 500 on the server.
+# *into* it - producing public/build/build/... and a 500 on the server.
 rm -rf "$STAGE/repo/public/build"
 cp -r public/build "$STAGE/repo/public/build"
 [ -f "$STAGE/repo/public/build/manifest.json" ] || { echo "!! manifest not at public/build/manifest.json"; exit 1; }
@@ -96,7 +96,7 @@ echo "==> Publishing"
 cp "$APP/deploy/RELEASE_README.md" README.md
 git add -A
 if git diff --cached --quiet; then
-  echo "    nothing changed — release is already current"
+  echo "    nothing changed - release is already current"
   exit 0
 fi
 git -c user.email=hafizmoazkhalid@gmail.com commit --quiet -m "$MSG"

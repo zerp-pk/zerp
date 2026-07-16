@@ -8,7 +8,7 @@
 
 ## How was this tested?
 
-<!-- Steps you took to verify the change works — manual repro, a test you added, etc. -->
+<!-- Steps you took to verify the change works - manual repro, a test you added, etc. -->
 
 ## Checklist
 

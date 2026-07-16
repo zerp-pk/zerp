@@ -4,7 +4,7 @@
 // `modules` is a list of package_name slugs (matching each package's
 // module.json `package_name`), or `null` to mean "everything".
 //
-// These are a starting recommendation, not derived automatically — review
+// These are a starting recommendation, not derived automatically - review
 // and adjust per bundle as the product evolves. Add more presets here
 // without touching any installer code.
 

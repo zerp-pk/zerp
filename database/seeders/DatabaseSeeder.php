@@ -23,7 +23,7 @@ class DatabaseSeeder extends Seeder
         $userId = User::where('email', 'company@example.com')->first()->id;
         User::CompanySetting($userId);
 
-        // Always register/enable available modules into add_ons — this must
+        // Always register/enable available modules into add_ons - this must
         // not be gated behind demo data, or a non-demo install ends up with
         // an empty module list and a feature-less /plans page.
         (new PackageSeeder())->run($userId);

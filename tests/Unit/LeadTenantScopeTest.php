@@ -49,7 +49,7 @@ class LeadTenantScopeTest extends TestCase
         $this->actAsCompany(7);
 
         // lead_calls has no created_by column, so the scope reaches the tenant
-        // through the parent lead — the case that made the calls endpoints the
+        // through the parent lead - the case that made the calls endpoints the
         // hard ones to fix.
         $sql = LeadCall::query()->toSql();
 

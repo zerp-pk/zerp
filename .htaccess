@@ -21,7 +21,7 @@
 
     # storage/ is two things at once: the backend directory (logs, framework caches,
     # the `installed` marker) AND the /storage/media/... URL prefix for uploaded
-    # files, which is not a real path here — it falls through to the rewrite below
+    # files, which is not a real path here - it falls through to the rewrite below
     # and lands on public/storage. media/ is the only public prefix; deny the rest.
     RewriteCond %{REQUEST_URI} !^/storage/media/
     RewriteRule ^storage/ - [F,L]

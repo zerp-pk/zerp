@@ -1,5 +1,5 @@
 # Build context is the PARENT directory of this repo (see docker-compose.yml),
-# so both zerp/ and the sibling ZerpPackages/ (module packages) are visible —
+# so both zerp/ and the sibling ZerpPackages/ (module packages) are visible,
 # composer.json's path repositories resolve to ../ZerpPackages/<module> from
 # this repo's root, i.e. /ZerpPackages inside these build stages.
 

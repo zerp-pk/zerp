@@ -294,7 +294,7 @@ class MediaController extends Controller
 
         try {
             // Files are always stored flat under media/{file_name} on $media->disk.
-            // Do NOT use $media->getPath()/getUrl() — those resolve through the
+            // Do NOT use $media->getPath()/getUrl() - those resolve through the
             // registered MediaPathGenerator (media/{model_id}/...), which nothing
             // in this app actually writes to.
             $filePath = Storage::disk($media->disk)->path('media/' . $media->file_name);
@@ -304,7 +304,7 @@ class MediaController extends Controller
             }
 
             // file_name may include a subpath (e.g. "employee_documents/xxx.pdf")
-            // for backfilled records — the download filename must be a bare basename.
+            // for backfilled records - the download filename must be a bare basename.
             return response()->download($filePath, basename($media->file_name));
         } catch (\Exception $e) {
             abort(404, __('File storage unavailable'));

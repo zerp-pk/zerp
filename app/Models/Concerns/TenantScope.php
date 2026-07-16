@@ -16,7 +16,7 @@ class TenantScope
     /**
      * Lift the tenant boundary for the current request.
      *
-     * For public per-company portals only — the support-ticket help centre and the
+     * For public per-company portals only - the support-ticket help centre and the
      * recruitment job board serve one company's data to the world, addressed by a
      * slug in the URL rather than by who is logged in. Their controllers already
      * filter by that company explicitly; lifting the ambient boundary is what lets
