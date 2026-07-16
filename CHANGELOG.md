@@ -1,5 +1,19 @@
 # Changelog
 
+## v1.1.1 — 2026-07-16
+
+### Fixed
+- **`Settings → Modules` returned a 500.** The screen read the module catalogue as
+  arrays, but `Module::find()` returns the module object itself, so rendering the page
+  raised a fatal `Error`. Module images now come from the catalogue too, which resolves
+  an add-on's own uploaded image and the `vendor/zerp/` path — the old hardcoded
+  `packages/local/` path no longer exists for modules that moved to Composer packages.
+- **Blank page at `/index.php`.** The root front controller was Laravel's dev-server
+  shim, whose `return false` only means "serve the static file yourself" to `php -S`;
+  Apache and LiteSpeed ended the request with an empty `200` instead. It now always
+  hands off to `public/index.php`. `.htaccess` serves the static assets and never
+  routed them through here, so nothing else changes.
+
 ## v1.1.0 — 2026-07-16
 
 ### Security

@@ -61,6 +61,18 @@ class ModulePreferenceTest extends TestCase
         return $user;
     }
 
+    public function test_the_modules_screen_loads(): void
+    {
+        // Every other test here is a PUT, so nothing ever rendered the page — and the
+        // catalogue is a list of Module objects, which the screen read as arrays and
+        // 500'd on. A plain GET is the whole regression test.
+        $company = $this->company(['Lead'], ['Lead']);
+
+        $this->actingAs($company)
+            ->get(route('settings.modules'))
+            ->assertOk();
+    }
+
     public function test_a_disabled_module_drops_out_of_the_active_set(): void
     {
         $company = $this->company(['Lead'], ['Lead']);
