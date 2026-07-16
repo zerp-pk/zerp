@@ -1,21 +1,15 @@
 <?php
 
 /**
- * Laravel - A PHP Framework For Web Artisans
+ * Front controller for shared hosting, where the document root is the repo root
+ * rather than public/.
  *
- * @package  Laravel
- * @author   Taylor Otwell <taylor@laravel.com>
+ * This was Laravel's built-in dev-server shim, which returned false for any file
+ * that exists under public/ — a magic value only `php -S` understands. Apache and
+ * LiteSpeed just end the script and send an empty 200, so /index.php and
+ * /build/manifest.json served blank pages. The .htaccess rewrites static assets
+ * straight out of public/ and never routes them here, so the branch had no job
+ * beyond breaking those two URLs.
  */
-
-$uri = urldecode(
-    parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH)
-);
-
-// This file allows us to emulate Apache's "mod_rewrite" functionality from the
-// built-in PHP web server. This provides a convenient way to test a Laravel
-// application without having installed a "real" web server software here.
-if ($uri !== '/' && file_exists(__DIR__.'/public'.$uri)) {
-    return false;
-}
 
 require_once __DIR__.'/public/index.php';

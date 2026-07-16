@@ -31,13 +31,16 @@ class ModulePreferenceController extends Controller
         $entitled = Plan::getUserSubscriptionModules($company->id);
 
         $modules = collect($entitled)->map(function (string $name) use ($catalogue, $disabled) {
-            $meta = collect($catalogue)->firstWhere('name', $name) ?? [];
+            // Module::find() returns the Module object itself, not an array — read it
+            // with property access. Its image already resolves the add-on's own upload
+            // and the vendor/zerp path, which packages/local no longer has.
+            $meta = collect($catalogue)->firstWhere('name', $name);
 
             return [
                 'module' => $name,
-                'title' => $meta['alias'] ?? $meta['name'] ?? $name,
-                'description' => $meta['description'] ?? null,
-                'image' => url('/packages/local/' . $name . '/favicon.png'),
+                'title' => $meta->alias ?? $name,
+                'description' => $meta->description ?? null,
+                'image' => $meta->image ?? url('/packages/local/' . $name . '/favicon.png'),
                 'enabled' => !in_array($name, $disabled, true),
             ];
         })->sortBy('title')->values();
