@@ -1,9 +1,9 @@
-import { Head, router, usePage } from '@inertiajs/react';
+import { router, usePage } from '@inertiajs/react';
 import { useTranslation } from 'react-i18next';
-import AuthenticatedLayout from '@/layouts/authenticated-layout';
-import { Card } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
+import { Blocks } from 'lucide-react';
 
 interface ModuleRow {
     module: string;
@@ -13,7 +13,7 @@ interface ModuleRow {
     enabled: boolean;
 }
 
-export default function Modules() {
+export default function ModulesSettings() {
     const { t } = useTranslation();
     const { modules = [] } = usePage().props as unknown as { modules: ModuleRow[] };
 
@@ -28,17 +28,18 @@ export default function Modules() {
     };
 
     return (
-        <AuthenticatedLayout>
-            <Head title={t('Modules')} />
+        <Card>
+            <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                    <Blocks className="h-5 w-5" />
+                    {t('Modules')}
+                </CardTitle>
+                <p className="text-muted-foreground mt-1 text-sm">
+                    {t('Switch off the modules you do not use. They disappear from the sidebar and their pages stop opening. Nothing is deleted, and you can switch them back on at any time.')}
+                </p>
+            </CardHeader>
 
-            <div className="space-y-6 p-4">
-                <div>
-                    <h1 className="text-xl font-semibold">{t('Modules')}</h1>
-                    <p className="text-muted-foreground mt-1 text-sm">
-                        {t('Switch off the modules you do not use. They disappear from the sidebar and their pages stop opening. Nothing is deleted, and you can switch them back on at any time.')}
-                    </p>
-                </div>
-
+            <CardContent>
                 {modules.length === 0 && (
                     <p className="text-muted-foreground text-sm">
                         {t('Your plan does not include any modules yet.')}
@@ -74,7 +75,7 @@ export default function Modules() {
                         </Card>
                     ))}
                 </div>
-            </div>
-        </AuthenticatedLayout>
+            </CardContent>
+        </Card>
     );
 }

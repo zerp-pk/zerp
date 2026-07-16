@@ -16,6 +16,8 @@ const coreComponents = {
   'cookie-settings': lazy(() => import('@/pages/settings/components/cookie-settings')),
   'bank-transfer-settings': lazy(() => import('@/pages/settings/components/bank-transfer-settings')),
   'cache-settings': lazy(() => import('@/pages/settings/components/cache-settings')),
+  'modules-settings': lazy(() => import('@/pages/settings/components/modules-settings')),
+  'menu-settings': lazy(() => import('@/pages/settings/components/menu-settings')),
 };
 
 // Auto-load package components

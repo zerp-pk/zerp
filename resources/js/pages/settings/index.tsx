@@ -83,7 +83,8 @@ export default function Settings() {
             <div className="pr-4">
               {sidebarNavItems.map((item) => {
             const sectionId = item.href.replace('#', '');
-            const canManage = auth.user?.permissions?.includes(item.permission);
+            // No permission means everyone: see filterByPermission in utils/settings.
+            const canManage = !item.permission || auth.user?.permissions?.includes(item.permission);
 
             if (!canManage) return null;
 

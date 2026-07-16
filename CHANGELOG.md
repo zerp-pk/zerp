@@ -1,5 +1,28 @@
 # Changelog
 
+## v1.2.0 - 2026-07-16
+
+### Changed
+- **Settings is one page.** The company's modules and the sidebar arranger were their
+  own screens; both are sections of `Settings` now. The old URLs redirect, so existing
+  links still work. The `Settings` sidebar entry no longer carries a permission and can
+  no longer be hidden: the arranger lives inside it, so hiding it would leave no way
+  back, and staff hold no settings permission at all yet still arrange their own
+  sidebar. Sections are shown per permission, so staff see only the sidebar, and
+  nothing they may not manage is sent to the browser.
+
+### Fixed
+- **A company saw modules its plan does not include.** Entitlement was the plan's
+  modules merged with `user_active_modules`, so any row there widened it past the plan.
+  `PackageSeeder` writes a row per installed module, so a seeded company saw everything
+  regardless of its plan, and editing a plan to drop a module left subscribers holding
+  it. The plan is the boundary now; `user_active_modules` records what was picked and
+  paid for and can no longer widen the entitlement.
+- The sidebar and route access had a **second, independent answer** to the same
+  question: `ActivatedModule()` read `user_active_modules` directly and never consulted
+  the plan, so a module outside the plan stayed in the menu and its routes kept
+  resolving. Both now derive from one place.
+
 ## v1.1.2 - 2026-07-16
 
 ### Fixed

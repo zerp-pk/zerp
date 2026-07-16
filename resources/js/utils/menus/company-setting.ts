@@ -1,10 +1,11 @@
-import { Palette, Building,SettingsIcon, Mail, DollarSign, CreditCard } from 'lucide-react';
+import { Palette, Building,SettingsIcon, Mail, DollarSign, CreditCard, Blocks, LayoutList } from 'lucide-react';
 
 export interface SettingMenuItem {
   order: number;
   title: string;
   href: string;
   icon: any;
+  /** Empty means everyone: the section is a personal preference, not a privilege. */
   permission: string;
   component: string;
 }
@@ -65,5 +66,23 @@ export const getCompanySettings = (t: (key: string) => string): SettingMenuItem[
     icon: CreditCard,
     permission: 'manage-bank-transfer-settings',
     component: 'bank-transfer-settings'
+  },
+  {
+    order: 1100,
+    title: t('Modules'),
+    href: '#modules-settings',
+    icon: Blocks,
+    permission: 'manage-settings',
+    component: 'modules-settings'
+  },
+  {
+    // No permission: everyone arranges their own sidebar, including staff, who hold
+    // no settings permission at all.
+    order: 1200,
+    title: t('Sidebar'),
+    href: '#menu-settings',
+    icon: LayoutList,
+    permission: '',
+    component: 'menu-settings'
   }
 ];

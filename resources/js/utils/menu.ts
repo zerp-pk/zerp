@@ -123,8 +123,12 @@ const filterByPermission = (items: NavItem[], userPermissions: string[]): NavIte
     });
 };
 
-/** The sidebar arranger. It may be reordered, but never hidden. */
-export const MENU_MANAGER_KEY = 'menu-manager';
+/**
+ * Settings, which is where the sidebar arranger lives. It may be reordered, but never
+ * hidden: hiding it would take away the only way back to the screen that unhides
+ * things. This used to be the arranger's own entry, before it moved into Settings.
+ */
+export const SETTINGS_KEY = 'settings';
 
 /**
  * A stable identity for a top-level menu item.
@@ -150,9 +154,9 @@ export const applyMenuPreference = (
     const order = preference?.order ?? [];
     const hidden = preference?.hidden ?? [];
 
-    // The menu manager itself is never hideable: hiding it would leave the user with
-    // no way back into the screen that unhides things.
-    const hideable = hidden.filter(key => key !== MENU_MANAGER_KEY);
+    // Settings is never hideable: the arranger lives inside it, so hiding it would
+    // leave the user with no way back into the screen that unhides things.
+    const hideable = hidden.filter(key => key !== SETTINGS_KEY);
 
     const visible = hideable.length ? items.filter(item => !hideable.includes(menuKey(item))) : items;
 

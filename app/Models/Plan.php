@@ -57,6 +57,18 @@ class Plan extends Model
         return self::getUserSubscriptionModules($userId);
     }
 
+    /**
+     * The modules a company is entitled to: its plan's, and nothing else.
+     *
+     * user_active_modules records what a company picked and paid for at subscribe
+     * time, but it is not the boundary. It used to be merged in here, which let it
+     * widen the entitlement past the plan: PackageSeeder writes a row per installed
+     * module, so a seeded company saw every module regardless of the plan it was on,
+     * and editing a plan to drop a module left subscribers with the old rows.
+     *
+     * The plan is the boundary. A module has to be in the plan to be entitled, and
+     * has to be installed and enabled to be usable.
+     */
     public static function getUserSubscriptionModules($userId = null)
     {
         $user = $userId ? User::find($userId) : auth()->user();
@@ -70,27 +82,18 @@ class Plan extends Model
             return (new Module())->allEnabled();
         }
 
-        $availableModules = [];
+        $planModules = [];
 
-        // Get modules from user's active plan
         if ($user->active_plan) {
             $plan = self::find($user->active_plan);
             if ($plan && $plan->modules) {
-                $availableModules = array_merge($availableModules, $plan->modules);
+                $planModules = is_array($plan->modules) ? $plan->modules : [];
             }
         }
 
-        // Get user's individually activated modules
-        $userActiveModules = UserActiveModule::where('user_id', $user->id)
-            ->pluck('module')
-            ->toArray();
+        // Ensure the modules are actually installed and enabled.
+        $enabled = (new Module())->allEnabled();
 
-        $availableModules = array_merge($availableModules, $userActiveModules);
-
-        // Remove duplicates and ensure modules are actually enabled
-        $enabledModules = (new Module())->allEnabled();
-        $availableModules = array_unique(array_intersect($availableModules, $enabledModules));
-
-        return array_values($availableModules);
+        return array_values(array_unique(array_intersect($planModules, $enabled)));
     }
 }
