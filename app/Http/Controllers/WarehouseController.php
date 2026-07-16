@@ -53,8 +53,8 @@ class WarehouseController extends Controller
             $warehouse->address = $validated['address'];
             $warehouse->city = $validated['city'];
             $warehouse->zip_code = $validated['zip_code'];
-            $warehouse->phone = $validated['phone'];
-            $warehouse->email = $validated['email'];
+            $warehouse->phone = $validated['phone'] ?? null;
+            $warehouse->email = $validated['email'] ?? null;
             $warehouse->is_active = $validated['is_active'];
             $warehouse->creator_id = Auth::id();
             $warehouse->created_by = creatorId();
@@ -80,8 +80,8 @@ class WarehouseController extends Controller
             $warehouse->address = $validated['address'];
             $warehouse->city = $validated['city'];
             $warehouse->zip_code = $validated['zip_code'];
-            $warehouse->phone = $validated['phone'];
-            $warehouse->email = $validated['email'];
+            $warehouse->phone = $validated['phone'] ?? null;
+            $warehouse->email = $validated['email'] ?? null;
             $warehouse->is_active = $validated['is_active'];
             $warehouse->save();
 

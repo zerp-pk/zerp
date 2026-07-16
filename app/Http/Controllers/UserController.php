@@ -75,7 +75,9 @@ class UserController extends Controller
             $user = new User();
             $user->name = $validated['name'];
             $user->email = $validated['email'];
-            $user->mobile_no = $validated['mobile_no'];
+            // mobile_no is nullable, and validated() omits keys the request never sent,
+            // so this is absent rather than null when the form leaves it blank.
+            $user->mobile_no = $validated['mobile_no'] ?? null;
             $user->password = Hash::make($validated['password']);
             $user->type = Auth::user()->type == 'superadmin' ? 'company' : ($role->name ?? 'staff');
             $user->is_enable_login = $validated['is_enable_login'];
@@ -129,7 +131,7 @@ class UserController extends Controller
 
             $user->name = $validated['name'];
             $user->email = $validated['email'];
-            $user->mobile_no = $validated['mobile_no'];
+            $user->mobile_no = $validated['mobile_no'] ?? null;
             $user->is_enable_login = $validated['is_enable_login'];
             $user->save();
 
