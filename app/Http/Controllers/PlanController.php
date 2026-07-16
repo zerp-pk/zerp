@@ -167,7 +167,7 @@ class PlanController extends Controller
             $validated = $request->validated();
             $plan = new Plan();
             $plan->name = $validated['name'];
-            $plan->description = $validated['description'];
+            $plan->description = $validated['description'] ?? null;
             $plan->number_of_users = $validated['number_of_users'];
             $plan->storage_limit = $validated['storage_limit'] * 1024 * 1024;
             $plan->status = $request->boolean('status', true);
@@ -252,7 +252,7 @@ class PlanController extends Controller
             $validated = $request->validated();
             
             $plan->name = $validated['name'];
-            $plan->description = $validated['description'];
+            $plan->description = $validated['description'] ?? null;
             $plan->number_of_users = $validated['number_of_users'];
             $plan->storage_limit = $validated['storage_limit'] * 1024 * 1024;
             $plan->status = $request->boolean('status', true);

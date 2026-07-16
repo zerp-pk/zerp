@@ -1,5 +1,16 @@
 # Changelog
 
+## v1.1.2 - 2026-07-16
+
+### Fixed
+- **Creating a user returned a 500** when the mobile number was left blank. `mobile_no`
+  is optional, so the form omits it, but `validated()` only returns keys the request
+  actually sent. Reading the absent key raised "Undefined array key" and the request
+  died. Editing a user had the same fault.
+- The same pattern, an optional field read from `validated()` without a default, also
+  affected warehouse phone/email and the helpdesk category and plan descriptions. All
+  of them would have failed the same way once the field was left empty.
+
 ## v1.1.1 - 2026-07-16
 
 ### Fixed
