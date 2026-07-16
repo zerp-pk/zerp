@@ -13,7 +13,7 @@ jobs:
     # This repo's composer.json references feature modules as path
     # repositories under a sibling ../ZerpPackages/ directory, which
     # doesn't exist in an isolated checkout of just this repo. CI
-    # therefore only lints/builds the core app itself — it does not
+    # therefore only lints/builds the core app itself - it does not
     # run `composer install` or the PHPUnit suite, since both need
     # the module packages present. See README "Get the module
     # packages" for the full local dev setup.
@@ -43,7 +43,7 @@ jobs:
           # key on.
 
       - name: Install frontend dependencies
-        # Not npm ci — that requires an existing package-lock.json, which
+        # Not npm ci - that requires an existing package-lock.json, which
         # isn't committed here.
         run: npm install
 

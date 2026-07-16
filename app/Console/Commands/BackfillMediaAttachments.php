@@ -21,7 +21,7 @@ class BackfillMediaAttachments extends Command
 
     /**
      * One entry per table/column being unified. Filled in incrementally as
-     * each package is migrated — see the plan for the full rollout order.
+     * each package is migrated - see the plan for the full rollout order.
      *
      * Each entry:
      *   iterate_model    Fully-qualified Eloquent model class to loop over (has path_column/media_id_column).
@@ -30,8 +30,8 @@ class BackfillMediaAttachments extends Command
      *   collection       Media collection_name to assign.
      *   directory        Auto-created top-level MediaDirectory name.
      *   owner_model      Fully-qualified class name recorded as Media.model_type (the real business owner,
-     *                    which may differ from iterate_model — e.g. a Contract, not its ContractAttachment row).
-     *   owner_id         Closure(mixed $row): int — resolves the owner's id from the iterated row.
+     *                    which may differ from iterate_model - e.g. a Contract, not its ContractAttachment row).
+     *   owner_id         Closure(mixed $row): int - resolves the owner's id from the iterated row.
      *   creator_of       Closure(mixed $row): array{?int, ?int} => [creator_id, created_by].
      *   exclude_values   Optional array of path_column values to skip (e.g. a shared default placeholder).
      */
@@ -156,7 +156,7 @@ class BackfillMediaAttachments extends Command
                 'directory' => 'Add-on Images',
                 'owner_model' => \App\Models\AddOn::class,
                 'owner_id' => fn ($row) => $row->id,
-                // Module registry is system-wide, not company-scoped — attribute to the superadmin.
+                // Module registry is system-wide, not company-scoped - attribute to the superadmin.
                 'creator_of' => function ($row) {
                     $superadminId = \App\Models\User::where('type', 'superadmin')->value('id');
                     return [$superadminId, $superadminId];
@@ -181,7 +181,7 @@ class BackfillMediaAttachments extends Command
                 'owner_model' => \App\Models\User::class,
                 'owner_id' => fn ($row) => $row->id,
                 'creator_of' => fn ($row) => [$row->id, $row->created_by ?? $row->id],
-                // Skip the shared default placeholder — it isn't a real per-user upload.
+                // Skip the shared default placeholder - it isn't a real per-user upload.
                 'exclude_values' => ['avatar.png'],
             ],
         ];
@@ -189,7 +189,7 @@ class BackfillMediaAttachments extends Command
 
     /**
      * JSON-array sources (support-ticket's `attachments` columns hold an
-     * array of {name, path} elements per row, not a single path column) —
+     * array of {name, path} elements per row, not a single path column),
      * handled by a dedicated loop rather than the generic column-based map.
      */
     protected function jsonArraySources(): array

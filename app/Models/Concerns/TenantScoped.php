@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Auth;
  * Confines every query on the model to the authenticated user's tenant.
  *
  * Module controllers across this codebase authorise mutations with a capability
- * check alone (`can('edit-employee')`), which every tenant's staff passes — so an
+ * check alone (`can('edit-employee')`), which every tenant's staff passes - so an
  * id belonging to another company resolved fine and was then read, edited or
  * deleted. Guarding each action individually is how the next new action ends up
  * unguarded, so the boundary lives on the model instead: a foreign id resolves to
@@ -24,8 +24,8 @@ use Illuminate\Support\Facades\Auth;
  *
  * With no authenticated user (console commands, seeders, queued jobs) there is no
  * tenant to scope to and the scope stands down; those paths are not attacker-
- * reachable. Code that legitimately acts on another tenant — provisioning a new
- * company's default records — must opt out explicitly:
+ * reachable. Code that legitimately acts on another tenant - provisioning a new
+ * company's default records - must opt out explicitly:
  *
  *     Model::withoutGlobalScope('tenant')
  *
@@ -35,7 +35,7 @@ use Illuminate\Support\Facades\Auth;
  *     'employee_id' => 'required|exists:employees,id,created_by,' . creatorId()
  *
  * Public per-company portals (the support-ticket help centre, the recruitment job
- * board) serve one company's data to the world, addressed by a slug in the URL —
+ * board) serve one company's data to the world, addressed by a slug in the URL,
  * a visitor logged in to a different company must still see it. Their middleware
  * calls TenantScope::standDownForThisRequest().
  */

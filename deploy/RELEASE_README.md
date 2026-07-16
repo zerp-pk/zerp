@@ -1,20 +1,20 @@
 # zerp-release
 
-**Generated repo — do not edit by hand.** It is rebuilt and published by
+**Generated repo - do not edit by hand.** It is rebuilt and published by
 `deploy/publish.sh` in [zerp-pk/zerp](https://github.com/zerp-pk/zerp). Any commit
 made directly here is wiped by the next publish.
 
 This is the tree Hostinger clones. It differs from the source repo in three ways:
 
-- `public/build/` (the compiled Vite bundle) **is committed** — the server has no Node.
+- `public/build/` (the compiled Vite bundle) **is committed** - the server has no Node.
 - `composer.json` pulls the `zerp/*` modules from **Packagist**, not from the
   `../ZerpPackages` path repositories, which don't exist on the server.
 - `vendor/` is **not** committed; `composer install` runs on the server.
 
 ## First-time setup on Hostinger
 
-The app is cloned **directly into `public_html`**, so it is served at `https://zerp.pk/`
-— not `zerp.pk/public/`. The committed root `.htaccess` and `index.php` handle that:
+The app is cloned **directly into `public_html`**, so it is served at `https://zerp.pk/`,
+not `zerp.pk/public/`. The committed root `.htaccess` and `index.php` handle that:
 requests are rewritten into `public/`, and the backend tree is blocked from the web
 (see [Security](#security-check-do-this-before-announcing-the-site)). You do **not**
 need to change the document root.
@@ -47,10 +47,10 @@ php artisan storage:link
 php artisan config:cache && php artisan route:cache && php artisan view:cache
 ```
 
-`public_html` must be empty before the clone — Git refuses to clone into a directory
+`public_html` must be empty before the clone - Git refuses to clone into a directory
 that already has files. Remove Hostinger's `default.php` / `index.html` placeholders first.
 
-### Security check — do this before announcing the site
+### Security check - do this before announcing the site
 
 The whole app lives under the document root, so the `.htaccess` deny rules are the
 only thing keeping the source private. Verify they are active. Every one of these
@@ -62,7 +62,7 @@ for p in .env .git/config storage/logs/laravel.log config/database.php composer.
 done
 ```
 
-If any returns 200, Apache is ignoring `.htaccess` (`AllowOverride` is off) — stop and
+If any returns 200, Apache is ignoring `.htaccess` (`AllowOverride` is off) - stop and
 fix that before going live, or your source and DB credentials are downloadable. These
 must still return **200**: `https://zerp.pk/build/manifest.json` and the landing page.
 
@@ -79,5 +79,5 @@ frontend bundle or a module's assets are missing.
 
 `public/packages/local/<Module>/` holds relative symlinks into `vendor/zerp/<pkg>`,
 committed to this repo. They resolve once `composer install` has run. If module images
-404, look for dangling links with `find public/packages -xtype l` — output there means
+404, look for dangling links with `find public/packages -xtype l` - output there means
 a module failed to install.

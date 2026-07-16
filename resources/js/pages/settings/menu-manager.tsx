@@ -28,7 +28,7 @@ export default function MenuManager() {
 
     const [scope, setScope] = useState<Scope>('user');
 
-    // The real sidebar, already filtered by permission — so the manager can only ever
+    // The real sidebar, already filtered by permission - so the manager can only ever
     // offer items the user actually has.
     const menu = allMenuItems();
 
@@ -82,7 +82,7 @@ export default function MenuManager() {
                 <div>
                     <h1 className="text-xl font-semibold">{t('Menu')}</h1>
                     <p className="text-muted-foreground mt-1 text-sm">
-                        {t('Drag to reorder your sidebar. Hiding an item only removes it from the sidebar — it does not change what you are allowed to open.')}
+                        {t('Drag to reorder your sidebar. Hiding an item only removes it from the sidebar - it does not change what you are allowed to open.')}
                     </p>
                 </div>
 

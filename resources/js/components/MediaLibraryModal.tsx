@@ -79,7 +79,7 @@ export default function MediaLibraryModal({
     }
   };
 
-  // NOTE: contract is frozen — every MediaPicker consumer across the app expects the bare
+  // NOTE: contract is frozen - every MediaPicker consumer across the app expects the bare
   // file_name string (single) / string[] of file_names (multiple), not a URL or numeric id.
   const handleSelect = (fileName: string) => {
     if (multiple) {

@@ -7,7 +7,7 @@ assignees: ""
 ---
 
 **Which module/area does this affect?**
-Core app, or a specific module (HRM, CRM, POS, etc. — see the table in the
+Core app, or a specific module (HRM, CRM, POS, etc. - see the table in the
 main README)? If it's a new capability that doesn't fit an existing module,
 say so.
 
@@ -21,4 +21,4 @@ What you want to happen.
 Any alternative solutions or workarounds you've thought about.
 
 **Additional context**
-Anything else — mockups, links, related issues.
+Anything else - mockups, links, related issues.

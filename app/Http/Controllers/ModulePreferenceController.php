@@ -25,13 +25,13 @@ class ModulePreferenceController extends Controller
         $disabled = DisabledModule::forCompany($company->id);
         $catalogue = (new Module())->allModules();
 
-        // Only what the company is entitled to — its plan plus any add-ons it bought.
+        // Only what the company is entitled to - its plan plus any add-ons it bought.
         // Note this reflects entitlement, not the disabled state, so a switched-off
         // module still appears here (that is the point: it can be switched back on).
         $entitled = Plan::getUserSubscriptionModules($company->id);
 
         $modules = collect($entitled)->map(function (string $name) use ($catalogue, $disabled) {
-            // Module::find() returns the Module object itself, not an array — read it
+            // Module::find() returns the Module object itself, not an array - read it
             // with property access. Its image already resolves the add-on's own upload
             // and the vendor/zerp path, which packages/local no longer has.
             $meta = collect($catalogue)->firstWhere('name', $name);

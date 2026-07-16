@@ -10,7 +10,7 @@ use Inertia\Inertia;
 /**
  * The sidebar layout: order of the top-level items, and which are hidden.
  *
- * Hiding is cosmetic. It takes an item out of the sidebar and nothing else — the
+ * Hiding is cosmetic. It takes an item out of the sidebar and nothing else - the
  * routes stay reachable and permissions still decide who may do what. To actually
  * take a module out of the product, use ModulePreferenceController.
  */
@@ -42,7 +42,7 @@ class MenuPreferenceController extends Controller
 
         abort_if($validated['scope'] === 'company' && $user->type !== 'company', 403);
 
-        // A company admin has both rows, and they key on the same user_id — hence
+        // A company admin has both rows, and they key on the same user_id - hence
         // scope. Staff only ever write a `user` row.
         MenuPreference::updateOrCreate(
             ['user_id' => $user->id, 'scope' => $validated['scope']],

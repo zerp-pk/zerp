@@ -146,7 +146,7 @@ export const getCompanyMenu = (t: (key: string) => string): NavItem[] => [
     {
         // No permission: arranging your own sidebar is a personal preference, not a
         // privilege. `name` is the stable key the menu manager saves against, and the
-        // one entry it refuses to hide — hiding it would leave no way back.
+        // one entry it refuses to hide - hiding it would leave no way back.
         title: t('Sidebar'),
         href: route('settings.menu'),
         icon: LayoutList,

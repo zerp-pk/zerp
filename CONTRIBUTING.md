@@ -5,10 +5,10 @@ you dive in.
 
 ## Repository layout
 
-Zerp isn't a single repo — it's this core app (auth, settings, billing, the
+Zerp isn't a single repo - it's this core app (auth, settings, billing, the
 Media Library, and other cross-cutting infrastructure) plus **30 separate
 module repositories** under the [zerp-pk](https://github.com/zerp-pk)
-organization (HRM, CRM, Accounting, POS, etc. — see the full table in
+organization (HRM, CRM, Accounting, POS, etc. - see the full table in
 [README.md](README.md)). Each module is its own Composer package, pulled in
 as a local path repository and symlinked into `vendor/zerp/<module>/`.
 
@@ -35,7 +35,7 @@ a sibling directory even if you're only working on the core app, since
 
 1. Fork the repo (or the specific module repo you're changing) and create a
    branch off `main`.
-2. Make your change. Keep commits focused — one logical change per commit is
+2. Make your change. Keep commits focused - one logical change per commit is
    easier to review than a single commit doing five unrelated things.
 3. Match the existing code style in the file(s) you're touching (PSR-12 for
    PHP, the existing TypeScript/React conventions for frontend code). There's
@@ -47,13 +47,13 @@ a sibling directory even if you're only working on the core app, since
 
 ## Reporting bugs / requesting features
 
-Use the issue templates — they ask for the info that's actually needed to
+Use the issue templates - they ask for the info that's actually needed to
 act on a report (repro steps, expected vs. actual behavior, which
 module/repo it affects).
 
 ## Security issues
 
-Please don't open a public issue for security vulnerabilities — see
+Please don't open a public issue for security vulnerabilities - see
 [SECURITY.md](SECURITY.md) for the private reporting process.
 
 ## Code of Conduct

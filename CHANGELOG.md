@@ -1,12 +1,12 @@
 # Changelog
 
-## v1.1.1 — 2026-07-16
+## v1.1.1 - 2026-07-16
 
 ### Fixed
 - **`Settings → Modules` returned a 500.** The screen read the module catalogue as
   arrays, but `Module::find()` returns the module object itself, so rendering the page
   raised a fatal `Error`. Module images now come from the catalogue too, which resolves
-  an add-on's own uploaded image and the `vendor/zerp/` path — the old hardcoded
+  an add-on's own uploaded image and the `vendor/zerp/` path - the old hardcoded
   `packages/local/` path no longer exists for modules that moved to Composer packages.
 - **Blank page at `/index.php`.** The root front controller was Laravel's dev-server
   shim, whose `return false` only means "serve the static file yourself" to `php -S`;
@@ -14,11 +14,11 @@
   hands off to `public/index.php`. `.htaccess` serves the static assets and never
   routed them through here, so nothing else changes.
 
-## v1.1.0 — 2026-07-16
+## v1.1.0 - 2026-07-16
 
 ### Security
 - **Cross-tenant isolation.** Module controllers authorised mutations with a
-  capability check alone (`can('edit-leads')`), which every company's staff passes —
+  capability check alone (`can('edit-leads')`), which every company's staff passes,
   so another company's record id resolved and could be read, edited or deleted. The
   boundary now lives on the models as a global scope, so a foreign id resolves to
   null and route-model binding 404s before a controller runs. Applied across the
@@ -37,7 +37,7 @@
   by what the plan or purchased add-ons allow.
 - **Sidebar arranger** (`Settings → Menu`): drag to reorder, hide what you do not
   want. Owners can set a company default; anyone can override it with their own
-  layout. Permissions still decide what exists — hiding only affects the sidebar.
+  layout. Permissions still decide what exists - hiding only affects the sidebar.
 
 ### Fixed
 - Dropped the HRM `system-setup` route, which pointed at a controller that was never
@@ -45,9 +45,9 @@
 - Release publishing: nested `public/build/build/` path, missing `composer.lock`,
   absolute module asset symlinks, and `.env` no longer publishable.
 
-## v1.0.0 — 2026-07-10
+## v1.0.0 - 2026-07-10
 
-First stable release of Zerp — an open, modular ERP platform.
+First stable release of Zerp - an open, modular ERP platform.
 
 ### Core
 - Multi-company ERP core: authentication, roles/permissions, plan & module gating, media library.

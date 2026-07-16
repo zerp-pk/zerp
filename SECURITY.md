@@ -3,7 +3,7 @@
 ## Supported Versions
 
 Zerp is under active development on `main`. There are no maintained LTS
-branches yet — security fixes land on `main` and the latest state of each
+branches yet - security fixes land on `main` and the latest state of each
 module repository under the `zerp-pk` organization.
 
 ## Reporting a Vulnerability
@@ -19,7 +19,7 @@ Instead, use GitHub's private vulnerability reporting for this repository:
    steps, and potential impact.
 
 If the vulnerability is in one of the feature module repositories (see the
-table in [README.md](README.md)), please report it there directly — each
+table in [README.md](README.md)), please report it there directly - each
 module repo under `zerp-pk` has the same private reporting option enabled.
 
 We'll acknowledge your report, investigate, and keep you updated as a fix is

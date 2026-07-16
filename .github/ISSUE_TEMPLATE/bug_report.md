@@ -7,7 +7,7 @@ assignees: ""
 ---
 
 **Which module/area is this in?**
-Core app, or a specific module (HRM, CRM, POS, etc. — see the table in the
+Core app, or a specific module (HRM, CRM, POS, etc. - see the table in the
 main README)?
 
 **Describe the bug**
@@ -31,4 +31,4 @@ If applicable, add screenshots.
 - Browser (if a frontend issue):
 
 **Additional context**
-Anything else relevant — logs, stack traces, related issues.
+Anything else relevant - logs, stack traces, related issues.

@@ -139,8 +139,8 @@ export const menuKey = (item: NavItem): string =>
 /**
  * Apply a saved sidebar layout: the chosen order, and the hidden items.
  *
- * Items the preference has never seen — a module installed since the user last
- * arranged their menu — keep their built-in order and follow the arranged ones,
+ * Items the preference has never seen - a module installed since the user last
+ * arranged their menu - keep their built-in order and follow the arranged ones,
  * rather than vanishing or jumping to the top.
  */
 export const applyMenuPreference = (

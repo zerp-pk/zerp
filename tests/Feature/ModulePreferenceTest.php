@@ -63,7 +63,7 @@ class ModulePreferenceTest extends TestCase
 
     public function test_the_modules_screen_loads(): void
     {
-        // Every other test here is a PUT, so nothing ever rendered the page — and the
+        // Every other test here is a PUT, so nothing ever rendered the page - and the
         // catalogue is a list of Module objects, which the screen read as arrays and
         // 500'd on. A plain GET is the whole regression test.
         $company = $this->company(['Lead'], ['Lead']);
@@ -91,7 +91,7 @@ class ModulePreferenceTest extends TestCase
     {
         // user_active_modules doubles as the record of which add-ons a company bought.
         // If switching a module off deleted that row, switching it back on would mean
-        // buying it again — so this is the test that matters most on this screen.
+        // buying it again - so this is the test that matters most on this screen.
         $company = $this->company([], ['Lead']);
         $this->actingAs($company);
 
