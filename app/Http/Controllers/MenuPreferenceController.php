@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Models\MenuPreference;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Inertia\Inertia;
 
 /**
  * The sidebar layout: order of the top-level items, and which are hidden.
@@ -16,16 +15,13 @@ use Inertia\Inertia;
  */
 class MenuPreferenceController extends Controller
 {
+    /**
+     * The arranger lives inside Settings now, so this route only exists to send anyone
+     * holding an old link or bookmark to the section.
+     */
     public function index()
     {
-        $user = Auth::user();
-
-        return Inertia::render('settings/menu-manager', [
-            'preference' => MenuPreference::resolveFor($user),
-            'companyDefault' => $this->companyDefault($user),
-            // Only a company admin may set the default everyone else inherits.
-            'canSetCompanyDefault' => $user->type === 'company',
-        ]);
+        return redirect()->route('settings.index', [], 302)->withFragment('menu-settings');
     }
 
     public function update(Request $request)
@@ -64,7 +60,11 @@ class MenuPreferenceController extends Controller
         return back()->with('success', __('Your menu layout has been reset.'));
     }
 
-    private function companyDefault($user): array
+    /**
+     * The layout a company admin set for everyone. Shared with SettingController,
+     * which renders the section.
+     */
+    public static function companyDefaultFor($user): array
     {
         $default = MenuPreference::where('user_id', creatorId())->where('scope', 'company')->first();
 

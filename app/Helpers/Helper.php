@@ -240,9 +240,12 @@ if (!function_exists('ActivatedModule')) {
                 }
 
                 if ($user) {
-                    $active_module = UserActiveModule::where('user_id', $user->id)->pluck('module')->toArray();
-                    $user_active_module = array_values(array_intersect($available_modules, $active_module));
-                    $user_active_module = array_values(array_unique(array_merge($activated_module,$user_active_module)));
+                    // The plan is the boundary, via the one function that decides it.
+                    // This used to read user_active_modules directly and never look at
+                    // the plan, so a module outside the plan still reached the sidebar
+                    // and still resolved its routes through PlanModuleCheck.
+                    $entitled = \App\Models\Plan::getUserSubscriptionModules($user->id);
+                    $user_active_module = array_values(array_unique(array_merge($activated_module, $entitled)));
 
                     // Modules the company has switched off for itself. Subtracted here,
                     // at the single place that answers "what is active", so a disabled

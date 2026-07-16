@@ -1,13 +1,12 @@
 import { useMemo, useState } from 'react';
-import { Head, router, usePage } from '@inertiajs/react';
+import { router, usePage } from '@inertiajs/react';
 import { useTranslation } from 'react-i18next';
 import { DragDropContext, Draggable, Droppable, type DropResult } from '@hello-pangea/dnd';
-import { Eye, EyeOff, GripVertical } from 'lucide-react';
-import AuthenticatedLayout from '@/layouts/authenticated-layout';
+import { Eye, EyeOff, GripVertical, LayoutList } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Card } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { allMenuItems, applyMenuPreference, menuKey, MENU_MANAGER_KEY } from '@/utils/menu';
+import { allMenuItems, applyMenuPreference, menuKey, SETTINGS_KEY } from '@/utils/menu';
 import { cn } from '@/lib/utils';
 
 type Scope = 'user' | 'company';
@@ -18,7 +17,7 @@ interface Preference {
     source?: 'user' | 'company' | 'default';
 }
 
-export default function MenuManager() {
+export default function MenuSettings() {
     const { t } = useTranslation();
     const { preference, companyDefault, canSetCompanyDefault } = usePage().props as unknown as {
         preference: Preference;
@@ -75,17 +74,18 @@ export default function MenuManager() {
     };
 
     return (
-        <AuthenticatedLayout>
-            <Head title={t('Menu')} />
+        <Card>
+            <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                    <LayoutList className="h-5 w-5" />
+                    {t('Sidebar')}
+                </CardTitle>
+                <p className="text-muted-foreground mt-1 text-sm">
+                    {t('Drag to reorder your sidebar. Hiding an item only removes it from the sidebar - it does not change what you are allowed to open.')}
+                </p>
+            </CardHeader>
 
-            <div className="max-w-2xl space-y-6 p-4">
-                <div>
-                    <h1 className="text-xl font-semibold">{t('Menu')}</h1>
-                    <p className="text-muted-foreground mt-1 text-sm">
-                        {t('Drag to reorder your sidebar. Hiding an item only removes it from the sidebar - it does not change what you are allowed to open.')}
-                    </p>
-                </div>
-
+            <CardContent className="max-w-2xl space-y-6">
                 {canSetCompanyDefault && (
                     <Tabs value={scope} onValueChange={value => switchScope(value as Scope)}>
                         <TabsList>
@@ -142,8 +142,8 @@ export default function MenuManager() {
                                                         type="button"
                                                         variant="ghost"
                                                         size="icon"
-                                                        disabled={key === MENU_MANAGER_KEY}
-                                                        title={key === MENU_MANAGER_KEY ? t('This page cannot be hidden') : undefined}
+                                                        disabled={key === SETTINGS_KEY}
+                                                        title={key === SETTINGS_KEY ? t('This page cannot be hidden') : undefined}
                                                         onClick={() => toggleHidden(key)}
                                                         aria-label={isHidden ? t('Show') : t('Hide')}
                                                     >
@@ -173,7 +173,7 @@ export default function MenuManager() {
                         </Button>
                     )}
                 </div>
-            </div>
-        </AuthenticatedLayout>
+            </CardContent>
+        </Card>
     );
 }

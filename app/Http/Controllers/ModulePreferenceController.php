@@ -7,8 +7,8 @@ use App\Models\DisabledModule;
 use App\Models\Plan;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use App\Models\User;
 use Illuminate\Validation\ValidationException;
-use Inertia\Inertia;
 
 /**
  * Lets a company switch off modules it does not use.
@@ -19,18 +19,30 @@ use Inertia\Inertia;
  */
 class ModulePreferenceController extends Controller
 {
+    /**
+     * The modules screen lives inside Settings now, so this route only exists to send
+     * anyone holding an old link or bookmark to the section.
+     */
     public function index()
     {
-        $company = $this->company();
+        return redirect()->route('settings.index', [], 302)->withFragment('modules-settings');
+    }
+
+    /**
+     * The rows the Modules section renders. Shared with SettingController, which is
+     * what actually renders the page.
+     */
+    public static function rowsFor(User $company): array
+    {
         $disabled = DisabledModule::forCompany($company->id);
         $catalogue = (new Module())->allModules();
 
-        // Only what the company is entitled to - its plan plus any add-ons it bought.
-        // Note this reflects entitlement, not the disabled state, so a switched-off
-        // module still appears here (that is the point: it can be switched back on).
+        // Only what the company is entitled to, which is its plan. Note this reflects
+        // entitlement, not the disabled state, so a switched-off module still appears
+        // here (that is the point: it can be switched back on).
         $entitled = Plan::getUserSubscriptionModules($company->id);
 
-        $modules = collect($entitled)->map(function (string $name) use ($catalogue, $disabled) {
+        return collect($entitled)->map(function (string $name) use ($catalogue, $disabled) {
             // Module::find() returns the Module object itself, not an array - read it
             // with property access. Its image already resolves the add-on's own upload
             // and the vendor/zerp path, which packages/local no longer has.
@@ -43,11 +55,7 @@ class ModulePreferenceController extends Controller
                 'image' => $meta->image ?? url('/packages/local/' . $name . '/favicon.png'),
                 'enabled' => !in_array($name, $disabled, true),
             ];
-        })->sortBy('title')->values();
-
-        return Inertia::render('settings/modules', [
-            'modules' => $modules,
-        ]);
+        })->sortBy('title')->values()->all();
     }
 
     public function update(Request $request)

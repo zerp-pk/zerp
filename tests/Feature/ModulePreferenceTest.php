@@ -10,6 +10,7 @@ use App\Models\User;
 use App\Models\UserActiveModule;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Support\Facades\Hash;
+use Spatie\Permission\Models\Permission;
 use Tests\TestCase;
 
 /**
@@ -54,23 +55,53 @@ class ModulePreferenceTest extends TestCase
         $user->email_verified_at = now();
         $user->save();
 
+        // user_active_modules records what a company picked and paid for. It is not the
+        // entitlement: the plan is. Tests pass rows here to prove they cannot widen it.
         foreach ($ownedAddons as $module) {
             UserActiveModule::create(['user_id' => $user->id, 'module' => $module]);
         }
 
-        return $user;
+        // Modules is a section of Settings now, so reaching it needs manage-settings,
+        // which a real company owner holds.
+        $user->givePermissionTo(Permission::firstOrCreate(
+            ['name' => 'manage-settings', 'guard_name' => 'web'],
+            ['add_on' => 'user', 'module' => 'user', 'label' => 'Manage Settings'],
+        ));
+
+        return $user->fresh();
     }
 
-    public function test_the_modules_screen_loads(): void
+    public function test_the_settings_screen_loads_with_the_modules_section(): void
     {
-        // Every other test here is a PUT, so nothing ever rendered the page - and the
-        // catalogue is a list of Module objects, which the screen read as arrays and
-        // 500'd on. A plain GET is the whole regression test.
+        // Nothing here ever rendered the screen (every other test is a PUT), and the
+        // catalogue is a list of Module objects which it read as arrays and 500'd on.
+        // A plain GET is the whole regression test. Modules is a section of Settings
+        // now, so this renders the page that carries it.
+        $company = $this->company(['Lead'], ['Lead']);
+
+        $response = $this->actingAs($company)->get(route('settings.index'));
+
+        $response->assertOk();
+        $this->assertNotEmpty($response->viewData('page')['props']['modules']);
+    }
+
+    public function test_the_old_modules_url_redirects_to_the_section(): void
+    {
+        // The screen moved into Settings; old links and bookmarks still work.
         $company = $this->company(['Lead'], ['Lead']);
 
         $this->actingAs($company)
             ->get(route('settings.modules'))
-            ->assertOk();
+            ->assertRedirect(route('settings.index') . '#modules-settings');
+    }
+
+    public function test_the_old_menu_url_redirects_to_the_section(): void
+    {
+        $company = $this->company(['Lead'], ['Lead']);
+
+        $this->actingAs($company)
+            ->get(route('settings.menu'))
+            ->assertRedirect(route('settings.index') . '#menu-settings');
     }
 
     public function test_a_disabled_module_drops_out_of_the_active_set(): void
@@ -89,13 +120,22 @@ class ModulePreferenceTest extends TestCase
 
     public function test_disabling_a_module_does_not_destroy_a_paid_entitlement(): void
     {
-        // user_active_modules doubles as the record of which add-ons a company bought.
+        // user_active_modules is the record of what a company picked and paid for.
         // If switching a module off deleted that row, switching it back on would mean
         // buying it again - so this is the test that matters most on this screen.
-        $company = $this->company([], ['Lead']);
+        // Lead has to be in the plan: entitlement is plan-bounded, so without it the
+        // update is rejected and this test would pass while doing nothing.
+        $company = $this->company(['Lead'], ['Lead']);
         $this->actingAs($company);
 
-        $this->put(route('settings.modules.update'), ['module' => 'Lead', 'enabled' => false]);
+        $this->put(route('settings.modules.update'), ['module' => 'Lead', 'enabled' => false])
+            ->assertSessionHasNoErrors();
+
+        // Proves the disable actually happened rather than being rejected.
+        $this->assertDatabaseHas('disabled_modules', [
+            'user_id' => $company->id,
+            'module' => 'Lead',
+        ]);
 
         $this->assertDatabaseHas('user_active_modules', [
             'user_id' => $company->id,
@@ -109,6 +149,27 @@ class ModulePreferenceTest extends TestCase
             'user_id' => $company->id,
             'module' => 'Lead',
         ]);
+    }
+
+    /**
+     * PackageSeeder writes a user_active_modules row per installed module, and those
+     * rows used to be merged into the entitlement, so a company saw every installed
+     * module regardless of its plan. The plan is the boundary.
+     */
+    public function test_a_module_outside_the_plan_is_not_shown_even_with_an_active_module_row(): void
+    {
+        // Plan has Lead only, but the company carries a row for Hrm as well.
+        $company = $this->company(['Lead'], ['Lead', 'Hrm']);
+        $this->actingAs($company);
+
+        $this->assertContains('Lead', ActivatedModule());
+        $this->assertNotContains('Hrm', ActivatedModule());
+
+        $modules = collect($this->get(route('settings.index'))
+            ->viewData('page')['props']['modules'])->pluck('module');
+
+        $this->assertTrue($modules->contains('Lead'));
+        $this->assertFalse($modules->contains('Hrm'), 'a module outside the plan must not reach the Modules screen');
     }
 
     public function test_a_company_cannot_enable_a_module_its_plan_does_not_include(): void

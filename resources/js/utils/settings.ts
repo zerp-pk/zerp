@@ -45,7 +45,9 @@ const getPackageSettingsItems = (userRoles: string[], activatedPackages: string[
 
 // Filter settings items based on permissions
 const filterByPermission = (items: SettingMenuItem[], userPermissions: string[]): SettingMenuItem[] => {
-    return items.filter(item => userPermissions.includes(item.permission));
+    // An item with no permission is a personal preference rather than a privilege,
+    // so it shows for everyone - staff hold no settings permission at all.
+    return items.filter(item => !item.permission || userPermissions.includes(item.permission));
 };
 
 // Main function to get filtered settings items

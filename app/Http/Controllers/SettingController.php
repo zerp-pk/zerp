@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\MenuPreference;
 use App\Models\Setting;
 use App\Mail\TestMail;
 use Illuminate\Http\Request;
@@ -15,14 +16,26 @@ use Illuminate\Support\Facades\Cookie;
 
 class SettingController extends Controller
 {
+    /**
+     * Settings is one page: every section lives here, including the modules a company
+     * uses and the sidebar arranger.
+     *
+     * The page itself is not gated on manage-settings, because arranging your own
+     * sidebar is a personal preference rather than a privilege, and staff hold no
+     * settings permission at all. The sections are filtered by permission instead, so
+     * staff open this and see only the sidebar. Nothing a user may not manage is sent
+     * to the browser.
+     */
     public function index()
     {
-        if(Auth::user()->can('manage-settings'))
-        {
+        $user = Auth::user();
+        $canManage = $user->can('manage-settings');
+
+        if ($canManage) {
             $globalSettings = getCompanyAllSetting();
             $emailProviders = config('email-providers');
 
-            if(Auth::user()->hasRole('superadmin'))
+            if($user->hasRole('superadmin'))
             {
                $notifications = \App\Models\Notification::where('type','mail')->where('module', 'general')->get()->groupBy('module');
             }
@@ -30,20 +43,24 @@ class SettingController extends Controller
             {
                $notifications = \App\Models\Notification::where('type','mail')->get()->groupBy('module');
             }
-
-
-
-            return Inertia::render('settings/index', [
-                'globalSettings' => $globalSettings,
-                'emailProviders' => $emailProviders,
-                'notifications' => $notifications,
-                'cacheSize' => $this->getCacheSize()
-            ]);
         }
-        else
-        {
-            return back()->with('error', __('Permission denied'));
-        }
+
+        return Inertia::render('settings/index', [
+            'globalSettings' => $canManage ? $globalSettings : [],
+            'emailProviders' => $canManage ? $emailProviders : [],
+            'notifications' => $canManage ? $notifications : [],
+            'cacheSize' => $canManage ? $this->getCacheSize() : '0.00',
+
+            // Modules section: a company admin choosing what the company uses.
+            'modules' => ($canManage && $user->type === 'company')
+                ? ModulePreferenceController::rowsFor($user)
+                : [],
+
+            // Sidebar section: everyone arranges their own, so no permission here.
+            'preference' => MenuPreference::resolveFor($user),
+            'companyDefault' => MenuPreferenceController::companyDefaultFor($user),
+            'canSetCompanyDefault' => $user->type === 'company',
+        ]);
     }
 
     public function updateBrandSettings(Request $request)
