@@ -2,6 +2,8 @@
 
 namespace App\Http\Middleware;
 
+use App\Models\MenuPreference;
+
 use Illuminate\Http\Request;
 use Inertia\Middleware;
 use Illuminate\Auth\Access\AuthorizationException;
@@ -66,6 +68,12 @@ class HandleInertiaRequests extends Middleware
                     : ['activatedPackages' => ActivatedModule()],
                 'impersonating' => $request->session()->has('impersonator_id'),
                 'lang' => $locale,
+                // Sidebar layout: the user's own arrangement, or the company default
+                // they inherit. Resolved server-side so the sidebar and the menu
+                // manager cannot disagree about what is currently applied.
+                'menuPreference' => $request->user()
+                    ? MenuPreference::resolveFor($request->user())
+                    : ['order' => [], 'hidden' => [], 'source' => 'default'],
             ],
             'flash' => [
                 'success' => $request->session()->get('success'),

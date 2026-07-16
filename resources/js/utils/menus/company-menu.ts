@@ -1,4 +1,5 @@
-import { LayoutGrid, Users, Warehouse,ArrowRightLeft, Package, Tag, Tags, Shield, Settings, Image, CreditCard, Headphones, ShoppingCart, Kanban, Calendar, MessageCircle, Replace ,Receipt} from 'lucide-react';
+import {
+    LayoutList, LayoutGrid, Users, Warehouse,ArrowRightLeft, Package, Tag, Tags, Shield, Settings, Image, CreditCard, Headphones, ShoppingCart, Kanban, Calendar, MessageCircle, Replace ,Receipt} from 'lucide-react';
 import { NavItem } from '@/types';
 
 export const getCompanyMenu = (t: (key: string) => string): NavItem[] => [
@@ -126,9 +127,30 @@ export const getCompanyMenu = (t: (key: string) => string): NavItem[] => [
     },
     {
         title: t('Settings'),
-        href: route('settings.index'),
         icon: Settings,
         permission: 'manage-settings',
         order: 3000,
+        children: [
+            {
+                title: t('General'),
+                href: route('settings.index'),
+                permission: 'manage-settings',
+            },
+            {
+                title: t('Modules'),
+                href: route('settings.modules'),
+                permission: 'manage-settings',
+            },
+        ],
+    },
+    {
+        // No permission: arranging your own sidebar is a personal preference, not a
+        // privilege. `name` is the stable key the menu manager saves against, and the
+        // one entry it refuses to hide — hiding it would leave no way back.
+        title: t('Sidebar'),
+        href: route('settings.menu'),
+        icon: LayoutList,
+        name: 'menu-manager',
+        order: 3010,
     },
 ];
