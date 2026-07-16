@@ -10,6 +10,14 @@
 - The same pattern, an optional field read from `validated()` without a default, also
   affected warehouse phone/email and the helpdesk category and plan descriptions. All
   of them would have failed the same way once the field was left empty.
+- **Creating a user returned a 500 when the company had no SMTP configured**, on a user
+  that had in fact been created: the welcome and verification emails are sent after the
+  user is saved, and `SetConfigEmail()` throws when no mail host is set. Both sends are
+  now guarded. The user is created, the admin gets a warning that the email did not go
+  out, and the reason is logged. Converting a lead to a deal had the same fault, where a
+  failure left the client created but the deal never made (fixed in zerp/lead v1.0.5).
+- Warning flash messages never reached the screen: the frontend has handled
+  `flash.warning` all along, but the middleware only shared `success` and `error`.
 
 ## v1.1.1 - 2026-07-16
 

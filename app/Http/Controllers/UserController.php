@@ -12,6 +12,7 @@ use Inertia\Inertia;
 use App\Events\CreateUser;
 use App\Models\EmailTemplate;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 use Spatie\Permission\Models\Role;
 use Illuminate\Support\Facades\Session;
 
@@ -99,6 +100,11 @@ class UserController extends Controller
             // Dispatch event for packages to handle their fields
             CreateUser::dispatch($request, $user);
 
+            // The user exists from here on, so neither mail is allowed to fail the
+            // request: SetConfigEmail() throws when the company has no SMTP set up,
+            // which used to surface as a 500 on a user that had in fact been created.
+            $mailFailed = null;
+
              // Send welcome email
             if(company_setting('New User') == 'on') {
                 $emailData = [
@@ -107,13 +113,30 @@ class UserController extends Controller
                     'password' => $validated['password'],
                 ];
 
-                EmailTemplate::sendEmailTemplate('New User', [$user->email], $emailData);
+                try {
+                    EmailTemplate::sendEmailTemplate('New User', [$user->email], $emailData);
+                } catch (\Throwable $e) {
+                    $mailFailed = $e;
+                }
             }
 
             if ($enableEmailVerification === 'on') {
-                // Apply dynamic mail configuration
-                SetConfigEmail(creatorId());
-                $user->sendEmailVerificationNotification();
+                try {
+                    // Apply dynamic mail configuration
+                    SetConfigEmail(creatorId());
+                    $user->sendEmailVerificationNotification();
+                } catch (\Throwable $e) {
+                    $mailFailed = $e;
+                }
+            }
+
+            if ($mailFailed) {
+                Log::warning('User created but its email could not be sent', [
+                    'user_id' => $user->id,
+                    'error' => $mailFailed->getMessage(),
+                ]);
+
+                return redirect()->route('users.index')->with('warning', __('The user has been created, but the email could not be sent. Check your email settings.'));
             }
 
             return redirect()->route('users.index')->with('success', __('The user has been created successfully.'));
