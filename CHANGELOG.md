@@ -1,5 +1,16 @@
 # Changelog
 
+## v1.2.1 - 2026-07-16
+
+### Fixed
+- **Module translations never loaded.** The translations endpoint merged a module's
+  language file from `packages/local/<Module>/`, the path modules used before they
+  became Composer packages. They live under `vendor/zerp/<package>/` now, so the file
+  was never found and every module string fell back to its English key in every
+  language. It failed silently: the check is a `File::exists()` that is simply false.
+  French returned 1706 strings where it should return 6485, so 4779 translations per
+  language were being dropped. Same class as the module image path fixed in v1.1.0.
+
 ## v1.2.0 - 2026-07-16
 
 ### Changed
