@@ -2,6 +2,7 @@
 
 namespace Tests\Unit;
 
+use App\Models\Concerns\TenantScope;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
@@ -28,6 +29,10 @@ class TenantScopeTest extends TestCase
         \Zerp\Account\Models\ChartOfAccount::class,
         \Zerp\Account\Models\AccountCategory::class,
         \Zerp\Account\Models\Expense::class,
+        \Zerp\Recruitment\Models\Candidate::class,
+        \Zerp\Recruitment\Models\JobPosting::class,
+        \Zerp\SupportTicket\Models\Ticket::class,
+        \Zerp\SupportTicket\Models\TicketCategory::class,
     ];
 
     /** Rows with no created_by column; the boundary comes from their parent. */
@@ -104,5 +109,40 @@ class TenantScopeTest extends TestCase
             $this->assertStringContainsString($parentTable, $sql, $model);
             $this->assertStringContainsString('created_by', $sql, $model);
         }
+    }
+
+    public function test_public_portals_can_stand_the_scope_down_for_one_request(): void
+    {
+        // The help centre and job board serve one company's data to the world, keyed
+        // by a slug in the URL. A visitor signed in to a different company must still
+        // see it, so their middleware lifts the boundary for that request only.
+        $this->actAsCompany(7);
+
+        $this->assertFalse(TenantScope::isStoodDown(), 'must be off by default');
+        $this->assertStringContainsString('created_by', \Zerp\SupportTicket\Models\TicketCategory::query()->toSql());
+
+        TenantScope::standDownForThisRequest();
+
+        $this->assertTrue(TenantScope::isStoodDown());
+        $this->assertStringNotContainsString(
+            'created_by',
+            \Zerp\SupportTicket\Models\TicketCategory::query()->toSql(),
+            'portal query must not be confined to the visitor\'s own tenant'
+        );
+    }
+
+    public function test_the_stand_down_does_not_survive_into_the_next_request(): void
+    {
+        // It is flagged on the container, which is rebuilt per request. A flag that
+        // leaked would silently disable tenant isolation for everything that followed.
+        $this->actAsCompany(7);
+        TenantScope::standDownForThisRequest();
+        $this->assertTrue(TenantScope::isStoodDown());
+
+        $this->refreshApplication();
+        $this->actAsCompany(7);
+
+        $this->assertFalse(TenantScope::isStoodDown(), 'stand-down leaked across requests');
+        $this->assertStringContainsString('created_by', \Zerp\SupportTicket\Models\TicketCategory::query()->toSql());
     }
 }
