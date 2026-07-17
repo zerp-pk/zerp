@@ -1,5 +1,26 @@
 # Changelog
 
+## v1.2.2 - 2026-07-17
+
+### Security
+- **`.env` is no longer in the repo.** It carried a real `APP_KEY` and
+  `APP_DEBUG=true`. `APP_KEY` encrypts every session and cookie, so a shared one
+  means anyone holding it can forge a login, and `APP_DEBUG` is also what enables
+  the debug bar. Because the file shipped, the `cp .env.example .env` step in every
+  install guide never ran, so a fresh install silently adopted both. `.env` is now
+  ignored, and `app:install` creates it from the template.
+
+### Changed
+- **`.env.example` is Zerp's, not Laravel's stock file.** It defaulted to
+  `DB_CONNECTION=sqlite` with every `DB_*` commented out, so copying it produced an
+  install that could not reach a database. It now carries MySQL defaults matching
+  what Docker Compose creates, `APP_DEBUG=false`, `LOG_LEVEL=error`, an empty
+  `APP_KEY`, and a comment on each group explaining what to change.
+- Dropped six variables nothing reads: `MAIL_DRIVER`, `CACHE_DRIVER`,
+  `QUEUE_DRIVER`, `BROADCAST_DRIVER`, `APP_LOG_LEVEL` (Laravel 8 names that Laravel
+  12 ignores) and `VITE_DEV_SERVER`. Added `PUSHER_APP_CLUSTER`, which the config
+  reads but the template never offered.
+
 ## v1.2.1 - 2026-07-16
 
 ### Fixed
