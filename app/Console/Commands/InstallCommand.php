@@ -41,6 +41,10 @@ class InstallCommand extends Command
             return 0;
         }
 
+        // .env is not in the repo: it holds secrets and every install needs its own.
+        // Create it before key:generate, which has nowhere to write the key without it.
+        $this->ensureEnvFile();
+
         // Generate app key if not exists
         if (empty(config('app.key'))) {
             $this->info('Generating application key...');
@@ -310,6 +314,30 @@ class InstallCommand extends Command
         // Called after the AddOn row exists so publishAssets() can resolve
         // the vendor/zerp/<package_name> fallback path on first bootstrap.
         (new Module())->publishAssets($moduleName);
+    }
+
+    /**
+     * Every install needs its own .env, so the repo does not carry one: a shared
+     * APP_KEY encrypts every session and cookie, and anyone holding it can forge a
+     * login. Copy the template if this install has not got one yet.
+     */
+    private function ensureEnvFile(): void
+    {
+        $env = base_path('.env');
+
+        if (File::exists($env)) {
+            return;
+        }
+
+        $example = base_path('.env.example');
+
+        if (!File::exists($example)) {
+            $this->error('No .env and no .env.example to copy. Restore .env.example and try again.');
+            exit(1);
+        }
+
+        File::copy($example, $env);
+        $this->info('Created .env from .env.example. Set your database credentials and APP_URL in it.');
     }
 
     private function isInstalled(): bool

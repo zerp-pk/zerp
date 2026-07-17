@@ -97,13 +97,19 @@ walks you through which modules to enable.
 ```bash
 composer install
 npm install
-cp .env.example .env   # if .env doesn't already exist
+cp .env.example .env
 ```
+
+`.env` is not in the repo: it holds your secrets, and every install needs
+its own. `.env.example` is the template, and its defaults are ready to run.
 
 Set your database credentials in `.env` (`DB_HOST`, `DB_DATABASE`,
 `DB_USERNAME`, `DB_PASSWORD`) and make sure `APP_URL` matches the port
-you'll serve on (e.g. `http://localhost:8000`). Generate a key if
-`.env` doesn't already have one: `php artisan key:generate`.
+you'll serve on (e.g. `http://localhost:8000`).
+
+`APP_KEY` starts empty. `app:install` generates one, or run
+`php artisan key:generate` yourself. It encrypts every session and cookie,
+so keep it secret and never reuse one between installs.
 
 ```bash
 php artisan app:install --force
@@ -124,11 +130,13 @@ Then skip to "Run the app" below.
 
 ### Option B - Manual
 
-Same as Option A up through generating `APP_KEY`, then run the steps
-`app:install` would otherwise do yourself - useful if you already have
-data and don't want `migrate:fresh` to wipe it:
+Run the steps `app:install` would otherwise do yourself - useful if you
+already have data and don't want `migrate:fresh` to wipe it. This path
+never runs `app:install`, so nothing creates `.env` or the key for you:
 
 ```bash
+cp .env.example .env          # then set DB_* and APP_URL in it
+php artisan key:generate      # APP_KEY starts empty; nothing works without it
 php artisan migrate
 php artisan db:seed --force   # also registers every module into add_ons via PackageSeeder
 php artisan storage:link
@@ -149,6 +157,11 @@ docker compose up -d --build
 docker compose exec app php artisan app:install --force
 docker compose exec app php artisan storage:link
 ```
+
+The copy is required, not optional: Compose reads `.env` for the app and to
+create the MySQL user, and won't start without it. The template's `DB_*`
+defaults match what Compose creates, so it works unchanged - `DB_HOST` and
+`REDIS_HOST` are pointed at the containers for you.
 
 Add `-it` to the `exec` command above (`docker compose exec -it app ...`)
 to get the interactive module picker; without it, `app:install` has no
