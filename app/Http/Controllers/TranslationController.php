@@ -38,10 +38,20 @@ class TranslationController extends Controller
 
         $translations = json_decode(File::get($path), true) ?? [];
 
-        // Merge enabled package translations
-        $enabledPackages = AddOn::where('is_enable', true)->pluck('module');
-        foreach ($enabledPackages as $packageName) {
-            $packageLangFile = base_path("packages/local/{$packageName}/src/Resources/lang/{$locale}.json");
+        // Merge enabled package translations.
+        //
+        // A module that moved to a Composer package has no packages/local directory,
+        // so looking only there silently merged nothing and left every module string
+        // in English. Fall back to vendor/zerp/<package_name>, the same way
+        // Module::json() resolves a module's own metadata. Note the vendor path uses
+        // the package slug (jitsi), not the module name (Jitsi).
+        foreach (AddOn::where('is_enable', true)->get(['module', 'package_name']) as $addon) {
+            $packageLangFile = base_path("packages/local/{$addon->module}/src/Resources/lang/{$locale}.json");
+
+            if (!File::exists($packageLangFile) && $addon->package_name) {
+                $packageLangFile = base_path("vendor/zerp/{$addon->package_name}/src/Resources/lang/{$locale}.json");
+            }
+
             if (File::exists($packageLangFile)) {
                 $packageTranslations = json_decode(File::get($packageLangFile), true) ?? [];
                 $translations = array_merge($translations, $packageTranslations);
