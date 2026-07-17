@@ -85,7 +85,7 @@ class PlanController extends Controller
                         }
                         
                         $paymentAmount = $latestOrder ? $latestOrder->price : 0;
-                        $currency = $latestOrder ? $latestOrder->currency : (admin_setting('defaultCurrency') ?? 'USD');
+                        $currency = $latestOrder ? $latestOrder->currency : (admin_setting('defaultCurrency') ?? 'PKR');
 
                         $currentSubscription = [
                             'plan_name' => $activePlanObj->name,
@@ -457,7 +457,7 @@ class PlanController extends Controller
             $order->plan_name = $plan->name;
             $order->plan_id = $plan->id;
             $order->price = 0;
-            $order->currency = admin_setting('defaultCurrency') ?? 'USD';
+            $order->currency = admin_setting('defaultCurrency') ?? 'PKR';
             $order->txn_id = '';
             $order->payment_type = '-';
             $order->payment_status = 'succeeded';
