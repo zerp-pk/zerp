@@ -18,7 +18,7 @@ export default function Create({ onSuccess }: CreateCouponProps) {
     const { t } = useTranslation();
     const [isSubmitting, setIsSubmitting] = useState(false);
     const { props } = usePage();
-    const currencySymbol = (props as any)?.companyAllSetting?.currencySymbol || '$';
+    const currencySymbol = (props as any)?.companyAllSetting?.currencySymbol || '₨';
 
     const { data, setData, post, errors, reset } = useForm<CreateCouponFormData>({
         name: '',

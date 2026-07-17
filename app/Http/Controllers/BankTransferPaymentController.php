@@ -80,7 +80,7 @@ class BankTransferPaymentController extends Controller
             $bank_transfer_payment->status = 'approved';
             $bank_transfer_payment->type = 'plan';
             $bank_transfer_payment->price = 0;
-            $bank_transfer_payment->price_currency = admin_setting('defaultCurrency') ?? 'USD';
+            $bank_transfer_payment->price_currency = admin_setting('defaultCurrency') ?? 'PKR';
             $bank_transfer_payment->created_by = creatorId();
             $bank_transfer_payment->save();
             $this->linkBankTransferMedia($bank_transfer_payment);
@@ -101,7 +101,7 @@ class BankTransferPaymentController extends Controller
                     'plan_name' => !empty($plan->name) ? $plan->name : 'Basic Package',
                     'plan_id' => $plan->id,
                     'price' => 0,
-                    'currency' => admin_setting('defaultCurrency') ?? 'USD',
+                    'currency' => admin_setting('defaultCurrency') ?? 'PKR',
                     'txn_id' => '',
                     'payment_type' => __('Bank Transfer'),
                     'payment_status' => 'succeeded',
@@ -132,7 +132,7 @@ class BankTransferPaymentController extends Controller
         $bank_transfer_payment->status = 'pending';
         $bank_transfer_payment->type = 'plan';
         $bank_transfer_payment->price = $price;
-        $bank_transfer_payment->price_currency = admin_setting('defaultCurrency') ?? 'USD';
+        $bank_transfer_payment->price_currency = admin_setting('defaultCurrency') ?? 'PKR';
         $bank_transfer_payment->created_by = creatorId();
         $bank_transfer_payment->save();
         $this->linkBankTransferMedia($bank_transfer_payment);

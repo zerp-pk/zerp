@@ -52,7 +52,7 @@ export default function Details() {
     const { t } = useTranslation();
     const { coupon, usageRecords, auth, ...pageProps } = usePage<CouponDetailsProps>().props;
     const urlParams = new URLSearchParams(window.location.search);
-    const currencySymbol = (pageProps as any)?.companyAllSetting?.currencySymbol || '$';
+    const currencySymbol = (pageProps as any)?.companyAllSetting?.currencySymbol || '₨';
 
     const [filters, setFilters] = useState<UsageFilters>({
         user_name: urlParams.get('user_name') || '',

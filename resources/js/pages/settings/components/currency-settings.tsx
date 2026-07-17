@@ -34,13 +34,13 @@ export default function CurrencySettings({ userSettings = {}, auth }: CurrencySe
     // Currency Settings form state
     const [currencySettings, setCurrencySettings] = useState({
         decimalFormat: userSettings?.decimalFormat || '2',
-        defaultCurrency: userSettings?.defaultCurrency || 'USD',
+        defaultCurrency: userSettings?.defaultCurrency || 'PKR',
         decimalSeparator: userSettings?.decimalSeparator || '.',
         thousandsSeparator: userSettings?.thousandsSeparator || ',',
         floatNumber: userSettings?.floatNumber === '0' ? false : true,
         currencySymbolSpace: userSettings?.currencySymbolSpace === '1',
         currencySymbolPosition: userSettings?.currencySymbolPosition || 'before',
-        currencySymbol: userSettings?.currencySymbol || '$',
+        currencySymbol: userSettings?.currencySymbol || '₨',
         currencyName: ''
     });
 
@@ -67,13 +67,13 @@ export default function CurrencySettings({ userSettings = {}, auth }: CurrencySe
     useEffect(() => {
         setCurrencySettings({
             decimalFormat: userSettings?.decimalFormat || '2',
-            defaultCurrency: userSettings?.defaultCurrency || 'USD',
+            defaultCurrency: userSettings?.defaultCurrency || 'PKR',
             decimalSeparator: userSettings?.decimalSeparator || '.',
             thousandsSeparator: userSettings?.thousandsSeparator || ',',
             floatNumber: userSettings?.floatNumber === '0' ? false : true,
             currencySymbolSpace: userSettings?.currencySymbolSpace === '1',
             currencySymbolPosition: userSettings?.currencySymbolPosition || 'before',
-            currencySymbol: userSettings?.currencySymbol || '$',
+            currencySymbol: userSettings?.currencySymbol || '₨',
             currencyName: ''
         });
     }, [userSettings]);
@@ -105,7 +105,7 @@ export default function CurrencySettings({ userSettings = {}, auth }: CurrencySe
         setCurrencySettings(prev => ({
             ...prev,
             defaultCurrency: value,
-            currencySymbol: selectedCurrency?.symbol || '$',
+            currencySymbol: selectedCurrency?.symbol || '₨',
             currencyName: selectedCurrency?.name || value
         }));
     };
@@ -137,7 +137,7 @@ export default function CurrencySettings({ userSettings = {}, auth }: CurrencySe
 
             // Get currency symbol from the currencies array
             const selectedCurrency = currencies.find((c: CurrencyProps) => c.code === currencySettings.defaultCurrency);
-            const symbol = selectedCurrency?.symbol || '$';
+            const symbol = selectedCurrency?.symbol || '₨';
 
             // Add currency symbol with proper positioning and spacing
             const space = currencySettings.currencySymbolSpace ? ' ' : '';

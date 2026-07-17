@@ -72,7 +72,7 @@ export default function Index() {
     const { t } = useTranslation();
     const { coupons, auth, ...pageProps } = usePage<CouponsIndexProps>().props;
     const urlParams = new URLSearchParams(window.location.search);
-    const currencySymbol = (pageProps as any)?.companyAllSetting?.currencySymbol || '$';
+    const currencySymbol = (pageProps as any)?.companyAllSetting?.currencySymbol || '₨';
 
     const [filters, setFilters] = useState<CouponFilters>({
         name: urlParams.get('name') || '',

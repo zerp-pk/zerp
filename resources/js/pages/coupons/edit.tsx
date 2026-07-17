@@ -18,7 +18,7 @@ export default function EditCoupon({ coupon, onSuccess }: EditCouponProps) {
     const { t } = useTranslation();
     const [isSubmitting, setIsSubmitting] = useState(false);
     const { props } = usePage();
-    const currencySymbol = (props as any)?.companyAllSetting?.currencySymbol || '$';
+    const currencySymbol = (props as any)?.companyAllSetting?.currencySymbol || '₨';
 
     const { data, setData, patch, errors } = useForm<EditCouponFormData>({
         name: coupon.name,

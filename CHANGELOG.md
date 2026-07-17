@@ -11,6 +11,12 @@
   ignored, and `app:install` creates it from the template.
 
 ### Changed
+- **Defaults are now Asia/Karachi and PKR.** A fresh install gets the Pakistani
+  timezone and rupee rather than UTC and the US dollar: `APP_TIMEZONE`, the
+  `config/app.php` fallback, the settings seeder, the currency list's default entry,
+  and every `'USD'` / `'$'` fallback in the app and frontend. Companies still pick
+  their own in `Settings > Currency`; this only decides what they start with, and no
+  existing setting is rewritten.
 - **`.env.example` is Zerp's, not Laravel's stock file.** It defaulted to
   `DB_CONNECTION=sqlite` with every `DB_*` commented out, so copying it produced an
   install that could not reach a database. It now carries MySQL defaults matching

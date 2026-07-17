@@ -2,7 +2,7 @@
 
 return [
     'currencies' => [
-        ['id' => 1, 'name' => 'US Dollar', 'code' => 'USD', 'symbol' => '$', 'is_default' => true],
+        ['id' => 1, 'name' => 'US Dollar', 'code' => 'USD', 'symbol' => '$', 'is_default' => false],
         ['id' => 2, 'name' => 'Euro', 'code' => 'EUR', 'symbol' => '€', 'is_default' => false],
         ['id' => 3, 'name' => 'British Pound', 'code' => 'GBP', 'symbol' => '£', 'is_default' => false],
         ['id' => 4, 'name' => 'Japanese Yen', 'code' => 'JPY', 'symbol' => '¥', 'is_default' => false],
@@ -118,7 +118,7 @@ return [
         ['id' => 114, 'name' => 'Nicaraguan Córdoba', 'code' => 'NIO', 'symbol' => 'C$', 'is_default' => false],
         ['id' => 115, 'name' => 'North Korean Won', 'code' => 'KPW', 'symbol' => '₩', 'is_default' => false],
         ['id' => 116, 'name' => 'Omani Rial', 'code' => 'OMR', 'symbol' => 'ر.ع.', 'is_default' => false],
-        ['id' => 117, 'name' => 'Pakistani Rupee', 'code' => 'PKR', 'symbol' => '₨', 'is_default' => false],
+        ['id' => 117, 'name' => 'Pakistani Rupee', 'code' => 'PKR', 'symbol' => '₨', 'is_default' => true],
         ['id' => 118, 'name' => 'Panamanian Balboa', 'code' => 'PAB', 'symbol' => 'B/.', 'is_default' => false],
         ['id' => 119, 'name' => 'Papua New Guinean Kina', 'code' => 'PGK', 'symbol' => 'K', 'is_default' => false],
         ['id' => 120, 'name' => 'Paraguayan Guarani', 'code' => 'PYG', 'symbol' => '₲', 'is_default' => false],

@@ -215,7 +215,7 @@ const formatAdminCurrency = (amount: number | string, pageProps?: any): string =
     }
 
     const formattedNumber = parts.join(decimalSeparator);
-    const symbol = getAdminSetting('currencySymbol', pageProps) || '$';
+    const symbol = getAdminSetting('currencySymbol', pageProps) || '₨';
     const space = currencySymbolSpace ? ' ' : '';
 
     return currencySymbolPosition === 'before'
@@ -231,7 +231,7 @@ const formatAdminCurrency = (amount: number | string, pageProps?: any): string =
  */
 const getCurrencySymbol = (pageProps?: any): string => {
   try {
-    return getCompanySetting('currencySymbol', pageProps) || '$';
+    return getCompanySetting('currencySymbol', pageProps) || '₨';
   } catch {
     return '$';
   }
@@ -239,7 +239,7 @@ const getCurrencySymbol = (pageProps?: any): string => {
 
 const getAdminCurrencySymbol = (pageProps?: any): string => {
   try {
-    return getAdminSetting('currencySymbol', pageProps) || '$';
+    return getAdminSetting('currencySymbol', pageProps) || '₨';
   } catch {
     return '$';
   }

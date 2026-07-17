@@ -45,8 +45,8 @@ class DefultSetting extends Seeder
             'termsConditionsUrl' => '',
 
             // Currency Settings
-            'defaultCurrency' => 'USD',
-            'currencySymbol' => '$',
+            'defaultCurrency' => 'PKR',
+            'currencySymbol' => '₨',
             'currency_format' => '2',
             'decimalFormat' => '2',
             'decimalSeparator' => '.',
