@@ -1,5 +1,33 @@
 # Changelog
 
+## v1.2.3 - 2026-07-18
+
+### Security
+- **Sort parameters could inject SQL identifiers.** The `account` module's listing
+  screens passed `?sort=` and `?direction=` straight into `orderBy()`. Eloquent binds
+  values but not identifiers, so a crafted sort or direction reached the SQL text
+  unescaped. A new `sortSafe` query macro now accepts a column only if it exists on the
+  table (`Schema::hasColumn`) and a direction only if it is `asc` or `desc`, falling
+  back to safe defaults otherwise. Ships as `zerp/account` v1.0.3.
+- **Search terms were not escaped for LIKE.** Every listing search built a
+  `LIKE '%term%'` clause without escaping, so a `%` or `_` in the input was read as a
+  wildcard: `%` matched every row and `_` matched any single character. A new
+  `likeEscape()` helper neutralises those metacharacters, and the seventeen controllers
+  that search now wrap the term with it. Values stay bound; only the wildcards are
+  escaped, so a literal `%` or `_` matches itself.
+
+### Fixed
+- **Email templates rendered a blank app name and URL in production.**
+  `EmailTemplate::replaceVariable()` read `env('APP_NAME')` and `env('APP_URL')`, but
+  `env()` returns null once `php artisan config:cache` has run, which every production
+  install does. `{app_name}` and `{app_url}` came through empty in outgoing mail. Both
+  now read from `config()`, which stays populated after caching. The same fix ships for
+  the recruitment offer letter and its seeded template `from` as `zerp/recruitment` v1.0.4.
+- **The installer database step never submitted.** Its submit handler only logged on
+  error and never posted, so the step could not advance. It now posts to
+  `installer.database.store`. Stray debug `console.log` calls were also removed from the
+  installer environment step and the plan subscribe flow.
+
 ## v1.2.2 - 2026-07-17
 
 ### Security
