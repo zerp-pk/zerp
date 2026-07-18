@@ -30,7 +30,7 @@ class TransferController extends Controller
                 })
                 ->when(request('product_name'), function($q) {
                     $q->whereHas('product', function($query) {
-                        $query->where('name', 'like', '%' . request('product_name') . '%');
+                        $query->where('name', 'like', '%' . likeEscape(request('product_name')) . '%');
                     });
                 })
                 ->when(request('from_warehouse'), function($q) {

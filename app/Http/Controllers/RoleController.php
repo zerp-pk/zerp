@@ -16,7 +16,7 @@ class RoleController extends Controller
         if(Auth::user()->can('manage-roles')){
             $roles = Role::select('id', 'name', 'label','editable')
                 ->where('created_by', creatorId())
-                ->when(request('name'), fn($q) => $q->where('name', 'like', '%' . request('name') . '%'))
+                ->when(request('name'), fn($q) => $q->where('name', 'like', '%' . likeEscape(request('name')) . '%'))
                 ->when(request('sort'), fn($q) => $q->orderBy(request('sort'), request('direction', 'asc')))
                 ->with(['users' => function($query) {
                     $query->select('id', 'name')->limit(5);

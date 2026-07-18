@@ -63,7 +63,7 @@ class SalesReturnController extends Controller
             $query->where('status', $request->status);
         }
         if ($request->search) {
-            $query->where('return_number', 'like', '%' . $request->search . '%');
+            $query->where('return_number', 'like', '%' . likeEscape($request->search) . '%');
         }
         if ($request->date_range) {
             $dates = explode(' - ', $request->date_range);

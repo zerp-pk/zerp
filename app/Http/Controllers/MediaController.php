@@ -85,8 +85,8 @@ class MediaController extends Controller
         }
         if ($search !== '') {
             $mediaQuery->where(function ($q) use ($search) {
-                $q->where('name', 'like', "%{$search}%")
-                  ->orWhere('file_name', 'like', "%{$search}%");
+                $q->where('name', 'like', '%' . likeEscape($search) . '%')
+                  ->orWhere('file_name', 'like', '%' . likeEscape($search) . '%');
             });
         }
         $this->scopeMediaQuery($mediaQuery);
