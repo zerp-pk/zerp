@@ -30,13 +30,8 @@ export default function Environment({ timezones }: { timezones: string[] }) {
         post(route('installer.environment.store'), {
             forceFormData: true,
             onSuccess: () => {
-                console.log('Environment saved successfully');
                 window.location.href = route('installer.database');
             },
-            onError: (errors) => {
-                console.log('Validation errors:', errors);
-            },
-
         });
     };
 
@@ -201,9 +196,6 @@ export default function Environment({ timezones }: { timezones: string[] }) {
                                         type="submit"
                                         className="py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50"
                                         disabled={processing}
-                                        onClick={(e) => {
-                                            console.log('Button clicked, processing:', processing);
-                                        }}
                                     >
                                         {processing ? t('Saving...') : t('Next')}
                                     </Button>

@@ -8,11 +8,7 @@ export default function Database() {
 
     const submit: FormEventHandler = (e) => {
         e.preventDefault();
-        post(route('installer.database.store'), {
-            onError: (errors) => {
-                console.log('Database setup errors:', errors);
-            }
-        });
+        post(route('installer.database.store'));
     };
 
     return (

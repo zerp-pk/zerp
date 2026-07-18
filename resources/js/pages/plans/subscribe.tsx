@@ -43,8 +43,6 @@ export default function Subscribe({ plan, activeModules, userActiveModules, bank
     
 
     const handleSubscribe = (subscriptionData: any) => {
-        console.log('Processing subscription:', subscriptionData);
-        
         // Here you would make the API call to process the subscription
         router.post(route('subscriptions.store'), subscriptionData, {
             onSuccess: () => {
