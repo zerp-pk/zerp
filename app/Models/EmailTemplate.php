@@ -331,12 +331,12 @@ class EmailTemplate extends Model
 
             $arrValue[$key] = $val;
         }
-        $arrValue['app_name']     = env('APP_NAME');
+        $arrValue['app_name']     = config('app.name');
         if (is_null($arrValue['company_name']) || $arrValue['company_name'] == '-') {
             $companySettings = getCompanyAllSetting();
             $arrValue['company_name'] = $companySettings['company_name'] ?? '--';
         }
-        $arrValue['app_url']      = '<a href="' . env('APP_URL') . '" target="_blank">' . env('APP_URL') . '</a>';
+        $arrValue['app_url']      = '<a href="' . config('app.url') . '" target="_blank">' . config('app.url') . '</a>';
 
 
         return str_replace($arrVariable, array_values($arrValue), $content);
