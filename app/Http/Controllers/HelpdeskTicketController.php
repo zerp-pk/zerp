@@ -31,8 +31,8 @@ class HelpdeskTicketController extends Controller
                     }
                 })
                 ->when(request('title'), fn($q) => $q->where(function($query) {
-                    $query->where('title', 'like', '%' . request('title') . '%')
-                          ->orWhere('ticket_id', 'like', '%' . request('title') . '%');
+                    $query->where('title', 'like', '%' . likeEscape(request('title')) . '%')
+                          ->orWhere('ticket_id', 'like', '%' . likeEscape(request('title')) . '%');
                 }))
                 ->when(request('status'), fn($q) => $q->where('status', request('status')))
                 ->when(request('priority'), fn($q) => $q->where('priority', request('priority')))

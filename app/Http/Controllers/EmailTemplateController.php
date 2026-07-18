@@ -15,7 +15,7 @@ class EmailTemplateController extends Controller
         if(Auth::user()->can('manage-email-templates')){
             $emailTemplates = EmailTemplate::query()
                 ->with('templateLangs')
-                ->when(request('name'), fn($q) => $q->where('name', 'like', '%' . request('name') . '%'))
+                ->when(request('name'), fn($q) => $q->where('name', 'like', '%' . likeEscape(request('name')) . '%'))
                 ->when(request('module_name'), fn($q) => $q->where('module_name', request('module_name')))
                 ->when(request('sort'), fn($q) => $q->orderBy(request('sort'), request('direction', 'asc')), fn($q) => $q->latest())
                 ->paginate(request('per_page', 10))

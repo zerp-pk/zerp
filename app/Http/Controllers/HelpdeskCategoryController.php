@@ -19,7 +19,7 @@ class HelpdeskCategoryController extends Controller
         if(Auth::user()->can('manage-helpdesk-categories')){
             $categories = HelpdeskCategory::query()
                 ->where('created_by', creatorId())
-                ->when(request('name'), fn($q) => $q->where('name', 'like', '%' . request('name') . '%'))
+                ->when(request('name'), fn($q) => $q->where('name', 'like', '%' . likeEscape(request('name')) . '%'))
                 ->when(request('is_active') !== null, fn($q) => $q->where('is_active', request('is_active')))
                 ->when(request('sort'), fn($q) => $q->orderBy(request('sort'), request('direction', 'asc')), fn($q) => $q->latest())
                 ->paginate(request('per_page', 10))

@@ -31,8 +31,8 @@ class UserController extends Controller
                         $q->whereRaw('1 = 0');
                     }
                 })
-                ->when(request('name'), fn($q) => $q->where('name', 'like', '%' . request('name') . '%'))
-                ->when(request('email'), fn($q) => $q->where('email', 'like', '%' . request('email') . '%'))
+                ->when(request('name'), fn($q) => $q->where('name', 'like', '%' . likeEscape(request('name')) . '%'))
+                ->when(request('email'), fn($q) => $q->where('email', 'like', '%' . likeEscape(request('email')) . '%'))
                 ->when(request('role'), fn($q) => $q->join('model_has_roles', 'users.id', '=', 'model_has_roles.model_id')
                     ->where('model_has_roles.role_id', request('role'))
                     ->where('model_has_roles.model_type', User::class))
@@ -242,8 +242,8 @@ class UserController extends Controller
         if(Auth::user()->can('view-login-history')){
             $loginHistories = LoginHistory::with('user')
                 ->when(Auth::user()->type !== 'superadmin', fn($q) => $q->where('created_by', creatorId()))
-                ->when(request('user_name'), fn($q) => $q->whereHas('user', fn($q) => $q->where('name', 'like', '%' . request('user_name') . '%')))
-                ->when(request('ip'), fn($q) => $q->where('ip', 'like', '%' . request('ip') . '%'))
+                ->when(request('user_name'), fn($q) => $q->whereHas('user', fn($q) => $q->where('name', 'like', '%' . likeEscape(request('user_name')) . '%')))
+                ->when(request('ip'), fn($q) => $q->where('ip', 'like', '%' . likeEscape(request('ip')) . '%'))
                 ->when(request('role'), fn($q) => $q->whereHas('user', fn($q) => $q->where('type', request('role'))))
                 ->when(request('sort'), fn($q) => $q->orderBy(request('sort'), request('direction', 'asc')), fn($q) => $q->latest())
                 ->paginate(request('per_page', 10))

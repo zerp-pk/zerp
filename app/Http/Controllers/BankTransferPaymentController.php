@@ -151,9 +151,9 @@ class BankTransferPaymentController extends Controller
                         $q->where('user_id', Auth::id());
                     }
                 })
-                ->when(request('order_number'), fn($q) => $q->where('order_id', 'like', '%' . request('order_number') . '%'))
+                ->when(request('order_number'), fn($q) => $q->where('order_id', 'like', '%' . likeEscape(request('order_number')) . '%'))
                 ->when(request('status'), fn($q) => $q->where('status', request('status')))
-                ->when(request('user_name'), fn($q) => $q->whereHas('user', fn($query) => $query->where('name', 'like', '%' . request('user_name') . '%')))
+                ->when(request('user_name'), fn($q) => $q->whereHas('user', fn($query) => $query->where('name', 'like', '%' . likeEscape(request('user_name')) . '%')))
                 ->when(request('price_min'), fn($q) => $q->where('price', '>=', request('price_min')))
                 ->when(request('price_max'), fn($q) => $q->where('price', '<=', request('price_max')))
                 ->when(request('sort'), fn($q) => $q->orderBy(request('sort'), request('direction', 'asc')), fn($q) => $q->latest())

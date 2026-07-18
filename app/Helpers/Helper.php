@@ -15,6 +15,15 @@ use Spatie\Permission\Models\Role;
 use App\Services\DynamicStorageService;
 use App\Services\StorageConfigService;
 
+if (!function_exists('likeEscape')) {
+    // Escape LIKE wildcards so a search term containing % or _ matches literally
+    // instead of matching everything / any char. Values stay bound. See zerp-pk/zerp#44.
+    function likeEscape($value)
+    {
+        return addcslashes((string) $value, '%_\\');
+    }
+}
+
 if (!function_exists('creatorId')) {
     function creatorId()
     {

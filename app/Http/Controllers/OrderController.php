@@ -21,13 +21,13 @@ class OrderController extends Controller
                 ->when(request('search'), function($q) {
                     $search = request('search');
                     $q->where(function ($query) use ($search) {
-                        $query->where('order_id', 'like', "%{$search}%")
-                              ->orWhere('name', 'like', "%{$search}%")
-                              ->orWhere('email', 'like', "%{$search}%")
-                              ->orWhere('plan_name', 'like', "%{$search}%");
+                        $query->where('order_id', 'like', '%' . likeEscape($search) . '%')
+                              ->orWhere('name', 'like', '%' . likeEscape($search) . '%')
+                              ->orWhere('email', 'like', '%' . likeEscape($search) . '%')
+                              ->orWhere('plan_name', 'like', '%' . likeEscape($search) . '%');
                     });
                 })
-                ->when(request('order_id'), fn($q) => $q->where('order_id', 'like', '%' . request('order_id') . '%'))
+                ->when(request('order_id'), fn($q) => $q->where('order_id', 'like', '%' . likeEscape(request('order_id')) . '%'))
                 ->when(request('sort'), fn($q) => $q->orderBy(request('sort'), request('direction', 'desc')), fn($q) => $q->orderBy('id', 'desc'))
                 ->paginate(request('per_page', 10))
                 ->withQueryString();

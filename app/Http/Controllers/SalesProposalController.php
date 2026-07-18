@@ -71,7 +71,7 @@ class SalesProposalController extends Controller
                 }
             }
             if ($request->search) {
-                $query->where('proposal_number', 'like', '%' . $request->search . '%');
+                $query->where('proposal_number', 'like', '%' . likeEscape($request->search) . '%');
             }
             if ($request->date_range) {
                 $dates = explode(' - ', $request->date_range);

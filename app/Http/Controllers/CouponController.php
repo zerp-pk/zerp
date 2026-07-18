@@ -17,8 +17,8 @@ class CouponController extends Controller
         if(Auth::user()->can('manage-coupons')){
             $coupons = Coupon::select('id', 'name', 'description', 'code', 'discount', 'type', 'limit', 'minimum_spend', 'maximum_spend', 'limit_per_user', 'expiry_date', 'included_module', 'excluded_module', 'status', 'created_at')
                 ->where('created_by', creatorId())
-                ->when(request('name'), fn($q) => $q->where('name', 'like', '%' . request('name') . '%'))
-                ->when(request('code'), fn($q) => $q->where('code', 'like', '%' . request('code') . '%'))
+                ->when(request('name'), fn($q) => $q->where('name', 'like', '%' . likeEscape(request('name')) . '%'))
+                ->when(request('code'), fn($q) => $q->where('code', 'like', '%' . likeEscape(request('code')) . '%'))
                 ->when(request('type'), fn($q) => $q->where('type', request('type')))
                 ->when(request('status') !== null, fn($q) => $q->where('status', request('status')))
                 ->when(request('sort'), fn($q) => $q->orderBy(request('sort'), request('direction', 'asc')), fn($q) => $q->latest())
@@ -108,8 +108,8 @@ class CouponController extends Controller
             $usageRecords = UserCoupon::with(['user:id,name,email', 'coupon:id,name,code'])
                 ->where('coupon_id', $coupon->id)
                 ->select('id', 'coupon_id', 'user_id', 'order_id', 'created_at')
-                ->when(request('user_name'), fn($q) => $q->whereHas('user', fn($query) => $query->where('name', 'like', '%' . request('user_name') . '%')))
-                ->when(request('order_id'), fn($q) => $q->where('order_id', 'like', '%' . request('order_id') . '%'))
+                ->when(request('user_name'), fn($q) => $q->whereHas('user', fn($query) => $query->where('name', 'like', '%' . likeEscape(request('user_name')) . '%')))
+                ->when(request('order_id'), fn($q) => $q->where('order_id', 'like', '%' . likeEscape(request('order_id')) . '%'))
                 ->when(request('sort'), fn($q) => $q->orderBy(request('sort'), request('direction', 'asc')), fn($q) => $q->latest())
                 ->paginate(request('per_page', 10))
                 ->withQueryString();
