@@ -84,7 +84,7 @@ class PurchaseReturnController extends Controller
 
         $query->orderBy($sortField, $sortDirection);
 
-        $perPage = $request->get('per_page', 10);
+        $perPage = perPage();
         $returns = $query->paginate($perPage);
 
         $vendors = User::where('type', 'vendor')->select('id', 'name', 'email')->where('created_by', creatorId())->get();

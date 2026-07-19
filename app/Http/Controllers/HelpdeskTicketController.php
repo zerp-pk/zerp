@@ -39,7 +39,7 @@ class HelpdeskTicketController extends Controller
                 ->when(request('category_id'), fn($q) => $q->where('category_id', request('category_id')))
                 ->when(request('company_id') && Auth::user()->type === 'superadmin', fn($q) => $q->where('created_by', request('company_id')))
                 ->when(request('sort'), fn($q) => $q->orderBy(request('sort'), request('direction', 'asc')), fn($q) => $q->latest())
-                ->paginate(request('per_page', 10))
+                ->paginate(perPage())
                 ->withQueryString();
 
             $categories = HelpdeskCategory::where('is_active', true)

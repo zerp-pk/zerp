@@ -93,7 +93,7 @@ class PurchaseInvoiceController extends Controller
 
         $query->orderBy($sortField, $sortDirection);
 
-        $perPage = $request->get('per_page', 10);
+        $perPage = perPage();
         $invoices = $query->paginate($perPage);
         $vendors = User::where('type', 'vendor')->select('id', 'name', 'email')->where('created_by', creatorId())->get();
         $warehouses = Warehouse::where('is_active', true)->select('id', 'name')->where('created_by', creatorId())->get();

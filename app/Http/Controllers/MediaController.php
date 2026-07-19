@@ -74,7 +74,7 @@ class MediaController extends Controller
 
         $directoryId = $request->input('directory_id');
         $search = trim((string) $request->input('q', ''));
-        $perPage = min(max((int) $request->input('per_page', 24), 1), 100);
+        $perPage = perPage(24);
 
         $mediaQuery = Media::query();
         if ($directoryId) {

@@ -44,7 +44,7 @@ class UserController extends Controller
                     return $q->latest();
                 })
                 ->select('users.*')
-                ->paginate(request('per_page', 10))
+                ->paginate(perPage())
                 ->withQueryString();
 
             $roles = Role::where('created_by', creatorId())->pluck('label', 'id');
@@ -246,7 +246,7 @@ class UserController extends Controller
                 ->when(request('ip'), fn($q) => $q->where('ip', 'like', '%' . likeEscape(request('ip')) . '%'))
                 ->when(request('role'), fn($q) => $q->whereHas('user', fn($q) => $q->where('type', request('role'))))
                 ->when(request('sort'), fn($q) => $q->orderBy(request('sort'), request('direction', 'asc')), fn($q) => $q->latest())
-                ->paginate(request('per_page', 10))
+                ->paginate(perPage())
                 ->withQueryString();
 
             $roles = Role::where('created_by', creatorId())->pluck('label', 'name');
