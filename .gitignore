@@ -6,6 +6,9 @@
 /storage/installed
 /storage/*.key
 /storage/app/cookie_data.csv
+# Runtime user uploads. The default branding/seed assets committed here stay
+# tracked (an ignore never untracks); only new uploads are ignored.
+/storage/app/public/media/
 /vendor
 .env
 .env.backup
