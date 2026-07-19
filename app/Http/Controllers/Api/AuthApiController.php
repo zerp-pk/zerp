@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Zerp\Hrm\Models\Employee;
 use Illuminate\Validation\Rule;
+use Illuminate\Validation\Rules\Password;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
@@ -100,7 +101,7 @@ class AuthApiController extends Controller
         try {
             $validator = Validator::make($request->all(), [
                 'current_password' => 'required|string',
-                'password'         => 'required|confirmed|min:6',
+                'password'         => ['required', 'confirmed', Password::defaults()],
             ]);
 
             if ($validator->fails()) {
