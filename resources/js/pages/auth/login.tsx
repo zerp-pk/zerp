@@ -37,8 +37,8 @@ export default function Login({
         if (isDemo) {
             setData((prevData) => ({
                 ...prevData,
-                email: 'company@example.com',
-                password: '1234',
+                email: 'testcompany@zerp.pk',
+                password: 'Test@1234',
             }));
         }
     }, [isDemo]);
@@ -223,7 +223,7 @@ export default function Login({
                         <div className="grid sm:grid-cols-2 gap-3">
                             <Button
                                 type="button"
-                                onClick={() => handleQuickLogin('superadmin@example.com', '1234')}
+                                onClick={() => handleQuickLogin('admin@zerp.pk', 'Admin@1234')}
                                 disabled={processing}
                                 className="sm:col-span-2 group h-auto relative py-2 px-4 border text-[13px] font-medium text-white transition-all duration-200 rounded-md shadow-sm hover:shadow-md transform hover:scale-[1.02] bg-primary disabled:opacity-50"
                             >
@@ -231,7 +231,7 @@ export default function Login({
                             </Button>
                             <Button
                                 type="button"
-                                onClick={() => handleQuickLogin('company@example.com', '1234')}
+                                onClick={() => handleQuickLogin('testcompany@zerp.pk', 'Test@1234')}
                                 disabled={processing}
                                 className="group h-auto relative py-2 px-4 border text-[13px] font-medium text-white transition-all duration-200 rounded-md shadow-sm hover:shadow-md transform hover:scale-[1.02] bg-primary disabled:opacity-50"
                             >

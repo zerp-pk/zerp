@@ -14,7 +14,10 @@ class InstallCommand extends Command
     protected $signature = 'app:install
                             {--force : Force installation even if already installed}
                             {--preset= : Install a named module preset non-interactively (see config/module-presets.php)}
-                            {--modules= : Comma-separated list of package_name slugs to enable, non-interactively}';
+                            {--modules= : Comma-separated list of package_name slugs to enable, non-interactively}
+                            {--admin-name= : Super admin display name (non-interactive)}
+                            {--admin-email= : Super admin login email (non-interactive)}
+                            {--admin-password= : Super admin password (non-interactive)}';
 
     protected $description = 'Install the application';
 
@@ -67,6 +70,8 @@ class InstallCommand extends Command
        // PackageSeeder (fired via DatabaseSeeder) reads this binding to
        // decide which modules to enable/seed; null means "all".
        app()->instance('zerp.selected_modules', $selectedPackageNames);
+       // PermissionRoleSeeder reads this binding for the super admin login.
+       app()->instance('zerp.superadmin', $this->resolveSuperAdmin());
        Artisan::call('db:seed', ['--force' => true]);
 
         // Install packages
@@ -77,6 +82,40 @@ class InstallCommand extends Command
 
         $this->info('Application installed successfully!');
         return 0;
+    }
+
+    /**
+     * Collect the super admin login: options win, otherwise prompt when
+     * interactive, otherwise the seeder's dev defaults apply (null entries).
+     */
+    private function resolveSuperAdmin(): array
+    {
+        $name     = $this->option('admin-name');
+        $email    = $this->option('admin-email');
+        $password = $this->option('admin-password');
+
+        if ($this->input->isInteractive()) {
+            $name     = $name     ?: $this->ask('Super admin name', 'ZERP Admin');
+            $email    = $email    ?: $this->askValid('Super admin email', fn ($v) => filter_var($v, FILTER_VALIDATE_EMAIL), 'a valid email');
+            $password = $password ?: $this->askValid('Super admin password', fn ($v) => strlen((string) $v) >= 6, 'at least 6 characters', true);
+        }
+
+        return array_filter([
+            'name'     => $name,
+            'email'    => $email,
+            'password' => $password,
+        ], fn ($v) => $v !== null && $v !== '');
+    }
+
+    private function askValid(string $question, callable $isValid, string $requirement, bool $secret = false): string
+    {
+        do {
+            $value = $secret ? $this->secret($question) : $this->ask($question);
+            if ($isValid($value)) {
+                return $value;
+            }
+            $this->error("Please enter {$requirement}.");
+        } while (true);
     }
 
     /**

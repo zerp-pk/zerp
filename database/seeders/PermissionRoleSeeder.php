@@ -17,13 +17,18 @@ class PermissionRoleSeeder extends Seeder
         Model::unguard();
         Artisan::call('cache:clear');
 
+        // Super admin credentials are collected during install (CLI prompts /
+        // GUI form) and handed over via this binding; fall back to dev defaults
+        // for a plain `db:seed`. Mirrors the zerp.selected_modules pattern.
+        $sa = app()->bound('zerp.superadmin') ? app('zerp.superadmin') : [];
+
         // Create Super Admin User
         $superAdmin = User::firstOrCreate(
-            ['email' => 'superadmin@example.com'],
+            ['email' => $sa['email'] ?? 'admin@zerp.pk'],
             [
-                'name' => 'Super Admin',
+                'name' => $sa['name'] ?? 'ZERP Admin',
                 'email_verified_at' => now(),
-                'password' => Hash::make('1234'),
+                'password' => Hash::make($sa['password'] ?? 'Admin@1234'),
                 'type' => 'superadmin',
                 'lang' => 'en',
                 'total_user' => -1,
@@ -33,13 +38,13 @@ class PermissionRoleSeeder extends Seeder
         );
 
 
-        // Create Company User
+        // Create the default Test Company user (fixed credentials).
         $company = User::firstOrCreate(
-            ['email' => 'company@example.com'],
+            ['email' => 'testcompany@zerp.pk'],
             [
-                'name' => 'Company',
+                'name' => 'Test Company',
                 'email_verified_at' => now(),
-                'password' => Hash::make('1234'),
+                'password' => Hash::make('Test@1234'),
                 'mobile_no' => '1234567890',
                 'type' => 'company',
                 'lang' => 'en',

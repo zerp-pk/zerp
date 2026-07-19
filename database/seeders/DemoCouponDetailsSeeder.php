@@ -15,7 +15,7 @@ class DemoCouponDetailsSeeder extends Seeder
     {
         $faker = Faker::create();
         $coupons = Coupon::pluck('id')->toArray();
-        $users = User::where('email', '!=', 'superadmin@example.com')->limit(10)->pluck('id')->toArray();
+        $users = User::where('type', '!=', 'superadmin')->limit(10)->pluck('id')->toArray();
         $orders = Order::pluck('order_id')->toArray();
 
         if (empty($coupons) || empty($users)) {

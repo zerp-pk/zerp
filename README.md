@@ -28,7 +28,9 @@ package.
 | pos | POS | [zerp-pk/pos](https://github.com/zerp-pk/pos) | `zerp/pos` |
 | product-service | Product & Service | [zerp-pk/product-service](https://github.com/zerp-pk/product-service) | `zerp/product-service` |
 | quotation | Quotation | [zerp-pk/quotation](https://github.com/zerp-pk/quotation) | `zerp/quotation` |
+| real-estate | Real Estate | [zerp-pk/real-estate](https://github.com/zerp-pk/real-estate) | `zerp/real-estate` |
 | recruitment | Recruitment | [zerp-pk/recruitment](https://github.com/zerp-pk/recruitment) | `zerp/recruitment` |
+| restaurant | Restaurant | [zerp-pk/restaurant](https://github.com/zerp-pk/restaurant) | `zerp/restaurant` |
 | slack | Slack | [zerp-pk/slack](https://github.com/zerp-pk/slack) | `zerp/slack` |
 | stripe | Stripe | [zerp-pk/stripe](https://github.com/zerp-pk/stripe) | `zerp/stripe` |
 | support-ticket | Support Ticket | [zerp-pk/support-ticket](https://github.com/zerp-pk/support-ticket) | `zerp/support-ticket` |
@@ -55,12 +57,25 @@ module packages" below) - `composer install` symlinks them into
 Check `pdo_mysql` is enabled:
 
 ```bash
+# Linux / macOS
 php -m | grep pdo_mysql
+
+# Windows (PowerShell or CMD)
+php -m | findstr pdo_mysql
 ```
 
-If missing, enable it in `/etc/php/php.ini` (or your distro's
-`conf.d`) with `extension=pdo_mysql`, or pass it ad hoc:
+If missing, enable it in your `php.ini` by uncommenting
+`extension=pdo_mysql`, then restart your terminal. The `php.ini` in use
+is shown by `php --ini` - typically `/etc/php/php.ini` (or a distro
+`conf.d/`) on Linux, `/usr/local/etc/php/` under Homebrew on macOS, and
+the file next to `php.exe` (e.g. `C:\php\php.ini` or the XAMPP/Laragon
+PHP folder) on Windows. Or pass it ad hoc:
 `php -d extension=pdo_mysql artisan ...`.
+
+> **Windows note:** the `php artisan`, `composer`, and `npm` commands
+> below are identical on every OS. Only a few shell built-ins differ -
+> those lines call out the Windows form inline. Run them from PowerShell
+> or CMD (or use WSL, where the Linux commands apply verbatim).
 
 The CLI `memory_limit` also needs to be reasonably high (this app's
 class map is large) - 512M is safe:
@@ -97,7 +112,7 @@ walks you through which modules to enable.
 ```bash
 composer install
 npm install
-cp .env.example .env
+cp .env.example .env      # Windows: copy .env.example .env
 ```
 
 `.env` is not in the repo: it holds your secrets, and every install needs
@@ -116,12 +131,15 @@ php artisan app:install --force
 php artisan storage:link
 ```
 
-`app:install` prompts for a module preset (`Full Suite`, `HR Only`,
-`Sales & CRM`, or a `Custom selection` picker) - see
-`config/module-presets.php` for the bundle definitions. For scripted/
-non-interactive installs, skip the prompt with `--preset=<name>` or
-`--modules=account,hrm,pos` (comma-separated `package_name` slugs); with
-neither flag and no TTY it defaults to installing everything.
+`app:install` prompts for the **super admin** name, email, and password,
+then for a **module preset** (`Full Suite`, `HR Only`, `Sales & CRM`, or a
+`Custom selection` picker) - see `config/module-presets.php` for the bundle
+definitions. For scripted/non-interactive installs, pass the credentials
+with `--admin-name`, `--admin-email`, `--admin-password`, and skip the
+module prompt with `--preset=<name>` or `--modules=account,hrm,pos`
+(comma-separated `package_name` slugs); with no module flag and no TTY it
+defaults to installing everything, and with no admin flags it falls back to
+the default super admin (see "Log in" below).
 
 ⚠️ `app:install` runs `migrate:fresh`, which **drops all tables**.
 Only run it on a fresh/disposable database.
@@ -135,12 +153,14 @@ already have data and don't want `migrate:fresh` to wipe it. This path
 never runs `app:install`, so nothing creates `.env` or the key for you:
 
 ```bash
-cp .env.example .env          # then set DB_* and APP_URL in it
+cp .env.example .env          # Windows: copy .env.example .env  (then set DB_* and APP_URL in it)
 php artisan key:generate      # APP_KEY starts empty; nothing works without it
 php artisan migrate
 php artisan db:seed --force   # also registers every module into add_ons via PackageSeeder
 php artisan storage:link
 touch storage/installed       # marks the app as installed, skips the /install wizard
+                              # Windows (CMD): type nul > storage\installed
+                              # Windows (PowerShell): New-Item storage/installed -ItemType File
 ```
 
 ### Option C - Docker
@@ -152,7 +172,7 @@ context (so both `zerp/` and `ZerpPackages/` are visible to
 `composer install` inside the container).
 
 ```bash
-cp .env.example .env
+cp .env.example .env          # Windows: copy .env.example .env
 docker compose up -d --build
 docker compose exec app php artisan app:install --force
 docker compose exec app php artisan storage:link
@@ -193,10 +213,21 @@ Visit `http://localhost:8000`.
 
 ## Log in
 
-Default seeded company/super-admin account:
+**Super admin** - you set these during install. `app:install` prompts for
+the super admin name, email, and password (the GUI installer collects them
+on the database step). For scripted installs pass
+`--admin-name`, `--admin-email`, and `--admin-password`. If you skip them
+on a non-interactive install, the seeder falls back to:
 
-- Email: `company@example.com`
-- Password: `1234`
+- Email: `admin@zerp.pk`
+- Password: `Admin@1234`
+
+**Test company** - a ready-to-use company account is always seeded:
+
+- Email: `testcompany@zerp.pk`
+- Password: `Test@1234`
+
+Change these passwords after your first login.
 
 ## Troubleshooting
 
@@ -204,6 +235,9 @@ Default seeded company/super-admin account:
   loaded; see Prerequisites above.
 - **`Allowed memory size exhausted` running `artisan tinker` or other
   commands** - bump CLI memory limit: `php -d memory_limit=512M artisan ...`.
+- **(Windows) `storage:link` fails or uploaded media 404s** - creating
+  symlinks needs elevation. Run the terminal as Administrator (or enable
+  Windows Developer Mode) and re-run `php artisan storage:link`.
 - **Redirected to `/install` in the browser after already
   installing** - the `storage/installed` marker file is missing;
   either re-run `php artisan app:install --force` or, if the DB is
