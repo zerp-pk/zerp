@@ -31,8 +31,8 @@
   module attached its menu under `settings`, and the sidebar drops a parent item's own
   link once it has children, so the Settings entry turned into a collapse-only group and
   `/settings` had no way in. Settings is a single navigable page and the product screens
-  are not sections of it, so the menu now attaches under `dashboard` like every other
-  module. Ships as `zerp/product-service` v1.0.3.
+  are not sections of it, so Product & Service is now its own top-level menu item.
+  Ships as `zerp/product-service` v1.0.4.
 
 ## v1.2.2 - 2026-07-17
 
