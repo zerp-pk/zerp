@@ -229,6 +229,34 @@ on a non-interactive install, the seeder falls back to:
 
 Change these passwords after your first login.
 
+## API documentation (Swagger / OpenAPI)
+
+The REST API is documented with [Scramble](https://scramble.dedoc.co/),
+which generates OpenAPI specs from the controllers' type hints, form
+requests, and API resources - no annotations to maintain. With the app
+running, open the interactive Swagger UI in your browser:
+
+| URL | Scope |
+|---|---|
+| `http://localhost:8000/docs/api` | Everything - core auth plus every module's API |
+| `http://localhost:8000/docs/hrm` | HRM module only |
+| `http://localhost:8000/docs/support-ticket` | Support Ticket module only |
+| `http://localhost:8000/docs/taskly` | Project (Taskly) module only |
+
+Each page has a **Download** link for the raw OpenAPI JSON (or fetch it
+directly, e.g. `/docs/api.json`) to import into Postman, Insomnia, or a
+client generator. Endpoints behind `auth:*` show an **Authorize** button -
+paste a bearer token (Sanctum) to try them live.
+
+The per-module pages exist only for modules that ship an API today (HRM,
+Support Ticket, Taskly); more appear as other modules gain API routes.
+
+> **Access is restricted to the `local` environment** by Scramble's
+> `RestrictedDocsAccess` middleware, so `/docs/*` returns 403 in
+> production. To expose it elsewhere, define a `viewApiDocs` gate or adjust
+> `middleware` in `config/scramble.php`. Verify a spec builds with
+> `php artisan scramble:analyze --api=hrm`.
+
 ## Troubleshooting
 
 - **`could not find driver` on any DB command** - `pdo_mysql` isn't
