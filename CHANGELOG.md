@@ -1,5 +1,26 @@
 # Changelog
 
+## v1.2.5 - 2026-07-19
+
+### Added
+- **The installer now asks who the super admin is.** Both install paths
+  collect the super admin name, email, and password instead of shipping a
+  hardcoded account. `app:install` prompts interactively, or accepts
+  `--admin-name`, `--admin-email`, and `--admin-password` for scripted
+  installs; the GUI installer collects them on the database step and shows
+  the chosen email on the final screen. With no input supplied on a
+  non-interactive install, it falls back to `admin@zerp.pk` / `Admin@1234`.
+
+### Changed
+- **Default seeded accounts.** The test company is now
+  `testcompany@zerp.pk` / `Test@1234`, and the default super admin (when
+  not supplied at install) is `admin@zerp.pk` / `Admin@1234`. Demo seeders
+  that referenced the super admin by its old fixed email now resolve it by
+  account type, so a user-supplied email no longer breaks seeding.
+- **Docs and README.** Added the Real Estate and Restaurant modules to the
+  module table, and the setup instructions now cover Windows alongside
+  Linux and macOS.
+
 ## v1.2.4 - 2026-07-19
 
 ### Security

@@ -18,7 +18,7 @@ class PackageSeeder extends Seeder
     public function run($userId = null): void
     {
         if(empty($userId)){
-          $userId = User::where('email', 'company@example.com')->first()->id;
+          $userId = User::where('email', 'testcompany@zerp.pk')->first()->id;
         }
 
         // Set by app:install to a package_name slug list; null means
@@ -87,7 +87,7 @@ class PackageSeeder extends Seeder
 
         // static assignPlan
         $plan = Plan::first();
-        $user = User::where('email', 'company@example.com')->first();
+        $user = User::where('email', 'testcompany@zerp.pk')->first();
         $user->active_plan = $plan->id;
         $user->plan_expire_date = date('Y-m-d', strtotime('+10 month'));
         $user->total_user = -1;

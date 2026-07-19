@@ -15,7 +15,7 @@ class DemoBankTransferSeeder extends Seeder
     {
         $faker = Faker::create();
         $orders = Order::pluck('id')->toArray();
-        $users = User::where('email', '!=', 'superadmin@example.com')->limit(5)->pluck('id')->toArray();
+        $users = User::where('type', '!=', 'superadmin')->limit(5)->pluck('id')->toArray();
 
         // Only create if orders exist
         if (empty($orders)) {

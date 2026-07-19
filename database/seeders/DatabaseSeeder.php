@@ -20,7 +20,7 @@ class DatabaseSeeder extends Seeder
         (new EmailTemplatesSeeder())->run();
         (new NotificationsTableSeeder())->run();
 
-        $userId = User::where('email', 'company@example.com')->first()->id;
+        $userId = User::where('email', 'testcompany@zerp.pk')->first()->id;
         User::CompanySetting($userId);
 
         // Always register/enable available modules into add_ons - this must

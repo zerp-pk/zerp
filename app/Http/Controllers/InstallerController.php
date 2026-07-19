@@ -95,11 +95,30 @@ class InstallerController extends Controller
         return Inertia::render('Installer/Database');
     }
 
-    public function databaseStore()
+    public function databaseStore(Request $request)
     {
+        $validator = Validator::make($request->all(), [
+            'admin_name' => 'required|string|max:255',
+            'admin_email' => 'required|email|max:255',
+            'admin_password' => 'required|string|min:6',
+        ]);
+
+        if ($validator->fails()) {
+            return back()->withErrors($validator)->withInput();
+        }
+
+        $admin = $validator->validated();
+
         try {
             // Test database connection first
             DB::connection()->getPdo();
+
+            // PermissionRoleSeeder reads this binding for the super admin login.
+            app()->instance('zerp.superadmin', [
+                'name' => $admin['admin_name'],
+                'email' => $admin['admin_email'],
+                'password' => $admin['admin_password'],
+            ]);
 
             // Handle foreign key constraints based on database type
             $dbType = config('database.default');
@@ -121,9 +140,9 @@ class InstallerController extends Controller
                 $this->enableModule($module['name']);
             }
 
-            return redirect('/install/final');
+            return redirect('/install/final')->with('admin_email', $admin['admin_email']);
         } catch (\Exception $e) {
-            return back()->withErrors(['database' => 'Database connection failed. Please check your database credentials.']);
+            return back()->withErrors(['database' => 'Database connection failed. Please check your database credentials.'])->withInput();
         }
     }
 
@@ -169,12 +188,12 @@ class InstallerController extends Controller
 
         $credentials = [
             'admin' => [
-                'email' => 'superadmin@example.com',
-                'password' => '1234'
+                'email' => session('admin_email', 'admin@zerp.pk'),
+                'password' => __('The password you chose during setup')
             ],
             'company' => [
-                'email' => 'company@example.com',
-                'password' => '1234'
+                'email' => 'testcompany@zerp.pk',
+                'password' => 'Test@1234'
             ]
         ];
 
