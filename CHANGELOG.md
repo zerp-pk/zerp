@@ -1,5 +1,22 @@
 # Changelog
 
+## v1.2.4 - 2026-07-19
+
+### Security
+- **Passwords only needed six characters.** Every account, staff and admins
+  included, could be secured with a weak password: the user create and change
+  password requests required `min:6` and nothing else, and the auth controllers
+  that call `Password::defaults()` had no policy registered, so it fell back to a
+  bare eight-character minimum. One policy now lives in `AppServiceProvider`
+  (at least 8 characters, mixed case, a number, and a compromised-password check
+  in production), and every password-setting path shares it.
+- **Index page size was unbounded.** Listing endpoints paginated with a
+  client-controlled `?per_page` and no upper limit, so `?per_page=1000000` forced
+  the app to load and serialise an entire table in one response, a resource
+  exhaustion any authenticated user could trigger. A new `perPage()` helper clamps
+  the value to a maximum of 100 (non-numeric input falls back to the default) and
+  every index now uses it.
+
 ## v1.2.3 - 2026-07-18
 
 ### Security
