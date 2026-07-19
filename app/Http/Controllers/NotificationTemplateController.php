@@ -26,7 +26,7 @@ class NotificationTemplateController extends Controller
             $sortField = $request->get('sort') ?: 'id';
             $query->orderBy($sortField, $request->get('direction', 'asc'));
 
-            $notificationTemplates = $query->paginate($request->get('per_page', 10))->withQueryString();
+            $notificationTemplates = $query->paginate(perPage())->withQueryString();
 
             return Inertia::render('notification-templates/Index', [
                 'notificationTemplates' => $notificationTemplates,

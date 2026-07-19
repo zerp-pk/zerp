@@ -37,7 +37,7 @@ class TransferController extends Controller
                     $q->where('from_warehouse', request('from_warehouse'));
                 })
                 ->when(request('sort'), fn($q) => $q->orderBy(request('sort'), request('direction', 'asc')), fn($q) => $q->latest())
-                ->paginate(request('per_page', 10))
+                ->paginate(perPage())
                 ->withQueryString();
 
             $warehouses = Warehouse::where('created_by', creatorId())->where('is_active', true)->get(['id', 'name']);

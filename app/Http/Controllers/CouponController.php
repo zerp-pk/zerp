@@ -22,7 +22,7 @@ class CouponController extends Controller
                 ->when(request('type'), fn($q) => $q->where('type', request('type')))
                 ->when(request('status') !== null, fn($q) => $q->where('status', request('status')))
                 ->when(request('sort'), fn($q) => $q->orderBy(request('sort'), request('direction', 'asc')), fn($q) => $q->latest())
-                ->paginate(request('per_page', 10))
+                ->paginate(perPage())
                 ->withQueryString();
 
             return Inertia::render('coupons/index', [
@@ -111,7 +111,7 @@ class CouponController extends Controller
                 ->when(request('user_name'), fn($q) => $q->whereHas('user', fn($query) => $query->where('name', 'like', '%' . likeEscape(request('user_name')) . '%')))
                 ->when(request('order_id'), fn($q) => $q->where('order_id', 'like', '%' . likeEscape(request('order_id')) . '%'))
                 ->when(request('sort'), fn($q) => $q->orderBy(request('sort'), request('direction', 'asc')), fn($q) => $q->latest())
-                ->paginate(request('per_page', 10))
+                ->paginate(perPage())
                 ->withQueryString();
 
             return Inertia::render('coupons/details', [

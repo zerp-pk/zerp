@@ -29,7 +29,7 @@ class OrderController extends Controller
                 })
                 ->when(request('order_id'), fn($q) => $q->where('order_id', 'like', '%' . likeEscape(request('order_id')) . '%'))
                 ->when(request('sort'), fn($q) => $q->orderBy(request('sort'), request('direction', 'desc')), fn($q) => $q->orderBy('id', 'desc'))
-                ->paginate(request('per_page', 10))
+                ->paginate(perPage())
                 ->withQueryString();
 
             return Inertia::render('orders/index', [

@@ -24,6 +24,22 @@ if (!function_exists('likeEscape')) {
     }
 }
 
+if (!function_exists('perPage')) {
+    // Clamp the client-controlled page size so ?per_page=1000000 cannot force the
+    // app to load and serialise a whole table in one response. Non-numeric input
+    // falls back to the default. See zerp-pk/zerp#40.
+    function perPage($default = 10, $max = 100)
+    {
+        $value = request('per_page', $default);
+
+        if (!is_numeric($value)) {
+            $value = $default;
+        }
+
+        return (int) max(1, min((int) $value, $max));
+    }
+}
+
 if (!function_exists('creatorId')) {
     function creatorId()
     {

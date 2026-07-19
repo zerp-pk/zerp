@@ -22,7 +22,7 @@ class HelpdeskCategoryController extends Controller
                 ->when(request('name'), fn($q) => $q->where('name', 'like', '%' . likeEscape(request('name')) . '%'))
                 ->when(request('is_active') !== null, fn($q) => $q->where('is_active', request('is_active')))
                 ->when(request('sort'), fn($q) => $q->orderBy(request('sort'), request('direction', 'asc')), fn($q) => $q->latest())
-                ->paginate(request('per_page', 10))
+                ->paginate(perPage())
                 ->withQueryString();
 
             return Inertia::render('helpdesk/categories/index', [

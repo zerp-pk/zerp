@@ -89,7 +89,7 @@ class SalesProposalController extends Controller
 
             $query->orderBy($sortField, $sortDirection);
 
-            $perPage = $request->get('per_page', 10);
+            $perPage = perPage();
             $proposals = $query->paginate($perPage);
             $customers = User::where('type', 'client')->select('id', 'name', 'email')->where('created_by', creatorId())->get();
 

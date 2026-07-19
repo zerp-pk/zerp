@@ -246,7 +246,7 @@ class MessengerController extends Controller
     public function getMessages($userId)
     {
         $user = Auth::user();
-        $perPage = request('per_page', 20);
+        $perPage = perPage(20);
         $page = request('page', 1);
         
         $messages = Message::where(function ($query) use ($user, $userId) {

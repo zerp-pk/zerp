@@ -18,7 +18,7 @@ class EmailTemplateController extends Controller
                 ->when(request('name'), fn($q) => $q->where('name', 'like', '%' . likeEscape(request('name')) . '%'))
                 ->when(request('module_name'), fn($q) => $q->where('module_name', request('module_name')))
                 ->when(request('sort'), fn($q) => $q->orderBy(request('sort'), request('direction', 'asc')), fn($q) => $q->latest())
-                ->paginate(request('per_page', 10))
+                ->paginate(perPage())
                 ->withQueryString();
 
             $allModules = EmailTemplate::distinct()->pluck('module_name')->filter()->sort()->values();

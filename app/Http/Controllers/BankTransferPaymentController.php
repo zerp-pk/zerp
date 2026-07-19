@@ -157,7 +157,7 @@ class BankTransferPaymentController extends Controller
                 ->when(request('price_min'), fn($q) => $q->where('price', '>=', request('price_min')))
                 ->when(request('price_max'), fn($q) => $q->where('price', '<=', request('price_max')))
                 ->when(request('sort'), fn($q) => $q->orderBy(request('sort'), request('direction', 'asc')), fn($q) => $q->latest())
-                ->paginate(request('per_page', 10))
+                ->paginate(perPage())
                 ->withQueryString();
 
             // Add plan data by parsing request JSON
