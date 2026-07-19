@@ -64,8 +64,8 @@ class UserCreationTest extends TestCase
         $response = $this->post(route('users.store'), [
             'name' => 'New Staff',
             'email' => $email,
-            'password' => 'secret123',
-            'password_confirmation' => 'secret123',
+            'password' => 'Secret123',
+            'password_confirmation' => 'Secret123',
             'type' => $role->id,
         ]);
 
@@ -102,8 +102,8 @@ class UserCreationTest extends TestCase
         $response = $this->post(route('users.store'), [
             'name' => 'No Mail Server',
             'email' => $email,
-            'password' => 'secret123',
-            'password_confirmation' => 'secret123',
+            'password' => 'Secret123',
+            'password_confirmation' => 'Secret123',
             'type' => $role->id,
         ]);
 

@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rules\Password;
 
 class StoreUserRequest extends FormRequest
 {
@@ -19,7 +20,7 @@ class StoreUserRequest extends FormRequest
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email',
             'mobile_no' => 'nullable|string|regex:/^\+\d{1,3}\d{9,13}$/',
-            'password' => 'required|confirmed|min:6',
+            'password' => ['required', 'confirmed', Password::defaults()],
             'type' => $typeRule,
             'is_enable_login' => 'boolean',
         ];
