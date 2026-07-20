@@ -15,6 +15,12 @@
   database. The same treatment covers the two bank transfer instruction
   panels, whose operator-supplied text likewise reaches other users.
 
+### Documentation
+- **How to use the API docs.** The README and the developer docs now cover
+  the Swagger UI: where the combined and per-module pages live, exporting
+  the OpenAPI JSON for Postman or a client generator, and the local-only
+  access gate.
+
 ### Added
 - **The installer now asks who the super admin is.** Both install paths
   collect the super admin name, email, and password instead of shipping a
