@@ -21,6 +21,8 @@
   the OpenAPI JSON for Postman or a client generator, and the local-only
   access gate.
 
+## v1.2.5 - 2026-07-19
+
 ### Added
 - **The installer now asks who the super admin is.** Both install paths
   collect the super admin name, email, and password instead of shipping a
