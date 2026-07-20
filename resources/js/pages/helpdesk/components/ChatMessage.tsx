@@ -7,6 +7,7 @@ import { ChatMessageProps } from './types';
 import { formatDateTime, getImagePath } from '@/utils/helpers';
 import { isImageFile } from '@/utils/fileHelpers';
 import { usePage } from '@inertiajs/react';
+import { SafeHtml } from '@/components/safe-html';
 
 export default function ChatMessage({ reply, isOwnMessage, onDelete, canDelete }: ChatMessageProps) {
     const pageProps = usePage().props as any;
@@ -72,9 +73,9 @@ export default function ChatMessage({ reply, isOwnMessage, onDelete, canDelete }
                         )}
                     </div>
 
-                    <div
+                    <SafeHtml
                         className="text-sm whitespace-pre-wrap"
-                        dangerouslySetInnerHTML={{ __html: reply.message }}
+                        html={reply.message}
                     />
 
                     {(() => {

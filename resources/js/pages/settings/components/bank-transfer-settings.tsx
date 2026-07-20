@@ -8,6 +8,7 @@ import { Switch } from '@/components/ui/switch';
 import { CreditCard, Save } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { router } from '@inertiajs/react';
+import { SafeHtml } from '@/components/safe-html';
 
 interface BankTransferSettingsProps {
     userSettings?: Record<string, string>;
@@ -119,9 +120,9 @@ export default function BankTransferSettings({ userSettings = {}, auth }: BankTr
                                 <h4 className="font-medium mb-3">{t('Customer Preview')}</h4>
                                 <div className="text-sm">
                                     {bankSettings.instructions ? (
-                                        <div 
+                                        <SafeHtml
                                             className="whitespace-pre-wrap"
-                                            dangerouslySetInnerHTML={{ __html: bankSettings.instructions.replace(/<br\/>/g, '<br/>') }}
+                                            html={bankSettings.instructions}
                                         />
                                     ) : (
                                         <p className="text-muted-foreground italic">{t('No instructions provided')}</p>
