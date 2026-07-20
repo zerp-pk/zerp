@@ -9,6 +9,7 @@ import ChatMessage from '../components/ChatMessage';
 import ReplyForm from '../components/ReplyForm';
 import { formatDate } from '@/utils/helpers';
 import { ShowHelpdeskTicketProps, HelpdeskReply } from './types';
+import { SafeHtml } from '@/components/safe-html';
 
 export default function Show() {
     const { ticket, auth } = usePage<ShowHelpdeskTicketProps>().props;
@@ -111,7 +112,7 @@ export default function Show() {
                                     {getPriorityBadge(ticket.priority)}
                                 </div>
                             </div>
-                            <div className="prose prose-sm max-w-none text-gray-700" dangerouslySetInnerHTML={{ __html: ticket.description }} />
+                            <SafeHtml className="prose prose-sm max-w-none text-gray-700" html={ticket.description} />
                         </div>
 
                         <div className="lg:w-80 space-y-4">
