@@ -1,6 +1,25 @@
 # Changelog
 
-## v1.2.5 - 2026-07-19
+## v1.2.6 - 2026-07-20
+
+### Security
+- **Helpdesk ticket content was rendered as raw HTML.** Ticket descriptions
+  and replies went straight to the DOM with no sanitizing, and both fields
+  are written by whoever opens the ticket. A submitter could store a script
+  that then ran in the browser of every agent who opened the ticket, with
+  that agent's session, which is an account takeover path against staff.
+  Both fields are rich text, so they are now passed through DOMPurify at
+  render time rather than rendered as plain text: scripts and event handler
+  attributes are stripped while the editor's own markup survives.
+  Sanitizing on render also neutralises payloads already stored in the
+  database. The same treatment covers the two bank transfer instruction
+  panels, whose operator-supplied text likewise reaches other users.
+
+### Documentation
+- **How to use the API docs.** The README and the developer docs now cover
+  the Swagger UI: where the combined and per-module pages live, exporting
+  the OpenAPI JSON for Postman or a client generator, and the local-only
+  access gate.
 
 ### Added
 - **The installer now asks who the super admin is.** Both install paths
