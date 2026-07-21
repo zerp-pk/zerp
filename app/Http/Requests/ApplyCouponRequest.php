@@ -8,6 +8,7 @@ class ApplyCouponRequest extends FormRequest
 {
     public function authorize(): bool
     {
+        // ponytail: Subscriber checkout action (apply a coupon at plan purchase); no permission gate by design.
         return true;
     }
 

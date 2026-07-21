@@ -8,7 +8,7 @@ class UpdateHelpdeskCategoryRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        return true;
+        return (bool) $this->user()?->can('edit-helpdesk-categories');
     }
 
     public function rules(): array

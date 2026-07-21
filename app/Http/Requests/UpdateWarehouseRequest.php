@@ -8,7 +8,7 @@ class UpdateWarehouseRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        return true;
+        return (bool) $this->user()?->can('edit-warehouses');
     }
 
     public function rules(): array

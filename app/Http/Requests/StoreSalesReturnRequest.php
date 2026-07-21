@@ -8,7 +8,7 @@ class StoreSalesReturnRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        return true;
+        return (bool) $this->user()?->can('create-sales-return-invoices');
     }
 
     public function rules(): array

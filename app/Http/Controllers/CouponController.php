@@ -36,58 +36,48 @@ class CouponController extends Controller
 
     public function store(StoreCouponRequest $request)
     {
-        if(Auth::user()->can('create-coupons')){
-            $validated = $request->validated();
+        $validated = $request->validated();
 
-            $coupon = new Coupon();
-            $coupon->name = $validated['name'] ?? '';
-            $coupon->description = $validated['description'] ?? null;
-            $coupon->code = $validated['code'] ?? '';
-            $coupon->discount = $validated['discount'] ?? 0;
-            $coupon->limit = $validated['limit'] ?? null;
-            $coupon->type = $validated['type'] ?? '';
-            $coupon->minimum_spend = $validated['minimum_spend'] ?? null;
-            $coupon->maximum_spend = $validated['maximum_spend'] ?? null;
-            $coupon->limit_per_user = $validated['limit_per_user'] ?? null;
-            $coupon->expiry_date = $validated['expiry_date'] ?? null;
-            $coupon->included_module = $validated['included_module'] ?? null;
-            $coupon->excluded_module = $validated['excluded_module'] ?? null;
-            $coupon->status = $request->boolean('status', true);
-            $coupon->created_by = creatorId();
-            $coupon->save();
+        $coupon = new Coupon();
+        $coupon->name = $validated['name'] ?? '';
+        $coupon->description = $validated['description'] ?? null;
+        $coupon->code = $validated['code'] ?? '';
+        $coupon->discount = $validated['discount'] ?? 0;
+        $coupon->limit = $validated['limit'] ?? null;
+        $coupon->type = $validated['type'] ?? '';
+        $coupon->minimum_spend = $validated['minimum_spend'] ?? null;
+        $coupon->maximum_spend = $validated['maximum_spend'] ?? null;
+        $coupon->limit_per_user = $validated['limit_per_user'] ?? null;
+        $coupon->expiry_date = $validated['expiry_date'] ?? null;
+        $coupon->included_module = $validated['included_module'] ?? null;
+        $coupon->excluded_module = $validated['excluded_module'] ?? null;
+        $coupon->status = $request->boolean('status', true);
+        $coupon->created_by = creatorId();
+        $coupon->save();
 
-            return redirect()->route('coupons.index')->with('success', __('The coupon has been created successfully.'));
-        }
-        else{
-            return redirect()->route('coupons.index')->with('error', __('Permission denied'));
-        }
+        return redirect()->route('coupons.index')->with('success', __('The coupon has been created successfully.'));
     }
 
     public function update(UpdateCouponRequest $request, Coupon $coupon)
     {
-        if(Auth::user()->can('edit-coupons')){
-            $validated = $request->validated();
+        $validated = $request->validated();
 
-            $coupon->name = $validated['name'] ?? '';
-            $coupon->description = $validated['description'] ?? null;
-            $coupon->code = $validated['code'] ?? '';
-            $coupon->discount = $validated['discount'] ?? 0;
-            $coupon->limit = $validated['limit'] ?? null;
-            $coupon->type = $validated['type'] ?? '';
-            $coupon->minimum_spend = $validated['minimum_spend'] ?? null;
-            $coupon->maximum_spend = $validated['maximum_spend'] ?? null;
-            $coupon->limit_per_user = $validated['limit_per_user'] ?? null;
-            $coupon->expiry_date = $validated['expiry_date'] ?? null;
-            $coupon->included_module = $validated['included_module'] ?? null;
-            $coupon->excluded_module = $validated['excluded_module'] ?? null;
-            $coupon->status = $request->boolean('status', true);
-            $coupon->save();
+        $coupon->name = $validated['name'] ?? '';
+        $coupon->description = $validated['description'] ?? null;
+        $coupon->code = $validated['code'] ?? '';
+        $coupon->discount = $validated['discount'] ?? 0;
+        $coupon->limit = $validated['limit'] ?? null;
+        $coupon->type = $validated['type'] ?? '';
+        $coupon->minimum_spend = $validated['minimum_spend'] ?? null;
+        $coupon->maximum_spend = $validated['maximum_spend'] ?? null;
+        $coupon->limit_per_user = $validated['limit_per_user'] ?? null;
+        $coupon->expiry_date = $validated['expiry_date'] ?? null;
+        $coupon->included_module = $validated['included_module'] ?? null;
+        $coupon->excluded_module = $validated['excluded_module'] ?? null;
+        $coupon->status = $request->boolean('status', true);
+        $coupon->save();
 
-            return back()->with('success', __('The coupon details are updated successfully.'));
-        }
-        else{
-            return redirect()->route('coupons.index')->with('error', __('Permission denied'));
-        }
+        return back()->with('success', __('The coupon details are updated successfully.'));
     }
 
     public function destroy(Coupon $coupon)

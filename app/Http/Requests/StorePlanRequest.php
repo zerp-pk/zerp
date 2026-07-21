@@ -8,7 +8,7 @@ class StorePlanRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        return true;
+        return (bool) $this->user()?->can('create-plans');
     }
 
     public function rules(): array

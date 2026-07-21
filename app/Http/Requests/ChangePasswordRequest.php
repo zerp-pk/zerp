@@ -9,7 +9,9 @@ class ChangePasswordRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        return true;
+        $model = $this->route('user');
+
+        return $this->user()?->can('change-password-users') && $model && $model->created_by == creatorId();
     }
 
     public function rules(): array

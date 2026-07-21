@@ -8,7 +8,7 @@ class UpdateHelpdeskTicketRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        return true;
+        return (bool) $this->user()?->can('edit-helpdesk-tickets');
     }
 
     public function rules(): array

@@ -69,49 +69,44 @@ class TransferController extends Controller
 
     public function store(StoreTransferRequest $request)
     {
-        if(Auth::user()->can('create-transfers')){
-            $validated = $request->validated();
+        $validated = $request->validated();
 
-            $transfer = new Transfer();
-            $transfer->from_warehouse = $validated['from_warehouse'];
-            $transfer->to_warehouse = $validated['to_warehouse'];
-            $transfer->product_id = $validated['product_id'];
-            $transfer->quantity = $validated['quantity'];
-            $transfer->date = $validated['date'];
-            $transfer->creator_id = Auth::id();
-            $transfer->created_by = creatorId();
-            $transfer->save();
+        $transfer = new Transfer();
+        $transfer->from_warehouse = $validated['from_warehouse'];
+        $transfer->to_warehouse = $validated['to_warehouse'];
+        $transfer->product_id = $validated['product_id'];
+        $transfer->quantity = $validated['quantity'];
+        $transfer->date = $validated['date'];
+        $transfer->creator_id = Auth::id();
+        $transfer->created_by = creatorId();
+        $transfer->save();
 
-            // Update warehouse stocks
-            // Decrease from source warehouse
-            $fromStock = WarehouseStock::where('product_id', $validated['product_id'])
-                ->where('warehouse_id', $validated['from_warehouse'])
-                ->first();
+        // Update warehouse stocks
+        // Decrease from source warehouse
+        $fromStock = WarehouseStock::where('product_id', $validated['product_id'])
+            ->where('warehouse_id', $validated['from_warehouse'])
+            ->first();
 
-            if ($fromStock) {
-                $fromStock->quantity = max(0, $fromStock->quantity - $validated['quantity']);
-                $fromStock->save();
-            }
-
-            // Increase in destination warehouse
-            $toStock = WarehouseStock::firstOrCreate(
-                [
-                    'product_id' => $validated['product_id'],
-                    'warehouse_id' => $validated['to_warehouse'],
-                ],
-                ['quantity' => 0]
-            );
-            $toStock->quantity += $validated['quantity'];
-            $toStock->save();
-
-            // Dispatch event for packages to handle their fields
-            CreateTransfer::dispatch($request, $transfer);
-
-            return back()->with('success', __('The transfer has been created successfully.'));
+        if ($fromStock) {
+            $fromStock->quantity = max(0, $fromStock->quantity - $validated['quantity']);
+            $fromStock->save();
         }
-        else{
-            return back()->with('error', __('Permission denied'));
-        }
+
+        // Increase in destination warehouse
+        $toStock = WarehouseStock::firstOrCreate(
+            [
+                'product_id' => $validated['product_id'],
+                'warehouse_id' => $validated['to_warehouse'],
+            ],
+            ['quantity' => 0]
+        );
+        $toStock->quantity += $validated['quantity'];
+        $toStock->save();
+
+        // Dispatch event for packages to handle their fields
+        CreateTransfer::dispatch($request, $transfer);
+
+        return back()->with('success', __('The transfer has been created successfully.'));
     }
 
     public function show(Transfer $transfer)

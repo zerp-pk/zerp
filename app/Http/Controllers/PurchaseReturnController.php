@@ -140,38 +140,32 @@ class PurchaseReturnController extends Controller
 
     public function store(StorePurchaseReturnRequest $request)
     {
-        if(Auth::user()->can('create-purchase-return-invoices')){
+    $totals = $this->calculateReturnTotals($request->items, $request->original_invoice_id);
+    $return = new PurchaseReturn();
+    $return->return_date = $request->return_date;
+    $return->vendor_id = $request->vendor_id;
+    $return->warehouse_id = $request->warehouse_id ?? null;
+    $return->original_invoice_id = $request->original_invoice_id;
+    $return->reason = $request->reason;
+    $return->notes = $request->notes;
+    $return->subtotal = $totals['subtotal'];
+    $return->tax_amount = $totals['tax_amount'];
+    $return->discount_amount = $totals['discount_amount'];
+    $return->total_amount = $totals['total_amount'];
+    $return->status = 'draft';
+    $return->creator_id = Auth::id();
+    $return->created_by = creatorId();
+    $return->save();
 
-        $totals = $this->calculateReturnTotals($request->items, $request->original_invoice_id);
-        $return = new PurchaseReturn();
-        $return->return_date = $request->return_date;
-        $return->vendor_id = $request->vendor_id;
-        $return->warehouse_id = $request->warehouse_id ?? null;
-        $return->original_invoice_id = $request->original_invoice_id;
-        $return->reason = $request->reason;
-        $return->notes = $request->notes;
-        $return->subtotal = $totals['subtotal'];
-        $return->tax_amount = $totals['tax_amount'];
-        $return->discount_amount = $totals['discount_amount'];
-        $return->total_amount = $totals['total_amount'];
-        $return->status = 'draft';
-        $return->creator_id = Auth::id();
-        $return->created_by = creatorId();
-        $return->save();
+    // Create return items
+    $this->createReturnItems($return->id, $request->items, $request->original_invoice_id);
 
-        // Create return items
-        $this->createReturnItems($return->id, $request->items, $request->original_invoice_id);
-
-        try {
-            CreatePurchaseReturn::dispatch($request, $return);
-        } catch (\Throwable $th) {
-            return back()->with('error', $th->getMessage());
-        }
-            return redirect()->route('purchase-returns.index')->with('success', __('The purchase return has been created successfully.'));
-        }
-        else{
-            return redirect()->route('purchase-returns.index')->with('error', __('Permission denied'));
-        }
+    try {
+        CreatePurchaseReturn::dispatch($request, $return);
+    } catch (\Throwable $th) {
+        return back()->with('error', $th->getMessage());
+    }
+        return redirect()->route('purchase-returns.index')->with('success', __('The purchase return has been created successfully.'));
     }
 
     public function show(PurchaseReturn $return)

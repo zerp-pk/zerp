@@ -8,6 +8,7 @@ class StoreBankTransferPaymentRequest extends FormRequest
 {
     public function authorize(): bool
     {
+        // ponytail: Subscriber checkout action (submit bank-transfer proof to buy a plan); no permission gate by design.
         return true;
     }
 

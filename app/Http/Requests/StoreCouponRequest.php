@@ -8,7 +8,7 @@ class StoreCouponRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        return true;
+        return (bool) $this->user()?->can('create-coupons');
     }
 
     public function rules(): array

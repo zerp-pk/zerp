@@ -8,7 +8,7 @@ class UpdateBankTransferPaymentRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        return true;
+        return (bool) $this->user()?->can('approve-bank-transfer-requests');
     }
 
     public function rules(): array

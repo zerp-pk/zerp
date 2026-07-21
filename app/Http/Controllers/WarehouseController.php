@@ -44,55 +44,45 @@ class WarehouseController extends Controller
 
     public function store(StoreWarehouseRequest $request)
     {
-        if(Auth::user()->can('create-warehouses')){
-            $validated = $request->validated();
-            $validated['is_active'] = $request->boolean('is_active', true);
+        $validated = $request->validated();
+        $validated['is_active'] = $request->boolean('is_active', true);
 
-            $warehouse = new Warehouse();
-            $warehouse->name = $validated['name'];
-            $warehouse->address = $validated['address'];
-            $warehouse->city = $validated['city'];
-            $warehouse->zip_code = $validated['zip_code'];
-            $warehouse->phone = $validated['phone'] ?? null;
-            $warehouse->email = $validated['email'] ?? null;
-            $warehouse->is_active = $validated['is_active'];
-            $warehouse->creator_id = Auth::id();
-            $warehouse->created_by = creatorId();
-            $warehouse->save();
+        $warehouse = new Warehouse();
+        $warehouse->name = $validated['name'];
+        $warehouse->address = $validated['address'];
+        $warehouse->city = $validated['city'];
+        $warehouse->zip_code = $validated['zip_code'];
+        $warehouse->phone = $validated['phone'] ?? null;
+        $warehouse->email = $validated['email'] ?? null;
+        $warehouse->is_active = $validated['is_active'];
+        $warehouse->creator_id = Auth::id();
+        $warehouse->created_by = creatorId();
+        $warehouse->save();
 
-            // Dispatch event for packages to handle their fields
-            CreateWarehouse::dispatch($request, $warehouse);
+        // Dispatch event for packages to handle their fields
+        CreateWarehouse::dispatch($request, $warehouse);
 
-            return redirect()->route('warehouses.index')->with('success', __('The warehouse has been created successfully.'));
-        }
-        else{
-            return redirect()->route('warehouses.index')->with('error', __('Permission denied'));
-        }
+        return redirect()->route('warehouses.index')->with('success', __('The warehouse has been created successfully.'));
     }
 
     public function update(UpdateWarehouseRequest $request, Warehouse $warehouse)
     {
-        if(Auth::user()->can('edit-warehouses')){
-            $validated = $request->validated();
-            $validated['is_active'] = $request->boolean('is_active', true);
+        $validated = $request->validated();
+        $validated['is_active'] = $request->boolean('is_active', true);
 
-            $warehouse->name = $validated['name'];
-            $warehouse->address = $validated['address'];
-            $warehouse->city = $validated['city'];
-            $warehouse->zip_code = $validated['zip_code'];
-            $warehouse->phone = $validated['phone'] ?? null;
-            $warehouse->email = $validated['email'] ?? null;
-            $warehouse->is_active = $validated['is_active'];
-            $warehouse->save();
+        $warehouse->name = $validated['name'];
+        $warehouse->address = $validated['address'];
+        $warehouse->city = $validated['city'];
+        $warehouse->zip_code = $validated['zip_code'];
+        $warehouse->phone = $validated['phone'] ?? null;
+        $warehouse->email = $validated['email'] ?? null;
+        $warehouse->is_active = $validated['is_active'];
+        $warehouse->save();
 
-            // Dispatch event for packages to handle their fields
-            UpdateWarehouse::dispatch($request, $warehouse);
+        // Dispatch event for packages to handle their fields
+        UpdateWarehouse::dispatch($request, $warehouse);
 
-            return back()->with('success', __('The warehouse details are updated successfully.'));
-        }
-        else{
-            return redirect()->route('warehouses.index')->with('error', __('Permission denied'));
-        }
+        return back()->with('success', __('The warehouse details are updated successfully.'));
     }
 
     public function destroy(Warehouse $warehouse)

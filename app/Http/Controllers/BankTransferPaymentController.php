@@ -179,60 +179,56 @@ class BankTransferPaymentController extends Controller
     {
         $validated = $request->validated();
 
-        if (Auth::user()->can('approve-bank-transfer-requests')) {
-            $bank_transfer_payment = BankTransferPayment::find($id);
-            if ($bank_transfer_payment && $bank_transfer_payment->status == 'pending') {
-                $bank_transfer_payment->status = $request->status;
-                $bank_transfer_payment->save();
+        $bank_transfer_payment = BankTransferPayment::find($id);
+        if ($bank_transfer_payment && $bank_transfer_payment->status == 'pending') {
+            $bank_transfer_payment->status = $request->status;
+            $bank_transfer_payment->save();
 
-                if ($request->status == 'approved') {
-                    $requests = json_decode($bank_transfer_payment->request);
-                    $plan = Plan::find($requests->plan_id);
-                    $counter = [
-                        'user_counter' => -1,
-                        'storage_counter' => 0,
-                    ];
-                    $user_module = (isset($requests->user_module_input)) ? $requests->user_module_input : '';
-                    $duration = (isset($requests->time_period)) ? $requests->time_period : 'Month';
-                    $user = User::find($bank_transfer_payment->user_id);
-                    $assignPlan = assignPlan($plan->id, $duration, $user_module, $counter, $bank_transfer_payment->user_id);
-                    if ($assignPlan['is_success']) {
-                        $order = Order::create([
-                            'order_id' => $bank_transfer_payment->order_id,
-                            'name' => $user->name,
-                            'email' => $user->email,
-                            'card_number' => null,
-                            'card_exp_month' => null,
-                            'card_exp_year' => null,
-                            'plan_name' => !empty($plan->name) ? $plan->name : 'Basic Package',
-                            'plan_id' => $plan->id,
-                            'price' => $bank_transfer_payment->price,
-                            'currency' => $bank_transfer_payment->price_currency,
-                            'txn_id' => '',
-                            'payment_type' => __('Bank Transfer'),
-                            'payment_status' => 'succeeded',
-                            'receipt' => $bank_transfer_payment->attachment,
-                            'created_by' => $bank_transfer_payment->user_id,
-                        ]);
-                        if (isset($requests->coupon_code)) {
-                            $coupon = Coupon::where('code', $requests->coupon_code)->first();
-                            if ($coupon) {
-                                recordCouponUsage($coupon->id, $bank_transfer_payment->user_id, $bank_transfer_payment->order_id);
-                            }
+            if ($request->status == 'approved') {
+                $requests = json_decode($bank_transfer_payment->request);
+                $plan = Plan::find($requests->plan_id);
+                $counter = [
+                    'user_counter' => -1,
+                    'storage_counter' => 0,
+                ];
+                $user_module = (isset($requests->user_module_input)) ? $requests->user_module_input : '';
+                $duration = (isset($requests->time_period)) ? $requests->time_period : 'Month';
+                $user = User::find($bank_transfer_payment->user_id);
+                $assignPlan = assignPlan($plan->id, $duration, $user_module, $counter, $bank_transfer_payment->user_id);
+                if ($assignPlan['is_success']) {
+                    $order = Order::create([
+                        'order_id' => $bank_transfer_payment->order_id,
+                        'name' => $user->name,
+                        'email' => $user->email,
+                        'card_number' => null,
+                        'card_exp_month' => null,
+                        'card_exp_year' => null,
+                        'plan_name' => !empty($plan->name) ? $plan->name : 'Basic Package',
+                        'plan_id' => $plan->id,
+                        'price' => $bank_transfer_payment->price,
+                        'currency' => $bank_transfer_payment->price_currency,
+                        'txn_id' => '',
+                        'payment_type' => __('Bank Transfer'),
+                        'payment_status' => 'succeeded',
+                        'receipt' => $bank_transfer_payment->attachment,
+                        'created_by' => $bank_transfer_payment->user_id,
+                    ]);
+                    if (isset($requests->coupon_code)) {
+                        $coupon = Coupon::where('code', $requests->coupon_code)->first();
+                        if ($coupon) {
+                            recordCouponUsage($coupon->id, $bank_transfer_payment->user_id, $bank_transfer_payment->order_id);
                         }
-                    } else {
-                        return redirect()->back()->with('error', __('Something went wrong, Please try again,'));
                     }
-
-                    return redirect()->back()->with('success', __('The bank transfer request Approve successfully'));
                 } else {
-                    return redirect()->back()->with('success', __('Bank transfer request Reject successfully'));
+                    return redirect()->back()->with('error', __('Something went wrong, Please try again,'));
                 }
+
+                return redirect()->back()->with('success', __('The bank transfer request Approve successfully'));
             } else {
-                return response()->json(['error' => __('Request data not found!')], 401);
+                return redirect()->back()->with('success', __('Bank transfer request Reject successfully'));
             }
         } else {
-            return back()->with('error', __('Permission denied'));
+            return response()->json(['error' => __('Request data not found!')], 401);
         }
     }
 

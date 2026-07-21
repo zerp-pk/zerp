@@ -8,7 +8,7 @@ class StoreHelpdeskReplyRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        return true;
+        return (bool) $this->user()?->can('create-helpdesk-replies');
     }
 
     public function rules(): array

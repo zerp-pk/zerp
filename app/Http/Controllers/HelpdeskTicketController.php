@@ -64,30 +64,25 @@ class HelpdeskTicketController extends Controller
 
     public function store(StoreHelpdeskTicketRequest $request)
     {
-        if(Auth::user()->can('create-helpdesk-tickets')){
-            $validated = $request->validated();
+        $validated = $request->validated();
 
-            $ticket = new HelpdeskTicket();
-            $ticket->title = $validated['title'];
-            $ticket->description = $validated['description'];
-            $ticket->priority = $validated['priority'];
-            $ticket->category_id = $validated['category_id'];
+        $ticket = new HelpdeskTicket();
+        $ticket->title = $validated['title'];
+        $ticket->description = $validated['description'];
+        $ticket->priority = $validated['priority'];
+        $ticket->category_id = $validated['category_id'];
 
-            if(Auth::user()->type === 'superadmin' && isset($validated['company_id'])) {
-                $ticket->created_by = $validated['company_id'];
-            } else {
-                $ticket->created_by = creatorId();
-            }
-
-            $ticket->save();
-
-            CreateHelpdeskTicket::dispatch($request, $ticket);
-
-            return back()->with('success', __('The ticket has been created successfully.'));
+        if(Auth::user()->type === 'superadmin' && isset($validated['company_id'])) {
+            $ticket->created_by = $validated['company_id'];
+        } else {
+            $ticket->created_by = creatorId();
         }
-        else{
-            return back()->with('error', __('Permission denied'));
-        }
+
+        $ticket->save();
+
+        CreateHelpdeskTicket::dispatch($request, $ticket);
+
+        return back()->with('success', __('The ticket has been created successfully.'));
     }
 
     public function show(HelpdeskTicket $helpdeskTicket)
@@ -106,29 +101,24 @@ class HelpdeskTicketController extends Controller
 
     public function update(UpdateHelpdeskTicketRequest $request, HelpdeskTicket $helpdeskTicket)
     {
-        if(Auth::user()->can('edit-helpdesk-tickets')){
-            $validated = $request->validated();
+        $validated = $request->validated();
 
-            $helpdeskTicket->title = $validated['title'];
-            $helpdeskTicket->description = $validated['description'];
-            $helpdeskTicket->status = $validated['status'];
-            $helpdeskTicket->priority = $validated['priority'];
-            $helpdeskTicket->category_id = $validated['category_id'];
+        $helpdeskTicket->title = $validated['title'];
+        $helpdeskTicket->description = $validated['description'];
+        $helpdeskTicket->status = $validated['status'];
+        $helpdeskTicket->priority = $validated['priority'];
+        $helpdeskTicket->category_id = $validated['category_id'];
 
 
-            if($validated['status'] === 'resolved' && !$helpdeskTicket->resolved_at) {
-                $helpdeskTicket->resolved_at = now();
-            }
-
-            $helpdeskTicket->save();
-
-            UpdateHelpdeskTicket::dispatch($request, $helpdeskTicket);
-
-            return back()->with('success', __('The ticket has been updated successfully'));
+        if($validated['status'] === 'resolved' && !$helpdeskTicket->resolved_at) {
+            $helpdeskTicket->resolved_at = now();
         }
-        else{
-            return redirect()->route('helpdesk-tickets.index')->with('error', __('Permission denied'));
-        }
+
+        $helpdeskTicket->save();
+
+        UpdateHelpdeskTicket::dispatch($request, $helpdeskTicket);
+
+        return back()->with('success', __('The ticket has been updated successfully'));
     }
 
     public function destroy(HelpdeskTicket $helpdeskTicket)
