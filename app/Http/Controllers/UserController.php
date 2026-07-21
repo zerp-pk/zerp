@@ -37,7 +37,7 @@ class UserController extends Controller
                     ->where('model_has_roles.role_id', request('role'))
                     ->where('model_has_roles.model_type', User::class))
                 ->when(request('is_enable_login') !== null, fn($q) => $q->where('is_enable_login', request('is_enable_login')))
-                ->when(request('sort'), fn($q) => $q->orderBy(request('sort'), request('direction', 'asc')), function($q) {
+                ->when(request('sort'), fn($q) => $q->sortSafe(request('sort'), request('direction'), 'id', 'asc'), function($q) {
                     if (config('app.is_demo', false) && Auth::user()->type === 'superadmin') {
                         return $q->orderBy('id', 'asc');
                     }
@@ -245,7 +245,7 @@ class UserController extends Controller
                 ->when(request('user_name'), fn($q) => $q->whereHas('user', fn($q) => $q->where('name', 'like', '%' . likeEscape(request('user_name')) . '%')))
                 ->when(request('ip'), fn($q) => $q->where('ip', 'like', '%' . likeEscape(request('ip')) . '%'))
                 ->when(request('role'), fn($q) => $q->whereHas('user', fn($q) => $q->where('type', request('role'))))
-                ->when(request('sort'), fn($q) => $q->orderBy(request('sort'), request('direction', 'asc')), fn($q) => $q->latest())
+                ->when(request('sort'), fn($q) => $q->sortSafe(request('sort'), request('direction'), 'id', 'asc'), fn($q) => $q->latest())
                 ->paginate(perPage())
                 ->withQueryString();
 

@@ -21,7 +21,7 @@ class CouponController extends Controller
                 ->when(request('code'), fn($q) => $q->where('code', 'like', '%' . likeEscape(request('code')) . '%'))
                 ->when(request('type'), fn($q) => $q->where('type', request('type')))
                 ->when(request('status') !== null, fn($q) => $q->where('status', request('status')))
-                ->when(request('sort'), fn($q) => $q->orderBy(request('sort'), request('direction', 'asc')), fn($q) => $q->latest())
+                ->when(request('sort'), fn($q) => $q->sortSafe(request('sort'), request('direction'), 'id', 'asc'), fn($q) => $q->latest())
                 ->paginate(perPage())
                 ->withQueryString();
 
@@ -110,7 +110,7 @@ class CouponController extends Controller
                 ->select('id', 'coupon_id', 'user_id', 'order_id', 'created_at')
                 ->when(request('user_name'), fn($q) => $q->whereHas('user', fn($query) => $query->where('name', 'like', '%' . likeEscape(request('user_name')) . '%')))
                 ->when(request('order_id'), fn($q) => $q->where('order_id', 'like', '%' . likeEscape(request('order_id')) . '%'))
-                ->when(request('sort'), fn($q) => $q->orderBy(request('sort'), request('direction', 'asc')), fn($q) => $q->latest())
+                ->when(request('sort'), fn($q) => $q->sortSafe(request('sort'), request('direction'), 'id', 'asc'), fn($q) => $q->latest())
                 ->paginate(perPage())
                 ->withQueryString();
 

@@ -17,7 +17,7 @@ class EmailTemplateController extends Controller
                 ->with('templateLangs')
                 ->when(request('name'), fn($q) => $q->where('name', 'like', '%' . likeEscape(request('name')) . '%'))
                 ->when(request('module_name'), fn($q) => $q->where('module_name', request('module_name')))
-                ->when(request('sort'), fn($q) => $q->orderBy(request('sort'), request('direction', 'asc')), fn($q) => $q->latest())
+                ->when(request('sort'), fn($q) => $q->sortSafe(request('sort'), request('direction'), 'id', 'asc'), fn($q) => $q->latest())
                 ->paginate(perPage())
                 ->withQueryString();
 

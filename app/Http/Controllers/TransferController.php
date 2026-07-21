@@ -36,7 +36,7 @@ class TransferController extends Controller
                 ->when(request('from_warehouse'), function($q) {
                     $q->where('from_warehouse', request('from_warehouse'));
                 })
-                ->when(request('sort'), fn($q) => $q->orderBy(request('sort'), request('direction', 'asc')), fn($q) => $q->latest())
+                ->when(request('sort'), fn($q) => $q->sortSafe(request('sort'), request('direction'), 'id', 'asc'), fn($q) => $q->latest())
                 ->paginate(perPage())
                 ->withQueryString();
 

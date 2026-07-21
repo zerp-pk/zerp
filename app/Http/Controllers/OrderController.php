@@ -28,7 +28,7 @@ class OrderController extends Controller
                     });
                 })
                 ->when(request('order_id'), fn($q) => $q->where('order_id', 'like', '%' . likeEscape(request('order_id')) . '%'))
-                ->when(request('sort'), fn($q) => $q->orderBy(request('sort'), request('direction', 'desc')), fn($q) => $q->orderBy('id', 'desc'))
+                ->when(request('sort'), fn($q) => $q->sortSafe(request('sort'), request('direction'), 'id', 'desc'), fn($q) => $q->orderBy('id', 'desc'))
                 ->paginate(perPage())
                 ->withQueryString();
 
