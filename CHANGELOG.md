@@ -1,5 +1,19 @@
 # Changelog
 
+## v1.2.7 - 2026-07-21
+
+### Security
+- **List screens sorted by an unvalidated column name.** Ten index screens
+  ordered by `?sort=` and `?direction=` taken straight from the query string.
+  Eloquent binds values but not identifiers, so the column name reached the
+  SQL text unescaped: a crafted `?sort=` was an unhandled 500 at best and an
+  injection surface at worst. Every call site now runs through the same
+  `sortSafe` guard the accounting module has used since v1.2.3, which accepts
+  a column only if it exists on the table and a direction only if it is `asc`
+  or `desc`, falling back to a safe default otherwise. Each screen keeps its
+  existing default ordering; only invalid input changes, from an error to a
+  safe order.
+
 ## v1.2.6 - 2026-07-20
 
 ### Security
