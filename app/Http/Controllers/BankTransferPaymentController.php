@@ -156,7 +156,7 @@ class BankTransferPaymentController extends Controller
                 ->when(request('user_name'), fn($q) => $q->whereHas('user', fn($query) => $query->where('name', 'like', '%' . likeEscape(request('user_name')) . '%')))
                 ->when(request('price_min'), fn($q) => $q->where('price', '>=', request('price_min')))
                 ->when(request('price_max'), fn($q) => $q->where('price', '<=', request('price_max')))
-                ->when(request('sort'), fn($q) => $q->orderBy(request('sort'), request('direction', 'asc')), fn($q) => $q->latest())
+                ->when(request('sort'), fn($q) => $q->sortSafe(request('sort'), request('direction'), 'id', 'asc'), fn($q) => $q->latest())
                 ->paginate(perPage())
                 ->withQueryString();
 

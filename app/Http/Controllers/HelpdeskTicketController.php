@@ -38,7 +38,7 @@ class HelpdeskTicketController extends Controller
                 ->when(request('priority'), fn($q) => $q->where('priority', request('priority')))
                 ->when(request('category_id'), fn($q) => $q->where('category_id', request('category_id')))
                 ->when(request('company_id') && Auth::user()->type === 'superadmin', fn($q) => $q->where('created_by', request('company_id')))
-                ->when(request('sort'), fn($q) => $q->orderBy(request('sort'), request('direction', 'asc')), fn($q) => $q->latest())
+                ->when(request('sort'), fn($q) => $q->sortSafe(request('sort'), request('direction'), 'id', 'asc'), fn($q) => $q->latest())
                 ->paginate(perPage())
                 ->withQueryString();
 
