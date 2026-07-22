@@ -58,10 +58,12 @@ class AuthenticatedSessionController extends Controller
             }
         }
 
-        return redirect()->route('dashboard');
-
-        // old code
-        // return redirect()->intended(route('dashboard', absolute: false));
+        // intended(), not a bare dashboard redirect: clicking an email verification
+        // link while logged out lands on this form, and the signed URL the auth
+        // middleware stashed is the whole reason the user is here. Dropping it sent
+        // them to the dashboard, which bounced them straight back to the "verify your
+        // email" notice, so verifying only worked on a second link. See zerp-pk/zerp#72.
+        return redirect()->intended(route('dashboard', absolute: false));
     }
 
     /**
