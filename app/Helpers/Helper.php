@@ -402,16 +402,22 @@ if (!function_exists('assignPlan')) {
                         'module' => $moduleName,
                     ]);
                 }
-                DefaultData::dispatch($user->id, $modules);
-                $client_role = Role::where('name', 'client')->where('created_by', $user->id)->first();
-                $staff_role = Role::where('name', 'staff')->where('created_by', $user->id)->first();
+                // Every module listens to these, and each one grants its permissions
+                // one at a time. Spatie flushes and reloads the whole permission cache
+                // per grant, which is what pushed this past the request timeout, so the
+                // invalidation is collapsed into one flush. See zerp-pk/zerp#70.
+                app(\Spatie\Permission\PermissionRegistrar::class)->bulk(function () use ($user, $modules) {
+                    DefaultData::dispatch($user->id, $modules);
+                    $client_role = Role::where('name', 'client')->where('created_by', $user->id)->first();
+                    $staff_role = Role::where('name', 'staff')->where('created_by', $user->id)->first();
 
-                if (!empty($client_role)) {
-                    GivePermissionToRole::dispatch($client_role->id, 'client', $modules);
-                }
-                if (!empty($staff_role)) {
-                    GivePermissionToRole::dispatch($staff_role->id, 'staff', $modules);
-                }
+                    if (!empty($client_role)) {
+                        GivePermissionToRole::dispatch($client_role->id, 'client', $modules);
+                    }
+                    if (!empty($staff_role)) {
+                        GivePermissionToRole::dispatch($staff_role->id, 'staff', $modules);
+                    }
+                });
             }
             
             // Set user limits from plan (don't modify the plan itself)

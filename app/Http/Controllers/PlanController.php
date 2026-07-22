@@ -425,12 +425,6 @@ class PlanController extends Controller
         }
 
         $duration = $request->duration;
-        $durationStr = (string)$duration;
-        \Illuminate\Support\Facades\Log::error('ASSIGIPLAN LOG [DEBUG]: called', [
-            'user_id' => $user->id,
-            'plan_id' => $plan->id,
-            'duration' => $durationStr
-        ]);
         $counter = [
             'user_counter' => $plan->number_of_users ?? '0',
             'storage_limit' => $plan->storage_limit ?? '0',
