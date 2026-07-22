@@ -40,7 +40,7 @@ class MediaController extends Controller
         } elseif ($user->can('manage-own-media')) {
             $query->where('creator_id', $user->id);
         } else {
-            $query->whereRaw('1 = 0');
+            denyAccess();
         }
 
         return $query;
@@ -60,7 +60,7 @@ class MediaController extends Controller
         } elseif ($user->can('manage-own-media-directories')) {
             $query->where('creator_id', $user->id);
         } else {
-            $query->whereRaw('1 = 0');
+            denyAccess();
         }
 
         return $query;

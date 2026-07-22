@@ -28,7 +28,7 @@ class UserController extends Controller
                     } elseif(Auth::user()->can('manage-own-users')) {
                         $q->where('creator_id', Auth::id());
                     } else {
-                        $q->whereRaw('1 = 0');
+                        denyAccess();
                     }
                 })
                 ->when(request('name'), fn($q) => $q->where('name', 'like', '%' . likeEscape(request('name')) . '%'))

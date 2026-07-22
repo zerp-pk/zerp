@@ -25,7 +25,7 @@ class TransferController extends Controller
                     } elseif(Auth::user()->can('manage-own-transfers')) {
                         $q->where('creator_id', Auth::id());
                     } else {
-                        $q->whereRaw('1 = 0');
+                        denyAccess();
                     }
                 })
                 ->when(request('product_name'), function($q) {

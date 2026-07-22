@@ -55,7 +55,7 @@ class SalesProposalController extends Controller
                             $q->where('status','!=', 'draft');
                         }
                     } else {
-                        $q->whereRaw('1 = 0');
+                        denyAccess();
                     }
                 });
             // Apply filters
