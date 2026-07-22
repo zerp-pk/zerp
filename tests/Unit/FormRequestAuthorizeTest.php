@@ -3,7 +3,12 @@
 namespace Tests\Unit;
 
 use App\Http\Requests\StoreCouponRequest;
+use App\Http\Requests\StorePlanRequest;
+use App\Http\Requests\StoreRoleRequest;
 use App\Http\Requests\StoreUserRequest;
+use App\Http\Requests\UpdateBankTransferPaymentRequest;
+use App\Http\Requests\UpdatePlanRequest;
+use App\Http\Requests\UpdateRoleRequest;
 use App\Http\Requests\UpdateWarehouseRequest;
 use Tests\TestCase;
 
@@ -47,6 +52,12 @@ class FormRequestAuthorizeTest extends TestCase
             'StoreCouponRequest'     => [StoreCouponRequest::class],
             'StoreUserRequest'       => [StoreUserRequest::class],
             'UpdateWarehouseRequest' => [UpdateWarehouseRequest::class],
+            // Admin-only paths: a revert to `return true` here is a privilege escalation.
+            'StoreRoleRequest'       => [StoreRoleRequest::class],
+            'UpdateRoleRequest'      => [UpdateRoleRequest::class],
+            'StorePlanRequest'       => [StorePlanRequest::class],
+            'UpdatePlanRequest'      => [UpdatePlanRequest::class],
+            'UpdateBankTransferPaymentRequest' => [UpdateBankTransferPaymentRequest::class],
         ];
     }
 
