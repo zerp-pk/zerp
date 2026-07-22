@@ -1,5 +1,29 @@
 # Changelog
 
+## v1.2.8 - 2026-07-22
+
+### Security
+- **Permission checks moved out of the controllers and into the requests.**
+  Every guarded write repeated an `if (can()) { ... } else { back() }` wrapper
+  around its controller body while the matching form request's `authorize()`
+  did nothing but `return true`, so the framework's own authorization step was
+  dead code and each new action had to remember the wrapper by hand. All
+  thirty form requests now carry the real check in `authorize()` and the
+  wrappers are gone. Two gaps closed on the way: the add-on price update had
+  no permission check at all, and the checks now run before validation rather
+  than after it. Denials are rendered per client, so the web UI keeps the
+  same "not authorized" message it always showed while API callers get a
+  genuine 403 instead of a redirect.
+- **List screens returned an empty page instead of denying.** A user who held
+  a section's top-level permission but neither of its narrower
+  "any" / "own" variants was given an empty list rather than an error, on
+  eleven screens including users, warehouses, invoices and media. A
+  misconfigured role therefore looked like an account with no data, which hid
+  the misconfiguration from whoever had to diagnose it and made the denial
+  itself unauditable. Those screens now deny explicitly, matching what the
+  surrounding permission check already did. Media file actions that
+  previously answered "not found" in this case now answer "not permitted".
+
 ## v1.2.7 - 2026-07-21
 
 ### Security
