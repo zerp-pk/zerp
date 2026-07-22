@@ -27,7 +27,7 @@ class HelpdeskTicketController extends Controller
                     } elseif(Auth::user()->can('manage-own-helpdesk-tickets')) {
                         $q->where('created_by', creatorId());
                     } else {
-                        $q->whereRaw('1 = 0');
+                        denyAccess();
                     }
                 })
                 ->when(request('title'), fn($q) => $q->where(function($query) {

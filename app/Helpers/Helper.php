@@ -40,6 +40,19 @@ if (!function_exists('perPage')) {
     }
 }
 
+if (!function_exists('denyAccess')) {
+    // Deny the current request outright. Index scopes used to fall back to
+    // whereRaw('1 = 0') when a user held none of the granular manage-any/manage-own
+    // permissions, so a misconfigured role looked like an empty page instead of an
+    // authorization error. AuthorizationException is what bootstrap/app.php renders
+    // per client: the usual Inertia "Permission denied" flash for the web UI, a real
+    // 403 for JSON. See zerp-pk/zerp#47.
+    function denyAccess($message = 'Permission denied'): never
+    {
+        throw new \Illuminate\Auth\Access\AuthorizationException(__($message));
+    }
+}
+
 if (!function_exists('creatorId')) {
     function creatorId()
     {
