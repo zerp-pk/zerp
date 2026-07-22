@@ -8,7 +8,9 @@ class UpdatePurchaseInvoiceRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        return true;
+        $model = $this->route('purchase_invoice');
+
+        return $this->user()?->can('edit-purchase-invoices') && $model && $model->created_by == creatorId();
     }
 
     public function rules(): array

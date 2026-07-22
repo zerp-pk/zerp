@@ -153,40 +153,34 @@ class PurchaseInvoiceController extends Controller
 
     public function store(StorePurchaseInvoiceRequest $request)
     {
-        if(Auth::user()->can('create-purchase-invoices')){
-            $totals = $this->calculateTotals($request->items);
+        $totals = $this->calculateTotals($request->items);
 
-            $invoice = new PurchaseInvoice();
-            $invoice->invoice_date = $request->invoice_date;
-            $invoice->due_date = $request->due_date;
-            $invoice->vendor_id = $request->vendor_id;
-            $invoice->warehouse_id = $request->warehouse_id;
-            $invoice->payment_terms = $request->payment_terms;
-            $invoice->notes = $request->notes;
-            $invoice->subtotal = $totals['subtotal'];
-            $invoice->tax_amount = $totals['tax_amount'];
-            $invoice->discount_amount = $totals['discount_amount'];
-            $invoice->total_amount = $totals['total_amount'];
-            $invoice->balance_amount = $totals['total_amount'];
-            $invoice->creator_id = Auth::id();
-            $invoice->created_by = creatorId();
-            $invoice->save();
+        $invoice = new PurchaseInvoice();
+        $invoice->invoice_date = $request->invoice_date;
+        $invoice->due_date = $request->due_date;
+        $invoice->vendor_id = $request->vendor_id;
+        $invoice->warehouse_id = $request->warehouse_id;
+        $invoice->payment_terms = $request->payment_terms;
+        $invoice->notes = $request->notes;
+        $invoice->subtotal = $totals['subtotal'];
+        $invoice->tax_amount = $totals['tax_amount'];
+        $invoice->discount_amount = $totals['discount_amount'];
+        $invoice->total_amount = $totals['total_amount'];
+        $invoice->balance_amount = $totals['total_amount'];
+        $invoice->creator_id = Auth::id();
+        $invoice->created_by = creatorId();
+        $invoice->save();
 
-            // Create invoice items
-            $this->createInvoiceItems($invoice->id, $request->items);
+        // Create invoice items
+        $this->createInvoiceItems($invoice->id, $request->items);
 
-            try {
-                CreatePurchaseInvoice::dispatch($request, $invoice);
-            } catch (\Throwable $th) {
-                return back()->with('error', $th->getMessage());
-            }
-
-            return redirect()->route('purchase-invoices.index')->with('success', __('The purchase invoice has been created successfully.'));
-
+        try {
+            CreatePurchaseInvoice::dispatch($request, $invoice);
+        } catch (\Throwable $th) {
+            return back()->with('error', $th->getMessage());
         }
-        else{
-            return redirect()->route('purchase-invoices.index')->with('error', __('Permission denied'));
-        }
+
+        return redirect()->route('purchase-invoices.index')->with('success', __('The purchase invoice has been created successfully.'));
     }
 
     public function show(PurchaseInvoice $purchaseInvoice)
@@ -263,37 +257,32 @@ class PurchaseInvoiceController extends Controller
 
     public function update(UpdatePurchaseInvoiceRequest $request, PurchaseInvoice $purchaseInvoice)
     {
-        if(Auth::user()->can('edit-purchase-invoices') && $purchaseInvoice->created_by == creatorId()){
-            if ($purchaseInvoice->status != 'draft') {
-                return redirect()->route('purchase-invoices.index')->with('error', __('Cannot update posted invoice.'));
-            }
-            $totals = $this->calculateTotals($request->items);
-
-            $purchaseInvoice->invoice_date = $request->invoice_date;
-            $purchaseInvoice->due_date = $request->due_date;
-            $purchaseInvoice->vendor_id = $request->vendor_id;
-            $purchaseInvoice->warehouse_id = $request->warehouse_id;
-            $purchaseInvoice->payment_terms = $request->payment_terms;
-            $purchaseInvoice->notes = $request->notes;
-            $purchaseInvoice->subtotal = $totals['subtotal'];
-            $purchaseInvoice->tax_amount = $totals['tax_amount'];
-            $purchaseInvoice->discount_amount = $totals['discount_amount'];
-            $purchaseInvoice->total_amount = $totals['total_amount'];
-            $purchaseInvoice->balance_amount = $totals['total_amount'];
-            $purchaseInvoice->save();
-
-            // Delete existing items and recreate
-            $purchaseInvoice->items()->delete();
-            $this->createInvoiceItems($purchaseInvoice->id, $request->items);
-
-            // Dispatch event for packages to handle their fields
-            UpdatePurchaseInvoice::dispatch($request, $purchaseInvoice);
-
-            return redirect()->route('purchase-invoices.index')->with('success', __('The purchase invoice details are updated successfully.'));
+        if ($purchaseInvoice->status != 'draft') {
+            return redirect()->route('purchase-invoices.index')->with('error', __('Cannot update posted invoice.'));
         }
-        else{
-            return redirect()->route('purchase-invoices.index')->with('error', __('Permission denied'));
-        }
+        $totals = $this->calculateTotals($request->items);
+
+        $purchaseInvoice->invoice_date = $request->invoice_date;
+        $purchaseInvoice->due_date = $request->due_date;
+        $purchaseInvoice->vendor_id = $request->vendor_id;
+        $purchaseInvoice->warehouse_id = $request->warehouse_id;
+        $purchaseInvoice->payment_terms = $request->payment_terms;
+        $purchaseInvoice->notes = $request->notes;
+        $purchaseInvoice->subtotal = $totals['subtotal'];
+        $purchaseInvoice->tax_amount = $totals['tax_amount'];
+        $purchaseInvoice->discount_amount = $totals['discount_amount'];
+        $purchaseInvoice->total_amount = $totals['total_amount'];
+        $purchaseInvoice->balance_amount = $totals['total_amount'];
+        $purchaseInvoice->save();
+
+        // Delete existing items and recreate
+        $purchaseInvoice->items()->delete();
+        $this->createInvoiceItems($purchaseInvoice->id, $request->items);
+
+        // Dispatch event for packages to handle their fields
+        UpdatePurchaseInvoice::dispatch($request, $purchaseInvoice);
+
+        return redirect()->route('purchase-invoices.index')->with('success', __('The purchase invoice details are updated successfully.'));
     }
 
     public function destroy(PurchaseInvoice $purchaseInvoice)

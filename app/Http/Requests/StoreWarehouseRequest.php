@@ -8,7 +8,7 @@ class StoreWarehouseRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        return true;
+        return (bool) $this->user()?->can('create-warehouses');
     }
 
     public function rules(): array

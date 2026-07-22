@@ -54,18 +54,13 @@ class RoleController extends Controller
 
     public function store(StoreRoleRequest $request)
     {
-        if(Auth::user()->can('create-roles')){
-            $role = new Role();
-            $role->name = $request->name;
-            $role->label = $request->label;
-            $role->created_by = creatorId();
-            $role->save();
-            $role->syncPermissions($request->permissions ?? []);
-            return redirect()->route('roles.index')->with('success', __('The role has been created successfully.'));
-        }
-        else{
-            return redirect()->route('roles.index')->with('error', __('Permission denied'));
-        }
+        $role = new Role();
+        $role->name = $request->name;
+        $role->label = $request->label;
+        $role->created_by = creatorId();
+        $role->save();
+        $role->syncPermissions($request->permissions ?? []);
+        return redirect()->route('roles.index')->with('success', __('The role has been created successfully.'));
     }
 
     public function edit(Role $role)
@@ -93,17 +88,12 @@ class RoleController extends Controller
 
     public function update(UpdateRoleRequest $request, Role $role)
     {
-        if(Auth::user()->can('edit-roles')){
-            $role->update([
-                'name' => $request->name,
-                'label' => $request->label
-            ]);
-            $role->syncPermissions($request->permissions ?? []);
-            return redirect()->route('roles.index')->with('success', __('The role details are updated successfully.'));
-        }
-        else{
-            return redirect()->route('roles.index')->with('error', __('Permission denied'));
-        }
+        $role->update([
+            'name' => $request->name,
+            'label' => $request->label
+        ]);
+        $role->syncPermissions($request->permissions ?? []);
+        return redirect()->route('roles.index')->with('success', __('The role details are updated successfully.'));
     }
 
     public function destroy(Role $role)

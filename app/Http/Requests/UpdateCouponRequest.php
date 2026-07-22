@@ -9,7 +9,7 @@ class UpdateCouponRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        return true;
+        return (bool) $this->user()?->can('edit-coupons');
     }
 
     public function rules(): array

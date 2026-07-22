@@ -36,47 +36,37 @@ class HelpdeskCategoryController extends Controller
 
     public function store(StoreHelpdeskCategoryRequest $request)
     {
-        if(Auth::user()->can('create-helpdesk-categories')){
-            $validated = $request->validated();
-            $validated['is_active'] = $request->boolean('is_active', true);
+        $validated = $request->validated();
+        $validated['is_active'] = $request->boolean('is_active', true);
 
-            $category = new HelpdeskCategory();
-            $category->name = $validated['name'];
-            $category->description = $validated['description'] ?? null;
-            $category->color = $validated['color'] ?? '#3B82F6';
-            $category->is_active = $validated['is_active'];
-            $category->creator_id = Auth::id();
-            $category->created_by = creatorId();
-            $category->save();
+        $category = new HelpdeskCategory();
+        $category->name = $validated['name'];
+        $category->description = $validated['description'] ?? null;
+        $category->color = $validated['color'] ?? '#3B82F6';
+        $category->is_active = $validated['is_active'];
+        $category->creator_id = Auth::id();
+        $category->created_by = creatorId();
+        $category->save();
 
-            CreateHelpdeskCategory::dispatch($request,$category);
+        CreateHelpdeskCategory::dispatch($request,$category);
 
-            return redirect()->route('helpdesk-categories.index')->with('success', __('The helpdesk category has been created successfully.'));
-        }
-        else{
-            return redirect()->route('helpdesk-categories.index')->with('error', __('Permission denied'));
-        }
+        return redirect()->route('helpdesk-categories.index')->with('success', __('The helpdesk category has been created successfully.'));
     }
 
     public function update(UpdateHelpdeskCategoryRequest $request, HelpdeskCategory $helpdeskCategory)
     {
-        if(Auth::user()->can('edit-helpdesk-categories')){
-            $validated = $request->validated();
-            $validated['is_active'] = $request->boolean('is_active', true);
+        $validated = $request->validated();
+        $validated['is_active'] = $request->boolean('is_active', true);
 
-            $helpdeskCategory->name = $validated['name'];
-            $helpdeskCategory->description = $validated['description'] ?? null;
-            $helpdeskCategory->color = $validated['color'] ?? '#3B82F6';
-            $helpdeskCategory->is_active = $validated['is_active'];
-            $helpdeskCategory->save();
+        $helpdeskCategory->name = $validated['name'];
+        $helpdeskCategory->description = $validated['description'] ?? null;
+        $helpdeskCategory->color = $validated['color'] ?? '#3B82F6';
+        $helpdeskCategory->is_active = $validated['is_active'];
+        $helpdeskCategory->save();
 
-            UpdateHelpdeskCategory::dispatch($request,$helpdeskCategory);
+        UpdateHelpdeskCategory::dispatch($request,$helpdeskCategory);
 
-            return back()->with('success', __('The helpdesk category has been updated successfully'));
-        }
-        else{
-            return redirect()->route('helpdesk-categories.index')->with('error', __('Permission denied'));
-        }
+        return back()->with('success', __('The helpdesk category has been updated successfully'));
     }
 
     public function destroy(HelpdeskCategory $helpdeskCategory)

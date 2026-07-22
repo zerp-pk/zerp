@@ -131,41 +131,35 @@ class SalesInvoiceController extends Controller
 
     public function store(StoreSalesInvoiceRequest $request)
     {
-        if(Auth::user()->can('create-sales-invoices')){
-            $totals = $this->calculateTotals($request->items);
+        $totals = $this->calculateTotals($request->items);
 
-            $invoice = new SalesInvoice();
-            $invoice->invoice_date = $request->invoice_date;
-            $invoice->due_date = $request->due_date;
-            $invoice->customer_id = $request->customer_id;
-            $invoice->warehouse_id = $request->type === 'product' ? $request->warehouse_id : null;
-            $invoice->type = $request->type ?? 'product';
-            $invoice->payment_terms = $request->payment_terms;
-            $invoice->notes = $request->notes;
-            $invoice->subtotal = $totals['subtotal'];
-            $invoice->tax_amount = $totals['tax_amount'];
-            $invoice->discount_amount = $totals['discount_amount'];
-            $invoice->total_amount = $totals['total_amount'];
-            $invoice->balance_amount = $totals['total_amount'];
-            $invoice->creator_id = Auth::id();
-            $invoice->created_by = creatorId();
-            $invoice->save();
+        $invoice = new SalesInvoice();
+        $invoice->invoice_date = $request->invoice_date;
+        $invoice->due_date = $request->due_date;
+        $invoice->customer_id = $request->customer_id;
+        $invoice->warehouse_id = $request->type === 'product' ? $request->warehouse_id : null;
+        $invoice->type = $request->type ?? 'product';
+        $invoice->payment_terms = $request->payment_terms;
+        $invoice->notes = $request->notes;
+        $invoice->subtotal = $totals['subtotal'];
+        $invoice->tax_amount = $totals['tax_amount'];
+        $invoice->discount_amount = $totals['discount_amount'];
+        $invoice->total_amount = $totals['total_amount'];
+        $invoice->balance_amount = $totals['total_amount'];
+        $invoice->creator_id = Auth::id();
+        $invoice->created_by = creatorId();
+        $invoice->save();
 
-            // Create invoice items
-            $this->createInvoiceItems($invoice->id, $request->items);
+        // Create invoice items
+        $this->createInvoiceItems($invoice->id, $request->items);
 
-            try {
-                CreateSalesInvoice::dispatch($request, $invoice);
-            } catch (\Throwable $th) {
-                return back()->with('error', $th->getMessage());
-            }
-
-            return redirect()->route('sales-invoices.index')->with('success', __('The sales invoice has been created successfully.'));
-
+        try {
+            CreateSalesInvoice::dispatch($request, $invoice);
+        } catch (\Throwable $th) {
+            return back()->with('error', $th->getMessage());
         }
-        else{
-            return redirect()->route('sales-invoices.index')->with('error', __('Permission denied'));
-        }
+
+        return redirect()->route('sales-invoices.index')->with('success', __('The sales invoice has been created successfully.'));
     }
 
     public function show(SalesInvoice $salesInvoice)
@@ -220,37 +214,32 @@ class SalesInvoiceController extends Controller
 
     public function update(UpdateSalesInvoiceRequest $request, SalesInvoice $salesInvoice)
     {
-        if(Auth::user()->can('edit-sales-invoices') && $salesInvoice->created_by == creatorId()){
-            if ($salesInvoice->status != 'draft') {
-                return redirect()->route('sales-invoices.index')->with('error', __('Cannot update posted invoice.'));
-            }
-            $totals = $this->calculateTotals($request->items);
-
-            $salesInvoice->invoice_date = $request->invoice_date;
-            $salesInvoice->due_date = $request->due_date;
-            $salesInvoice->customer_id = $request->customer_id;
-            $salesInvoice->warehouse_id = $salesInvoice->type === 'product' ? $request->warehouse_id : null;
-            $salesInvoice->payment_terms = $request->payment_terms;
-            $salesInvoice->notes = $request->notes;
-            $salesInvoice->subtotal = $totals['subtotal'];
-            $salesInvoice->tax_amount = $totals['tax_amount'];
-            $salesInvoice->discount_amount = $totals['discount_amount'];
-            $salesInvoice->total_amount = $totals['total_amount'];
-            $salesInvoice->balance_amount = $totals['total_amount'];
-            $salesInvoice->save();
-
-            // Delete existing items and recreate
-            $salesInvoice->items()->delete();
-            $this->createInvoiceItems($salesInvoice->id, $request->items);
-
-            // Dispatch event for packages to handle their fields
-            UpdateSalesInvoice::dispatch($request, $salesInvoice);
-
-            return redirect()->route('sales-invoices.index')->with('success', __('The sales invoice details are updated successfully.'));
+        if ($salesInvoice->status != 'draft') {
+            return redirect()->route('sales-invoices.index')->with('error', __('Cannot update posted invoice.'));
         }
-        else{
-            return redirect()->route('sales-invoices.index')->with('error', __('Permission denied'));
-        }
+        $totals = $this->calculateTotals($request->items);
+
+        $salesInvoice->invoice_date = $request->invoice_date;
+        $salesInvoice->due_date = $request->due_date;
+        $salesInvoice->customer_id = $request->customer_id;
+        $salesInvoice->warehouse_id = $salesInvoice->type === 'product' ? $request->warehouse_id : null;
+        $salesInvoice->payment_terms = $request->payment_terms;
+        $salesInvoice->notes = $request->notes;
+        $salesInvoice->subtotal = $totals['subtotal'];
+        $salesInvoice->tax_amount = $totals['tax_amount'];
+        $salesInvoice->discount_amount = $totals['discount_amount'];
+        $salesInvoice->total_amount = $totals['total_amount'];
+        $salesInvoice->balance_amount = $totals['total_amount'];
+        $salesInvoice->save();
+
+        // Delete existing items and recreate
+        $salesInvoice->items()->delete();
+        $this->createInvoiceItems($salesInvoice->id, $request->items);
+
+        // Dispatch event for packages to handle their fields
+        UpdateSalesInvoice::dispatch($request, $salesInvoice);
+
+        return redirect()->route('sales-invoices.index')->with('success', __('The sales invoice details are updated successfully.'));
     }
 
     public function destroy(SalesInvoice $salesInvoice)

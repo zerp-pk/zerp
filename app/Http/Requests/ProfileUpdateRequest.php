@@ -13,6 +13,11 @@ class ProfileUpdateRequest extends FormRequest
      *
      * @return array<string, \Illuminate\Contracts\Validation\Rule|array|string>
      */
+    public function authorize(): bool
+    {
+        return (bool) $this->user()?->can('edit-profile');
+    }
+
     public function rules(): array
     {
         return [

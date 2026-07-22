@@ -61,122 +61,107 @@ class UserController extends Controller
 
     public function store(StoreUserRequest $request)
     {
-        if(Auth::user()->can('create-users')){
-            $checkUser = canCreateUser();
-            if (!$checkUser['can_create']) {
-                return redirect()->route('users.index')->with('error', $checkUser['message']);
-            }
-
-            $validated = $request->validated();
-            $validated['is_enable_login'] = $request->boolean('is_enable_login', true);
-
-            $role = Role::find($validated['type']);
-            $enableEmailVerification = admin_setting('enableEmailVerification');
-
-            $user = new User();
-            $user->name = $validated['name'];
-            $user->email = $validated['email'];
-            // mobile_no is nullable, and validated() omits keys the request never sent,
-            // so this is absent rather than null when the form leaves it blank.
-            $user->mobile_no = $validated['mobile_no'] ?? null;
-            $user->password = Hash::make($validated['password']);
-            $user->type = Auth::user()->type == 'superadmin' ? 'company' : ($role->name ?? 'staff');
-            $user->is_enable_login = $validated['is_enable_login'];
-            $user->lang = company_setting('defaultLanguage') ?? 'en';
-            $user->email_verified_at = $enableEmailVerification === 'on' ? null : now();
-            $user->creator_id = Auth::id();
-            $user->created_by = creatorId();
-            $user->save();
-
-            if(Auth::user()->type == 'superadmin')
-            {
-                User::CompanySetting($user->id);
-                User::MakeRole($user->id);
-                $role = Role::findByName('company');
-            }
-
-            $user->assignRole($role);
-
-            // Dispatch event for packages to handle their fields
-            CreateUser::dispatch($request, $user);
-
-            // The user exists from here on, so neither mail is allowed to fail the
-            // request: SetConfigEmail() throws when the company has no SMTP set up,
-            // which used to surface as a 500 on a user that had in fact been created.
-            $mailFailed = null;
-
-             // Send welcome email
-            if(company_setting('New User') == 'on') {
-                $emailData = [
-                    'name' => $user->name,
-                    'email' => $user->email,
-                    'password' => $validated['password'],
-                ];
-
-                try {
-                    EmailTemplate::sendEmailTemplate('New User', [$user->email], $emailData);
-                } catch (\Throwable $e) {
-                    $mailFailed = $e;
-                }
-            }
-
-            if ($enableEmailVerification === 'on') {
-                try {
-                    // Apply dynamic mail configuration
-                    SetConfigEmail(creatorId());
-                    $user->sendEmailVerificationNotification();
-                } catch (\Throwable $e) {
-                    $mailFailed = $e;
-                }
-            }
-
-            if ($mailFailed) {
-                Log::warning('User created but its email could not be sent', [
-                    'user_id' => $user->id,
-                    'error' => $mailFailed->getMessage(),
-                ]);
-
-                return redirect()->route('users.index')->with('warning', __('The user has been created, but the email could not be sent. Check your email settings.'));
-            }
-
-            return redirect()->route('users.index')->with('success', __('The user has been created successfully.'));
+        $checkUser = canCreateUser();
+        if (!$checkUser['can_create']) {
+            return redirect()->route('users.index')->with('error', $checkUser['message']);
         }
-        else{
-            return redirect()->route('users.index')->with('error', __('Permission denied'));
+
+        $validated = $request->validated();
+        $validated['is_enable_login'] = $request->boolean('is_enable_login', true);
+
+        $role = Role::find($validated['type']);
+        $enableEmailVerification = admin_setting('enableEmailVerification');
+
+        $user = new User();
+        $user->name = $validated['name'];
+        $user->email = $validated['email'];
+        // mobile_no is nullable, and validated() omits keys the request never sent,
+        // so this is absent rather than null when the form leaves it blank.
+        $user->mobile_no = $validated['mobile_no'] ?? null;
+        $user->password = Hash::make($validated['password']);
+        $user->type = Auth::user()->type == 'superadmin' ? 'company' : ($role->name ?? 'staff');
+        $user->is_enable_login = $validated['is_enable_login'];
+        $user->lang = company_setting('defaultLanguage') ?? 'en';
+        $user->email_verified_at = $enableEmailVerification === 'on' ? null : now();
+        $user->creator_id = Auth::id();
+        $user->created_by = creatorId();
+        $user->save();
+
+        if(Auth::user()->type == 'superadmin')
+        {
+            User::CompanySetting($user->id);
+            User::MakeRole($user->id);
+            $role = Role::findByName('company');
         }
+
+        $user->assignRole($role);
+
+        // Dispatch event for packages to handle their fields
+        CreateUser::dispatch($request, $user);
+
+        // The user exists from here on, so neither mail is allowed to fail the
+        // request: SetConfigEmail() throws when the company has no SMTP set up,
+        // which used to surface as a 500 on a user that had in fact been created.
+        $mailFailed = null;
+
+         // Send welcome email
+        if(company_setting('New User') == 'on') {
+            $emailData = [
+                'name' => $user->name,
+                'email' => $user->email,
+                'password' => $validated['password'],
+            ];
+
+            try {
+                EmailTemplate::sendEmailTemplate('New User', [$user->email], $emailData);
+            } catch (\Throwable $e) {
+                $mailFailed = $e;
+            }
+        }
+
+        if ($enableEmailVerification === 'on') {
+            try {
+                // Apply dynamic mail configuration
+                SetConfigEmail(creatorId());
+                $user->sendEmailVerificationNotification();
+            } catch (\Throwable $e) {
+                $mailFailed = $e;
+            }
+        }
+
+        if ($mailFailed) {
+            Log::warning('User created but its email could not be sent', [
+                'user_id' => $user->id,
+                'error' => $mailFailed->getMessage(),
+            ]);
+
+            return redirect()->route('users.index')->with('warning', __('The user has been created, but the email could not be sent. Check your email settings.'));
+        }
+
+        return redirect()->route('users.index')->with('success', __('The user has been created successfully.'));
     }
 
     public function update(UpdateUserRequest $request, User $user)
     {
-        if(Auth::user()->can('edit-users')){
-            $validated = $request->validated();
-            $validated['is_enable_login'] = $request->boolean('is_enable_login', true);
+        $validated = $request->validated();
+        $validated['is_enable_login'] = $request->boolean('is_enable_login', true);
 
-            $user->name = $validated['name'];
-            $user->email = $validated['email'];
-            $user->mobile_no = $validated['mobile_no'] ?? null;
-            $user->is_enable_login = $validated['is_enable_login'];
-            $user->save();
+        $user->name = $validated['name'];
+        $user->email = $validated['email'];
+        $user->mobile_no = $validated['mobile_no'] ?? null;
+        $user->is_enable_login = $validated['is_enable_login'];
+        $user->save();
 
-            return back()->with('success', __('The user details are updated successfully.'));
-        }
-        else{
-            return redirect()->route('users.index')->with('error', __('Permission denied'));
-        }
+        return back()->with('success', __('The user details are updated successfully.'));
     }
 
     public function changePassword(ChangePasswordRequest $request, User $user)
     {
-        if(Auth::user()->can('change-password-users') && $user->created_by == creatorId() ){
-            $validated = $request->validated();
-            $user->password = Hash::make($validated['password']);
-            $user->save();
+        $validated = $request->validated();
+        $user->password = Hash::make($validated['password']);
+        $user->save();
 
-            return redirect()->route('users.index')->with('success', __('The password changed successfully.'));
-        }
-        else{
-            return redirect()->route('users.index')->with('error', __('Permission denied'));
-        }
+        return redirect()->route('users.index')->with('success', __('The password changed successfully.'));
     }
 
     public function destroy(User $user)

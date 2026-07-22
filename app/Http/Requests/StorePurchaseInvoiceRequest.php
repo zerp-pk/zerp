@@ -8,7 +8,7 @@ class StorePurchaseInvoiceRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        return true;
+        return (bool) $this->user()?->can('create-purchase-invoices');
     }
 
     public function rules(): array

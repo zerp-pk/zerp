@@ -8,7 +8,9 @@ class UpdateSalesInvoiceRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        return true;
+        $model = $this->route('sales_invoice');
+
+        return $this->user()?->can('edit-sales-invoices') && $model && $model->created_by == creatorId();
     }
 
     public function rules(): array

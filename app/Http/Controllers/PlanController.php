@@ -163,28 +163,24 @@ class PlanController extends Controller
 
     public function store(StorePlanRequest $request)
     {
-        if (Auth::user()->can('create-plans')) {
-            $validated = $request->validated();
-            $plan = new Plan();
-            $plan->name = $validated['name'];
-            $plan->description = $validated['description'] ?? null;
-            $plan->number_of_users = $validated['number_of_users'];
-            $plan->storage_limit = $validated['storage_limit'] * 1024 * 1024;
-            $plan->status = $request->boolean('status', true);
-            $plan->free_plan = $request->boolean('free_plan', false);
-            $plan->modules = $validated['modules'] ?? [];
-            $plan->package_price_yearly = $validated['package_price_yearly'];
-            $plan->package_price_monthly = $validated['package_price_monthly'];
-            $plan->trial = $request->boolean('trial', false);
-            $plan->trial_days = $validated['trial_days'] ?? 0;
-            $plan->created_by = creatorId();
-            $plan->save();
+        $validated = $request->validated();
+        $plan = new Plan();
+        $plan->name = $validated['name'];
+        $plan->description = $validated['description'] ?? null;
+        $plan->number_of_users = $validated['number_of_users'];
+        $plan->storage_limit = $validated['storage_limit'] * 1024 * 1024;
+        $plan->status = $request->boolean('status', true);
+        $plan->free_plan = $request->boolean('free_plan', false);
+        $plan->modules = $validated['modules'] ?? [];
+        $plan->package_price_yearly = $validated['package_price_yearly'];
+        $plan->package_price_monthly = $validated['package_price_monthly'];
+        $plan->trial = $request->boolean('trial', false);
+        $plan->trial_days = $validated['trial_days'] ?? 0;
+        $plan->created_by = creatorId();
+        $plan->save();
 
-            return redirect()->route('plans.index')
-                ->with('success', __('The plan has been created successfully.'));
-        } else {
-            return redirect()->route('plans.index')->with('error', __('Permission denied'));
-        }
+        return redirect()->route('plans.index')
+            ->with('success', __('The plan has been created successfully.'));
     }
 
     public function show(Plan $plan)
@@ -248,27 +244,23 @@ class PlanController extends Controller
 
     public function update(UpdatePlanRequest $request, Plan $plan)
     {
-        if (Auth::user()->can('edit-plans')) {
-            $validated = $request->validated();
-            
-            $plan->name = $validated['name'];
-            $plan->description = $validated['description'] ?? null;
-            $plan->number_of_users = $validated['number_of_users'];
-            $plan->storage_limit = $validated['storage_limit'] * 1024 * 1024;
-            $plan->status = $request->boolean('status', true);
-            $plan->free_plan = $request->boolean('free_plan', false);
-            $plan->modules = $validated['modules'] ?? [];
-            $plan->package_price_yearly = $validated['package_price_yearly'];
-            $plan->package_price_monthly = $validated['package_price_monthly'];
-            $plan->trial = $request->boolean('trial', false);
-            $plan->trial_days = $validated['trial_days'] ?? 0;
+        $validated = $request->validated();
+        
+        $plan->name = $validated['name'];
+        $plan->description = $validated['description'] ?? null;
+        $plan->number_of_users = $validated['number_of_users'];
+        $plan->storage_limit = $validated['storage_limit'] * 1024 * 1024;
+        $plan->status = $request->boolean('status', true);
+        $plan->free_plan = $request->boolean('free_plan', false);
+        $plan->modules = $validated['modules'] ?? [];
+        $plan->package_price_yearly = $validated['package_price_yearly'];
+        $plan->package_price_monthly = $validated['package_price_monthly'];
+        $plan->trial = $request->boolean('trial', false);
+        $plan->trial_days = $validated['trial_days'] ?? 0;
 
-            $plan->save();
+        $plan->save();
 
-            return redirect()->route('plans.index')->with('success', __('The plan details are updated successfully.'));
-        } else {
-            return redirect()->route('plans.index')->with('error', __('Permission denied'));
-        }
+        return redirect()->route('plans.index')->with('success', __('The plan details are updated successfully.'));
     }
 
     public function destroy(Plan $plan)
