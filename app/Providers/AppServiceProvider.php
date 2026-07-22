@@ -20,6 +20,14 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        // Lets assignPlan() grant a whole plan's permissions without Spatie rebuilding
+        // its cache after every single one. See zerp-pk/zerp#70. Bound in boot() rather
+        // than register() because Spatie's own provider registers after this one and
+        // would otherwise overwrite the binding.
+        $this->app->singleton(\Spatie\Permission\PermissionRegistrar::class, function ($app) {
+            return new \App\Permissions\BulkAwarePermissionRegistrar($app->make(\Illuminate\Cache\CacheManager::class));
+        });
+
         // One password policy for every place that sets a password. The auth
         // controllers already call Password::defaults(); the user and change
         // password requests reference it too. uncompromised() hits an external
