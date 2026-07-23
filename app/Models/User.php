@@ -96,9 +96,17 @@ class User extends Authenticatable implements MustVerifyEmail
         return $slug;
     }
 
+    // Platform modules the super admin owns, not per-company plan features. Every
+    // consumer of this list treats them the same way: excluded from the customer
+    // facing module lists (pricing, marketplace, plan builder) and always active
+    // for a company without being a plan entitlement. GoogleCaptcha belongs here
+    // for the first reason: it guards the platform's own login and registration,
+    // is configured only in super admin settings, and has no company side screen,
+    // so it must not appear as a purchasable feature.
     public static $superadmin_activated_module = [
         'ProductService',
         'LandingPage',
+        'GoogleCaptcha',
     ];
 
     public  $not_emp_type = [
