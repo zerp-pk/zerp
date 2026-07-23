@@ -1,5 +1,27 @@
 # Changelog
 
+## v1.3.1 - 2026-07-24
+
+### Fixed
+- **User creation accepted email addresses on domains that do not exist.**
+  The create and update forms validated the shape of the address only, so a
+  well-formed address on a domain that could never receive mail, such as
+  `bob@a-domain-that-never-existed.com`, was accepted and stored. The address
+  is now checked against the domain's mail records in production, so a
+  non-existent domain is rejected with a normal field error. This proves the
+  domain, not the mailbox: the verification email remains what establishes
+  that a person owns the address, and an admin can still create an account
+  whose address verifies later.
+
+### Internal
+- **Module API endpoints can now publish their request schemas.** Added a
+  shared API form-request base that lets a module move an endpoint from an
+  inline validator to a typed request without changing the `{success, message,
+  errors}` response that mobile and third-party clients read on a validation
+  failure. This lets the generated API documentation show real request bodies
+  instead of empty ones. The HRM module is the first to adopt it, on its
+  leave-request and clock-in-out endpoints (shipped in `zerp/hrm` v1.0.6).
+
 ## v1.3.0 - 2026-07-23
 
 ### Fixed
