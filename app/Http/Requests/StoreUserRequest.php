@@ -18,7 +18,7 @@ class StoreUserRequest extends FormRequest
         
         return [
             'name' => 'required|string|max:255',
-            'email' => 'required|email|unique:users,email',
+            'email' => ['required', emailRule(), 'unique:users,email'],
             'mobile_no' => 'nullable|string|regex:/^\+\d{1,3}\d{9,13}$/',
             'password' => ['required', 'confirmed', Password::defaults()],
             'type' => $typeRule,

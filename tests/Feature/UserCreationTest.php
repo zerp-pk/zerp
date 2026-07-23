@@ -77,6 +77,39 @@ class UserCreationTest extends TestCase
         $this->assertDatabaseHas('users', ['email' => $email, 'mobile_no' => null]);
     }
 
+    public function test_a_malformed_email_is_rejected_and_no_user_is_created(): void
+    {
+        $company = $this->company();
+        $role = $this->staffRole($company);
+        $this->actingAs($company);
+
+        $response = $this->post(route('users.store'), [
+            'name' => 'Bad Address',
+            'email' => 'not-an-email',
+            'password' => 'Secret123',
+            'password_confirmation' => 'Secret123',
+            'type' => $role->id,
+        ]);
+
+        $response->assertSessionHasErrors('email');
+        $this->assertDatabaseMissing('users', ['name' => 'Bad Address']);
+    }
+
+    /**
+     * The dns check resolves the domain over the network, so it is production-only
+     * and this asserts the switch rather than the lookup. Flipping the condition
+     * would either let fake domains through in production or break every offline
+     * test run, and neither shows up in the tests above. See zerp-pk/zerp#78.
+     */
+    public function test_the_email_rule_only_checks_dns_in_production(): void
+    {
+        $this->assertSame('email', emailRule());
+
+        $this->app['env'] = 'production';
+
+        $this->assertSame('email:rfc,dns', emailRule());
+    }
+
     /**
      * A company with no SMTP configured got a 500 on a user that had in fact been
      * created: SetConfigEmail() throws when email_host is unset, and the send sits
