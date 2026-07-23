@@ -1,5 +1,18 @@
 # Changelog
 
+## v1.3.2 - 2026-07-24
+
+### Fixed
+- **Google Captcha showed as a purchasable feature on the pricing page.** The
+  landing pricing page, the marketplace, and the plan builder listed Google
+  Captcha as a plan module, so a plan read something like 29 of 30 with captcha
+  as one of the rows. Captcha is not a per-company feature: it guards the
+  platform's own login and registration, is configured only in super admin
+  settings, and has no company-facing screen. It is now grouped with the other
+  super admin platform modules that these customer-facing lists already leave
+  out, so it no longer appears as something a company can buy. The company's
+  own module settings are unaffected.
+
 ## v1.3.1 - 2026-07-24
 
 ### Fixed
