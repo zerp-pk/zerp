@@ -22,8 +22,14 @@
         <env name="APP_MAINTENANCE_DRIVER" value="file"/>
         <env name="BCRYPT_ROUNDS" value="4"/>
         <env name="CACHE_STORE" value="array"/>
-        <!-- <env name="DB_CONNECTION" value="sqlite"/> -->
-        <!-- <env name="DB_DATABASE" value=":memory:"/> -->
+        <!-- A separate database, never the dev one. RefreshDatabase runs
+             migrate:fresh, so pointing the suite at DB_DATABASE=zerp would wipe
+             real data. sqlite :memory: would be simpler but pdo_sqlite is not
+             installed here, and the schema is MySQL-only in practice; this reuses
+             the MySQL connection and only swaps the database name. Create it once:
+             mysql -e "CREATE DATABASE zerp_testing". Layered over .env, not a
+             replacement, so no secrets are duplicated. -->
+        <env name="DB_DATABASE" value="zerp_testing"/>
         <env name="MAIL_MAILER" value="array"/>
         <env name="PULSE_ENABLED" value="false"/>
         <env name="QUEUE_CONNECTION" value="sync"/>

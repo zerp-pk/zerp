@@ -183,7 +183,7 @@ class Module
         if (is_null($this->addon)) {
             return $this->getDirectories();
         }
-        return $this->resolveModulePath($this->name, $this->addon->package_name);
+        return self::path($this->name, $this->addon->package_name);
     }
 
     public function getDevPackagePath()
@@ -192,15 +192,21 @@ class Module
             $path = base_path('packages/local');
             return File::directories($path);
         }
-        return $this->resolveModulePath($this->name, $this->addon->package_name);
+        return self::path($this->name, $this->addon->package_name);
     }
 
     /**
      * A module's source lives either under packages/local/<name> (legacy,
      * in-repo) or vendor/zerp/<package_name> (installed as a real Composer
      * package). Resolve whichever actually exists.
+     *
+     * The single place the core is allowed to name a module's source location.
+     * Anything that needs to reach into a module's files goes through here, so
+     * when modules start declaring their own paths (zerp-pk/zerp#19) only this
+     * method changes. Callers that hardcoded packages/local/<name> silently
+     * read nothing once a module became a Composer package.
      */
-    private function resolveModulePath(string $name, ?string $packageName): string
+    public static function path(string $name, ?string $packageName): string
     {
         $legacyPath = base_path('packages/local/' . $name);
         if (File::isDirectory($legacyPath)) {
