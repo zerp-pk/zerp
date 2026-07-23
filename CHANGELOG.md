@@ -1,5 +1,45 @@
 # Changelog
 
+## v1.3.0 - 2026-07-23
+
+### Fixed
+- **Subscribing to a plan could hang and return a 503.** Assigning a plan
+  granted the plan's module permissions one at a time, and the permission
+  layer rebuilt and re-cached its entire permission set after every single
+  grant. A full plan re-ran that rebuild well over a thousand times, so on a
+  cold cache one click stretched into minutes and the request timed out; a
+  retry that landed on the now-warm cache appeared to "work", which is why the
+  failure looked intermittent. The grants are now wrapped so the cache is
+  rebuilt once at the end rather than after each permission, cutting plan
+  assignment from over four minutes to about fifteen seconds.
+- **Email verification only worked on the second link.** Opening the
+  verification link while logged out landed on the login form, and signing in
+  there redirected to the dashboard, discarding the verification URL the auth
+  middleware had stashed. The dashboard bounced the user back to the "verify
+  your email" notice, which mailed a fresh link, and only that second link
+  verified. Login now honours the intended URL, so the first link verifies and
+  lands on the dashboard.
+
+### Changed
+- **Modules own their translations; the core no longer hunts for them by
+  path.** The core hardcoded a `packages/local/<name>` path to read each
+  module's language files. Once a module moved to a Composer package that path
+  no longer existed, so every module string silently fell back to its English
+  key in all other languages, saved translation edits vanished on the next
+  update, and creating a language copied no module strings. All module file
+  resolution now routes through a single resolver, so a module can move its own
+  files without breaking the core. The translation payload layers core strings,
+  then the strings of enabled modules, then admin edits, and leaves out
+  disabled modules so a company never downloads strings for a module it cannot
+  reach. Edits are stored outside the module and now survive a module upgrade
+  instead of being overwritten by it.
+
+### Internal
+- **Added feature tests for the mobile auth API** covering login, logout,
+  token refresh, change-password, and unauthenticated access, plus a test
+  configuration that runs the suite against a separate database so a run can
+  never touch development data.
+
 ## v1.2.8 - 2026-07-22
 
 ### Security
