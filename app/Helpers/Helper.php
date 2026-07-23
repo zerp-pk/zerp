@@ -40,6 +40,20 @@ if (!function_exists('perPage')) {
     }
 }
 
+if (!function_exists('emailRule')) {
+    // 'email' checks the shape only, so bob@a-domain-that-never-existed.com is
+    // accepted and stored. The dns check makes Laravel resolve the domain and
+    // reject addresses that could never receive mail. It needs a live resolver,
+    // so it is limited to production the same way Password::defaults() limits
+    // uncompromised(), keeping local runs and the test suite offline.
+    // Note this proves the domain, never the mailbox: the verification email is
+    // still what establishes that a person owns the address. See zerp-pk/zerp#78.
+    function emailRule()
+    {
+        return app()->isProduction() ? 'email:rfc,dns' : 'email';
+    }
+}
+
 if (!function_exists('denyAccess')) {
     // Deny the current request outright. Index scopes used to fall back to
     // whereRaw('1 = 0') when a user held none of the granular manage-any/manage-own
