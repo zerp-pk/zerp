@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Classes\Module;
 use App\Models\User;
 use App\Models\Setting;
 use App\Models\AddOn;
@@ -17,6 +18,66 @@ class TranslationController extends Controller
     {
         $languagesData = json_decode(File::get(resource_path('lang/language.json')), true);
         return collect($languagesData)->pluck('code')->toArray();
+    }
+
+    /**
+     * Identifies a module in app-owned storage. Prefer the Composer slug; fall
+     * back to the module name for a module that predates package_name.
+     */
+    private function moduleKey(AddOn $addon): string
+    {
+        return $addon->package_name ?: $addon->module;
+    }
+
+    /**
+     * The strings a module ships. Resolved through Module::path() rather than
+     * assembled here, so the core never hardcodes a module's internal layout.
+     * Read-only on purpose: a Composer package is replaced wholesale on every
+     * update, so anything written here is lost at the next install.
+     */
+    private function moduleLangFile(AddOn $addon, string $locale): string
+    {
+        return Module::path($addon->module, $addon->package_name) . "/src/Resources/lang/{$locale}.json";
+    }
+
+    /**
+     * Where edits to a module's strings live. The app owns these, the module
+     * owns its defaults, so a customised label survives a module upgrade
+     * instead of being overwritten by it.
+     */
+    private function moduleOverrideFile(string $moduleKey, string $locale): string
+    {
+        return resource_path("lang/modules/{$moduleKey}/{$locale}.json");
+    }
+
+    private function readJson(string $path): array
+    {
+        return File::exists($path) ? (json_decode(File::get($path), true) ?? []) : [];
+    }
+
+    /**
+     * The strings a module defines for a locale. Falls back to its English file
+     * when it ships nothing for this locale, so adding a language shows real
+     * labels rather than blanks, and picks up the real translations for free
+     * whenever the module later ships them.
+     */
+    private function moduleShipped(AddOn $addon, string $locale): array
+    {
+        return $this->readJson($this->moduleLangFile($addon, $locale))
+            ?: $this->readJson($this->moduleLangFile($addon, 'en'));
+    }
+
+    /**
+     * A module's effective strings: what it ships, with the app's overrides on
+     * top. Only correct for a single module read; a full payload has to apply
+     * every module's overrides in a second pass (see getTranslations).
+     */
+    private function moduleTranslations(AddOn $addon, string $locale): array
+    {
+        return array_merge(
+            $this->moduleShipped($addon, $locale),
+            $this->readJson($this->moduleOverrideFile($this->moduleKey($addon), $locale))
+        );
     }
 
     public function getTranslations($locale)
@@ -38,24 +99,21 @@ class TranslationController extends Controller
 
         $translations = json_decode(File::get($path), true) ?? [];
 
-        // Merge enabled package translations.
+        // Three layers, weakest first: core strings, then what enabled modules
+        // ship, then the edits an admin saved. Disabled modules are left out so a
+        // company never downloads strings for a module it cannot reach.
         //
-        // A module that moved to a Composer package has no packages/local directory,
-        // so looking only there silently merged nothing and left every module string
-        // in English. Fall back to vendor/zerp/<package_name>, the same way
-        // Module::json() resolves a module's own metadata. Note the vendor path uses
-        // the package slug (jitsi), not the module name (Jitsi).
-        foreach (AddOn::where('is_enable', true)->get(['module', 'package_name']) as $addon) {
-            $packageLangFile = base_path("packages/local/{$addon->module}/src/Resources/lang/{$locale}.json");
+        // Overrides are applied in a second pass rather than per module: modules
+        // share plenty of key names, so folding a module's override in alongside
+        // its own defaults let the next module's default overwrite it again.
+        $enabled = AddOn::where('is_enable', true)->get(['module', 'package_name']);
 
-            if (!File::exists($packageLangFile) && $addon->package_name) {
-                $packageLangFile = base_path("vendor/zerp/{$addon->package_name}/src/Resources/lang/{$locale}.json");
-            }
+        foreach ($enabled as $addon) {
+            $translations = array_merge($translations, $this->moduleShipped($addon, $locale));
+        }
 
-            if (File::exists($packageLangFile)) {
-                $packageTranslations = json_decode(File::get($packageLangFile), true) ?? [];
-                $translations = array_merge($translations, $packageTranslations);
-            }
+        foreach ($enabled as $addon) {
+            $translations = array_merge($translations, $this->readJson($this->moduleOverrideFile($this->moduleKey($addon), $locale)));
         }
 
         if (empty($translations)) {
@@ -201,15 +259,7 @@ class TranslationController extends Controller
                 return response()->json(['error' => __('Package not found or disabled')], 404);
             }
 
-            $packageLangFile = base_path("packages/local/{$package->module}/src/Resources/lang/{$locale}.json");
-            if (!File::exists($packageLangFile)) {
-                $packageLangFile = base_path("packages/local/{$package->module}/src/Resources/lang/en.json");
-                if (!File::exists($packageLangFile)) {
-                    return response()->json(['translations' => []]);
-                }
-            }
-
-            $translations = json_decode(File::get($packageLangFile), true) ?? [];
+            $translations = $this->moduleTranslations($package, $locale);
 
             // Filter translations based on search
             $filteredTranslations = $translations;
@@ -265,19 +315,16 @@ class TranslationController extends Controller
             ]);
 
             $translations = $request->input('translations');
-            $packageLangFile = base_path("packages/local/{$package->module}/src/Resources/lang/{$locale}.json");
+
+            // Saved as an app-owned override, never back into the module. The
+            // module directory is Composer-managed and is replaced on every
+            // update, so edits written there disappear without a trace.
+            $overrideFile = $this->moduleOverrideFile($this->moduleKey($package), $locale);
 
             try {
-                $packageLangDir = dirname($packageLangFile);
-                if (!File::exists($packageLangDir)) {
-                    File::makeDirectory($packageLangDir, 0755, true);
-                }
-
-                if (File::exists($packageLangFile)) {
-                    $currentTranslations = json_decode(File::get($packageLangFile), true) ?? [];
-                    $translations = array_merge($currentTranslations, $translations);
-                }
-                File::put($packageLangFile, json_encode($translations, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
+                File::ensureDirectoryExists(dirname($overrideFile));
+                $translations = array_merge($this->readJson($overrideFile), $translations);
+                File::put($overrideFile, json_encode($translations, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
                 return response()->json(['success' => true, 'message' => __('The package translations updated successfully.')]);
             } catch (\Exception $e) {
                 return response()->json(['error' => __('Failed to save package translations: :error', ['error' => $e->getMessage()])], 500);
@@ -291,13 +338,15 @@ class TranslationController extends Controller
     {
         if (auth()->user()->can('manage-languages')) {
             $request->validate([
-                'code' => 'required|string|max:10',
+                // regex, because the code is interpolated into a file path below.
+                'code' => 'required|string|max:10|regex:/^[A-Za-z0-9_-]+$/',
                 'name' => 'required|string|max:255',
                 'countryCode' => 'required|string|size:2'
             ], [
                 'code.required' => __('Language code is required.'),
                 'code.string' => __('Language code must be a valid string.'),
                 'code.max' => __('Language code must not exceed 10 characters.'),
+                'code.regex' => __('Language code may only contain letters, numbers, dashes and underscores.'),
                 'name.required' => __('Language name is required.'),
                 'name.string' => __('Language name must be a valid string.'),
                 'name.max' => __('Language name must not exceed 255 characters.'),
@@ -329,19 +378,9 @@ class TranslationController extends Controller
                     File::copy($enFile, $newLangFile);
                 }
 
-                // Copy package translations
-                $enabledPackages = AddOn::where('is_enable', true)->pluck('module');
-                foreach ($enabledPackages as $packageName) {
-                    $packageEnFile = base_path("packages/local/{$packageName}/src/Resources/lang/en.json");
-                    $packageNewFile = base_path("packages/local/{$packageName}/src/Resources/lang/{$request->code}.json");
-                    if (File::exists($packageEnFile)) {
-                        $packageDir = dirname($packageNewFile);
-                        if (!File::exists($packageDir)) {
-                            File::makeDirectory($packageDir, 0755, true);
-                        }
-                        File::copy($packageEnFile, $packageNewFile);
-                    }
-                }
+                // No module files to copy: moduleTranslations() already falls back
+                // to each module's English strings for a locale it does not ship,
+                // and picks up the real ones as soon as the module ships them.
 
                 return response()->json(['success' => true, 'message' => __('The language has been created successfully.')]);
             } catch (\Exception $e) {
@@ -359,6 +398,12 @@ class TranslationController extends Controller
                 return response()->json(['error' => __('Cannot delete English language')], 422);
             }
 
+            // The code reaches File::delete() as part of a path, so it has to be a
+            // language we know about rather than whatever the URL carried.
+            if (!in_array($languageCode, $this->getAllowedLanguages())) {
+                return response()->json(['error' => __('Invalid language')], 400);
+            }
+
             try {
                 // Remove from language.json
                 $languagesFile = resource_path('lang/language.json');
@@ -372,13 +417,11 @@ class TranslationController extends Controller
                     File::delete($mainLangFile);
                 }
 
-                // Delete package language files
-                $enabledPackages = AddOn::where('is_enable', true)->pluck('module');
-                foreach ($enabledPackages as $packageName) {
-                    $packageLangFile = base_path("packages/local/{$packageName}/src/Resources/lang/{$languageCode}.json");
-                    if (File::exists($packageLangFile)) {
-                        File::delete($packageLangFile);
-                    }
+                // Drop this locale's module overrides. Every module at once, not
+                // just the enabled ones, so disabling a module before deleting a
+                // language does not strand its override file.
+                foreach (File::glob(resource_path("lang/modules/*/{$languageCode}.json")) as $overrideFile) {
+                    File::delete($overrideFile);
                 }
 
                 return response()->json(['success' => true, 'message' => __('The language has been deleted.')]);
