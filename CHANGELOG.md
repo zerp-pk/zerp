@@ -1,5 +1,18 @@
 # Changelog
 
+## v1.4.0 - 2026-07-24
+
+### Added
+- **REST APIs for the Timesheet and Quotation modules.** Both modules now
+  expose Sanctum-authenticated JSON APIs so the mobile app and third-party
+  clients can use them, matching the pattern the HRM module already follows.
+  Timesheet covers full CRUD plus a dashboard summary; Quotation covers CRUD
+  with line items, the draft/sent/accepted/rejected status transitions, and a
+  dashboard. Both answer with the shared response envelope, are scoped to the
+  company, and publish their own API documentation. No change to the web app;
+  this release pins the module versions that carry the new endpoints
+  (`zerp/timesheet` v1.0.3, `zerp/quotation` v1.0.3).
+
 ## v1.3.2 - 2026-07-24
 
 ### Fixed
