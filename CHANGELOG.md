@@ -1,5 +1,22 @@
 # Changelog
 
+## v1.4.2 - 2026-07-24
+
+### Added
+- **REST APIs for the Product & Service catalog, POS, Performance, and
+  Calendar modules.** Each module now exposes Sanctum-authenticated JSON
+  endpoints for the mobile app and third-party clients, following the same
+  pattern as the modules already shipped. Product & Service covers CRUD for
+  items, categories, units, and taxes; POS covers sales (list, view, and
+  single-transaction create with server-side tax) plus a register product
+  lookup; Performance covers CRUD for review cycles, appraisals, goals, and
+  indicators; Calendar exposes the aggregated cross-module events feed and the
+  Google Calendar settings. All answer with the shared response envelope, are
+  scoped to the company, and publish their own API documentation. No change to
+  the web app; this release pins the module versions that carry the new
+  endpoints (`zerp/product-service` v1.0.5, `zerp/pos` v1.0.3,
+  `zerp/performance` v1.0.3, `zerp/calendar` v1.0.3).
+
 ## v1.4.1 - 2026-07-24
 
 ### Added
