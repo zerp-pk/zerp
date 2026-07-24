@@ -1,5 +1,18 @@
 # Changelog
 
+## v1.4.1 - 2026-07-24
+
+### Added
+- **REST APIs for the Accounting, Restaurant, Real Estate, and Recruitment
+  modules.** Each module now exposes Sanctum-authenticated JSON endpoints so
+  the mobile app and third-party clients can use them, following the same
+  pattern as HRM, Timesheet, and Quotation. They answer with the shared
+  response envelope, are scoped to the company, and publish their own API
+  documentation. No change to the web app; this release pins the module
+  versions that carry the new endpoints (`zerp/account` v1.0.4,
+  `zerp/restaurant` v1.0.2, `zerp/real-estate` v1.0.3, `zerp/recruitment`
+  v1.0.5).
+
 ## v1.4.0 - 2026-07-24
 
 ### Added
