@@ -18,6 +18,13 @@ class User extends Authenticatable implements MustVerifyEmail
     use HasRoles, HasFactory, Notifiable, HasApiTokens;
 
     /**
+     * Placeholder stored in `users.avatar` for a user with no picture of their
+     * own. The column is NOT NULL with this as its default, so "no avatar" is
+     * always this value and never null: writing null is an integrity violation.
+     */
+    public const DEFAULT_AVATAR = 'avatar.png';
+
+    /**
      * The attributes that are mass assignable.
      *
      * @var array<int, string>
@@ -133,6 +140,15 @@ class User extends Authenticatable implements MustVerifyEmail
     public function avatarMedia(): BelongsTo
     {
         return $this->belongsTo(\Spatie\MediaLibrary\MediaCollections\Models\Media::class, 'avatar_media_id');
+    }
+
+    /**
+     * Whether the user uploaded a picture, as opposed to sitting on the
+     * default placeholder. Only a custom avatar has a Media row behind it.
+     */
+    public function hasCustomAvatar(): bool
+    {
+        return filled($this->avatar) && $this->avatar !== self::DEFAULT_AVATAR;
     }
 
     public static function CompanySetting($user_id)
