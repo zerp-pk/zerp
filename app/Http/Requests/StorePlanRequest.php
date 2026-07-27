@@ -17,7 +17,7 @@ class StorePlanRequest extends FormRequest
             'name' => 'required|string|max:255',
             'description' => 'nullable|string',
             'number_of_users' => 'required',
-            'storage_limit' => 'required|integer|min:0|max:100',
+            'storage_limit' => 'required|integer|min:1|max:100',
             'status' => 'boolean',
             'free_plan' => 'boolean',
             'modules' => 'nullable|array',

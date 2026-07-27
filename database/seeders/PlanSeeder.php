@@ -14,6 +14,7 @@ class PlanSeeder extends Seeder
                 'name' => 'Free Plan',
                 'description' => 'Perfect for getting started with basic features',
                 'number_of_users' => 10,
+                'storage_limit' => 5 * 1024 * 1024, // 5 GB, stored in KB
                 'status' => true,
                 'free_plan' => true,
                 'modules' => ["Taskly","Account","Hrm","Lead","Pos","Stripe","Paypal","AIAssistant","BudgetPlanner","Calendar","Contract","DoubleEntry","FormBuilder","Goal","Performance","Quotation","Recruitment","Slack","SupportTicket","Telegram","Timesheet","Training","Twilio","Webhook","ZoomMeeting"],
@@ -27,6 +28,7 @@ class PlanSeeder extends Seeder
                 'name' => 'Starter Plan',
                 'description' => 'Great for small teams and growing businesses',
                 'number_of_users' => 50,
+                'storage_limit' => 25 * 1024 * 1024, // 25 GB, stored in KB
                 'status' => true,
                 'free_plan' => false,
                 'modules' => ["Taskly","Account","Hrm","Lead","Pos","Stripe","BudgetPlanner","Calendar","Contract","DoubleEntry","FormBuilder","Goal","Performance","Quotation","Recruitment","Slack","SupportTicket","Timesheet","Training","Twilio","Webhook","ZoomMeeting"],
@@ -40,6 +42,7 @@ class PlanSeeder extends Seeder
                 'name' => 'Professional Plan',
                 'description' => 'Advanced features for established businesses',
                 'number_of_users' => 100,
+                'storage_limit' => 100 * 1024 * 1024, // 100 GB, stored in KB
                 'status' => true,
                 'free_plan' => false,
                 'modules' => ["Taskly","Account","Hrm","Lead","Pos","Stripe","Paypal","AIAssistant","BudgetPlanner","Calendar","Contract","DoubleEntry","FormBuilder","Goal","Performance","Quotation","Recruitment","Slack","SupportTicket","Telegram","Timesheet","Training","Twilio","Webhook","ZoomMeeting"],
