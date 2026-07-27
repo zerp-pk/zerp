@@ -1,5 +1,28 @@
 # Changelog
 
+## v1.4.3 - 2026-07-27
+
+### Fixed
+- **Media uploads were rejected with "Storage limit exceeded" on a fresh
+  install.** The seeded plans were created without a storage limit, so they
+  fell to the column default of 0 and every company subscribed to one
+  inherited a 0 byte quota: the very first upload failed. The three plans are
+  now seeded with real limits (5, 25 and 100 GB), a migration backfills any
+  plan or company already sitting on a 0 quota, and a plan can no longer be
+  saved with a 0 GB limit, which is what produced the dead quota in the first
+  place. The quota check itself was also miscounting: it read a property that
+  does not exist on an incoming upload, so it always weighed the new files as
+  0 bytes and only counted what was already stored. It now measures the
+  actual upload.
+- **Messenger read receipts stayed on a single tick.** The recipient did mark
+  a conversation seen on opening it, but nothing told the sender, so the ticks
+  only caught up on a page reload, which is why it looked intermittent. The
+  sender's own message was unreachable in any case: it renders immediately
+  with a temporary client id and the send call returned nothing, so the row
+  never picked up its stored id and no later update could match it. Sending
+  now returns the stored id, the client swaps it in, and an open conversation
+  polls for which of the sender's recent messages have been read.
+
 ## v1.4.2 - 2026-07-24
 
 ### Added
