@@ -201,7 +201,17 @@ class MessengerController extends Controller
             // Dispatch event for real-time updates
             event(new MessageSent($message, $receiverId));
 
-            return response()->json(['success' => true, 'message' => __('Message sent successfully!')]);
+            // The real id matters: the sender renders an optimistic message until this
+            // returns, and without an id nothing can ever update its read status.
+            return response()->json([
+                'success' => true,
+                'message' => __('Message sent successfully!'),
+                'data' => [
+                    'id' => $message->id,
+                    'attachment' => $message->attachment,
+                    'created_at' => $message->created_at->toISOString(),
+                ],
+            ]);
         } else {
             return back()->with('error', __('Permission denied'));
         }
@@ -526,11 +536,26 @@ class MessengerController extends Controller
             ->get();
 
         $hasNewMessages = $newMessages->count() > 0;
-        
+
+        // Read receipts: the recipient flips `seen` when they open the conversation,
+        // but nothing ever told the sender, so their ticks stayed on one. Report the
+        // messages that have been read so the open conversation can catch up.
+        // Bounded to the recent window, which is what the sender has on screen.
+        $withUserId = request('user_id');
+        $seenIds = $withUserId
+            ? Message::where('from_id', Auth::id())
+                ->where('to_id', $withUserId)
+                ->where('seen', 1)
+                ->latest('id')
+                ->limit(50)
+                ->pluck('id')
+            : collect();
+
         return response()->json([
             'has_new_messages' => $hasNewMessages,
             'timestamp' => now()->toISOString(),
-            'new_messages_count' => $newMessages->count()
+            'new_messages_count' => $newMessages->count(),
+            'seen_message_ids' => $seenIds,
         ]);
     }
 }
