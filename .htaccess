@@ -17,7 +17,10 @@
     #
     # Deliberately NOT blocked: /packages/... and /storage/media/..., which the
     # rewrite below maps into public/ to serve module and uploaded images.
-    RewriteRule ^(\.git|\.github|app|bootstrap|config|database|node_modules|resources|routes|stubs|tests)(/|$) - [F,L]
+    # deploy/ holds the deployment scripts and server notes. publish.sh strips it
+    # from the release tree, so it is absent on Hostinger, but a deploy made
+    # straight from this repo has it under the webroot.
+    RewriteRule ^(\.git|\.github|app|bootstrap|config|database|deploy|node_modules|resources|routes|stubs|tests)(/|$) - [F,L]
 
     # storage/ is two things at once: the backend directory (logs, framework caches,
     # the `installed` marker) AND the /storage/media/... URL prefix for uploaded
