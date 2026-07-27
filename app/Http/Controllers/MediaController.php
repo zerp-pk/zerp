@@ -384,7 +384,9 @@ class MediaController extends Controller
         if ($creator->storage_limit == -1) return null;
 
         $limit = $creator->storage_limit * 1024; // Convert KB to Bytes
-        $uploadSize = collect($files)->sum('size');
+        // UploadedFile has no `size` property, so sum('size') silently returned 0
+        // and the incoming upload was never counted against the limit.
+        $uploadSize = collect($files)->sum(fn($file) => $file->getSize());
         $currentUsage = Media::where('created_by', $creator->id)->sum('size');
 
         if (($currentUsage + $uploadSize) > $limit) {
