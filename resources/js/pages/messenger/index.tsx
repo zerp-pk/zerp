@@ -290,6 +290,33 @@ export default function MessengerPage() {
         return () => clearInterval(interval);
     }, []);
 
+    // Read receipt polling. The recipient marks messages seen server side when they
+    // open the conversation; without this the sender's ticks never caught up until
+    // the page was reloaded.
+    useEffect(() => {
+        if (!selectedUser?.id) return;
+
+        const refreshReadStatus = async () => {
+            try {
+                const response = await fetch(`${route('messenger.check-new-messages')}?user_id=${selectedUser.id}`, {
+                    headers: { 'X-Requested-With': 'XMLHttpRequest', 'Accept': 'application/json' }
+                });
+                const { seen_message_ids: seenIds } = await response.json();
+                if (!seenIds?.length) return;
+
+                const seen = new Set(seenIds.map((id: number) => id.toString()));
+                setChatMessages(prev => prev.map(msg =>
+                    !msg.is_read && seen.has(msg.id.toString()) ? { ...msg, is_read: true } : msg
+                ));
+            } catch (error) {
+                // Silently handle error
+            }
+        };
+
+        const interval = setInterval(refreshReadStatus, 10000);
+        return () => clearInterval(interval);
+    }, [selectedUser?.id]);
+
     const handleUserSelect = async (user: ChatUser) => {
         setSelectedUser(user);
         setCurrentPage(1);
@@ -408,13 +435,25 @@ export default function MessengerPage() {
                 'Accept': 'application/json'
             },
             body: formData
-        }).then(response => {
+        }).then(async response => {
             if (!response.ok) {
                 setChatMessages(prev => prev.filter(msg => msg.id.toString() !== tempMessage.id.toString()));
             } else {
+                // Swap the temp id for the stored one, otherwise the message stays a
+                // `temp-` row for the rest of the session and its read status can
+                // never be updated.
+                const result = await response.json().catch(() => null);
+                if (result?.data?.id) {
+                    setChatMessages(prev => prev.map(msg =>
+                        msg.id.toString() === tempMessage.id.toString()
+                            ? { ...msg, id: result.data.id, attachment: result.data.attachment ?? msg.attachment, _tempFile: undefined }
+                            : msg
+                    ));
+                }
+
                 // Update users list with latest message
-                setUsersState(prev => prev.map(user => 
-                    user.id === selectedUser.id 
+                setUsersState(prev => prev.map(user =>
+                    user.id === selectedUser.id
                         ? { ...user, last_message: { ...tempMessage, body: messageText || '📎 Attachment' } }
                         : user
                 ));
