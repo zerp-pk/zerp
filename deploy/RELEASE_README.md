@@ -66,6 +66,14 @@ If any returns 200, Apache is ignoring `.htaccess` (`AllowOverride` is off) - st
 fix that before going live, or your source and DB credentials are downloadable. These
 must still return **200**: `https://zerp.pk/build/manifest.json` and the landing page.
 
+This check assumes Apache or LiteSpeed. **nginx does not read `.htaccess` at all**,
+so on an nginx host every one of those paths is served and none of this section
+applies. Use the vhosts in
+[`deploy/nginx/`](https://github.com/zerp-pk/zerp/tree/main/deploy/nginx) in the
+source repo instead - `zerp-repo-docroot.conf` is the one matching this layout -
+and run the same checklist afterwards. They are not published into this repo,
+since a `.conf` sitting in `public_html` would itself be fetchable.
+
 ## Every deploy after that
 
 ```bash

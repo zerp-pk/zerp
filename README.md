@@ -211,6 +211,17 @@ npm run dev
 
 Visit `http://localhost:8000`.
 
+## Deploying behind a web server
+
+The committed `.htaccess` files harden Apache only. **nginx reads neither of
+them**: served from an nginx webroot with no configuration of its own, the app
+hands out `/.env` and `/.git/config` to anyone who asks.
+
+[`deploy/nginx/`](deploy/nginx/) holds the equivalent vhosts, one for a
+document root at `public/` (preferred) and one for a document root fixed at the
+repo root, plus a rule-by-rule mapping from the `.htaccess` directives and a
+verification checklist to run before a site goes live.
+
 ## Log in
 
 **Super admin** - you set these during install. `app:install` prompts for
