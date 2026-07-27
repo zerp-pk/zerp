@@ -83,9 +83,14 @@ class MessengerController extends Controller
                     
                     // Get conversation messages
                     $messages = Message::where(function ($query) use ($user, $selectedUserId) {
-                        $query->where('from_id', $user->id)->where('to_id', $selectedUserId);
-                    })->orWhere(function ($query) use ($user, $selectedUserId) {
-                        $query->where('from_id', $selectedUserId)->where('to_id', $user->id);
+                        // Grouped: `or` here without the wrapping closure binds looser
+                        // than the delete filter below, which then only applies to the
+                        // second half of the conversation.
+                        $query->where(function ($q) use ($user, $selectedUserId) {
+                            $q->where('from_id', $user->id)->where('to_id', $selectedUserId);
+                        })->orWhere(function ($q) use ($user, $selectedUserId) {
+                            $q->where('from_id', $selectedUserId)->where('to_id', $user->id);
+                        });
                     })->where(function ($query) use ($user) {
                         // Filter out messages deleted by current user
                         $query->where(function ($q) use ($user) {
@@ -260,9 +265,14 @@ class MessengerController extends Controller
         $page = request('page', 1);
         
         $messages = Message::where(function ($query) use ($user, $userId) {
-            $query->where('from_id', $user->id)->where('to_id', $userId);
-        })->orWhere(function ($query) use ($user, $userId) {
-            $query->where('from_id', $userId)->where('to_id', $user->id);
+            // Grouped: `or` here without the wrapping closure binds looser than the
+            // delete filter below, which then only applies to received messages. A
+            // sender deleting their own message saw it come back on the next load.
+            $query->where(function ($q) use ($user, $userId) {
+                $q->where('from_id', $user->id)->where('to_id', $userId);
+            })->orWhere(function ($q) use ($user, $userId) {
+                $q->where('from_id', $userId)->where('to_id', $user->id);
+            });
         })->where(function ($query) use ($user) {
             // Filter out messages deleted by current user
             $query->where(function ($q) use ($user) {
@@ -537,11 +547,24 @@ class MessengerController extends Controller
 
         $hasNewMessages = $newMessages->count() > 0;
 
-        // Read receipts: the recipient flips `seen` when they open the conversation,
+        $withUserId = request('user_id');
+
+        // Opening the conversation is not the only way to read it. A message that
+        // arrives over the websocket lands in an already open chat and was never
+        // marked seen, so the sender's tick stayed on one until the recipient
+        // reloaded the page. The poll runs while the conversation is on screen, so
+        // it marks the same thing a page load would.
+        if ($withUserId) {
+            Message::where('from_id', $withUserId)
+                ->where('to_id', Auth::id())
+                ->where('seen', 0)
+                ->update(['seen' => 1]);
+        }
+
+        // Read receipts: the recipient flips `seen` when they read the conversation,
         // but nothing ever told the sender, so their ticks stayed on one. Report the
         // messages that have been read so the open conversation can catch up.
         // Bounded to the recent window, which is what the sender has on screen.
-        $withUserId = request('user_id');
         $seenIds = $withUserId
             ? Message::where('from_id', Auth::id())
                 ->where('to_id', $withUserId)

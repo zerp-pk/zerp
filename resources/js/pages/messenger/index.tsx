@@ -290,13 +290,18 @@ export default function MessengerPage() {
         return () => clearInterval(interval);
     }, []);
 
-    // Read receipt polling. The recipient marks messages seen server side when they
-    // open the conversation; without this the sender's ticks never caught up until
-    // the page was reloaded.
+    // Read receipt polling, in both directions. It reports which of our own messages
+    // the other side has read, and marks theirs read on the way: a message arriving
+    // over the websocket lands in a conversation that is already open and never
+    // refetches, so this poll is the only thing that can mark it seen.
+    //
+    // Skipped while the tab is hidden, otherwise a chat left open in a background
+    // tab would report messages as read that nobody has looked at.
     useEffect(() => {
         if (!selectedUser?.id) return;
 
         const refreshReadStatus = async () => {
+            if (document.visibilityState !== 'visible') return;
             try {
                 const response = await fetch(`${route('messenger.check-new-messages')}?user_id=${selectedUser.id}`, {
                     headers: { 'X-Requested-With': 'XMLHttpRequest', 'Accept': 'application/json' }
@@ -313,8 +318,15 @@ export default function MessengerPage() {
             }
         };
 
+        // Straight away, so opening a conversation does not sit on a stale tick for
+        // a full interval, and again whenever the tab is brought back to the front.
+        refreshReadStatus();
         const interval = setInterval(refreshReadStatus, 10000);
-        return () => clearInterval(interval);
+        document.addEventListener('visibilitychange', refreshReadStatus);
+        return () => {
+            clearInterval(interval);
+            document.removeEventListener('visibilitychange', refreshReadStatus);
+        };
     }, [selectedUser?.id]);
 
     const handleUserSelect = async (user: ChatUser) => {
