@@ -11,6 +11,12 @@ import { useTranslation } from "react-i18next";
 import { getImagePath } from "@/utils/helpers";
 import { PhoneInputComponent } from "@/components/ui/phone-input";
 
+// Mirrors User::DEFAULT_AVATAR. Users with no picture of their own carry this
+// placeholder in the column, so the form shows them as empty: the preview falls
+// back to the icon and the clear button stays hidden until there is something
+// to clear.
+const DEFAULT_AVATAR = "avatar.png";
+
 export default function UpdateProfileInformation({
     mustVerifyEmail,
     status,
@@ -22,6 +28,7 @@ export default function UpdateProfileInformation({
 }) {
     const { auth } = usePage<PageProps>().props;
     const user = auth.user;
+    const currentAvatar = (user as any).avatar || '';
 
     const { t } = useTranslation();
     const { data, setData, patch, errors, processing, recentlySuccessful } =
@@ -29,7 +36,7 @@ export default function UpdateProfileInformation({
             name: user.name,
             email: user.email,
             mobile_no: (user as any).mobile_no || '',
-            avatar: (user as any).avatar || '',
+            avatar: currentAvatar === DEFAULT_AVATAR ? '' : currentAvatar,
             slug: (user as any).slug || '',
         });
 
