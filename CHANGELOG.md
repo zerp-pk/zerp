@@ -1,5 +1,32 @@
 # Changelog
 
+## v1.4.5 - 2026-09-07
+
+### Security
+- **Sorting a list could be used to inject SQL, across most of the platform.**
+  Index screens ordered by a column taken straight from the query string.
+  Eloquent binds values but not identifiers, so the column name went into the
+  SQL as written. A sweep of the whole codebase found this on 60 screens in 16
+  modules plus the notification template list in the app itself, which the
+  earlier pass had missed. Every one of them now accepts a column only if it
+  genuinely exists on the table being listed, and a direction only if it is
+  ascending or descending, falling back to the order the screen already used
+  when no sort was given. Two related holes closed on the way: one screen built
+  its ordering as raw SQL, where the direction was not checked by anything at
+  all, and several built the column by joining strings, which the first pass
+  did not recognise. Sorting behaves exactly as before for anything the screens
+  themselves offer.
+
+### Internal
+- This release pins the module versions carrying the fix: `zerp/double-entry`
+  v1.0.3, `zerp/form-builder` v1.0.3, `zerp/goal` v1.0.3, `zerp/google-meet`
+  v1.0.3, `zerp/hrm` v1.0.7, `zerp/jitsi` v1.0.3, `zerp/landing-page` v1.0.5,
+  `zerp/lead` v1.0.7, `zerp/performance` v1.0.4, `zerp/product-service` v1.0.6,
+  `zerp/real-estate` v1.0.4, `zerp/recruitment` v1.0.6, `zerp/taskly` v1.0.4,
+  `zerp/training` v1.0.3, `zerp/zoom-meeting` v1.0.3, alongside
+  `zerp/contract` v1.0.4 and `zerp/budget-planner` v1.0.3 shipped earlier.
+  Each module carries a test that fails if its guard is removed.
+
 ## v1.4.4 - 2026-09-07
 
 ### Security
