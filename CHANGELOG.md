@@ -1,5 +1,47 @@
 # Changelog
 
+## v1.4.4 - 2026-09-07
+
+### Security
+- **The `vendor/` directory was readable over the web.** The deny rules that
+  keep the backend tree private never listed `vendor`, and the rule covering
+  `composer.json` is anchored at the site root, so it did not reach the same
+  filenames one level down. Anyone could fetch `vendor/composer/installed.json`
+  and read the exact version of every dependency the app runs, which is the
+  first thing an attacker needs to match a target against known
+  vulnerabilities. Application source was not exposed: PHP under the prefix is
+  never served as text. `vendor/` is now denied outright, on both supported web
+  servers.
+
+### Added
+- **Web server hardening for nginx.** All of the hardening lived in `.htaccess`,
+  which nginx does not read, so the same tree served from an nginx webroot
+  handed out `/.env` and `/.git/config` with nothing in the repository to copy
+  from. `deploy/nginx/` adds vetted configuration for both deployment shapes, a
+  document root at `public/`, and a document root at the repository root, along
+  with a README mapping each rule to the `.htaccess` directive it replaces and
+  a script that checks a live host and exits non-zero if anything is exposed.
+
+### Fixed
+- **Removing a profile picture returned a 500 and kept the picture.** Clearing
+  the picker submits an empty value, which arrives as null, but the column is
+  not nullable, so saving raised a database error. The page failed with no
+  message and the picture stayed. Removing a picture now falls back to the
+  default placeholder and clears the stored media link, so it no longer points
+  at an image that no longer represents the user. Saving the profile without
+  touching the picture still leaves it alone.
+- **Read receipts still did not update in an open conversation.** The fix in
+  v1.4.3 covered a chat opened fresh, but a message arriving in an already-open
+  chat never marked it seen, so the sender's tick stayed single until the
+  recipient reloaded. The open conversation now marks itself read the way a
+  page load does, and pauses while the tab is in the background so messages
+  nobody has looked at are not reported as read.
+- **A deleted message came back.** Deleting your own message hid it until the
+  next load, because the filter that hides deleted messages was combined with
+  the conversation filter in a way that applied it only to received messages.
+  It appeared to work only when the other person deleted the message too. Both
+  sides of a conversation now honour the delete.
+
 ## v1.4.3 - 2026-07-27
 
 ### Fixed

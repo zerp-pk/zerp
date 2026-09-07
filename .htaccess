@@ -20,7 +20,14 @@
     # deploy/ holds the deployment scripts and server notes. publish.sh strips it
     # from the release tree, so it is absent on Hostinger, but a deploy made
     # straight from this repo has it under the webroot.
-    RewriteRule ^(\.git|\.github|app|bootstrap|config|database|deploy|node_modules|resources|routes|stubs|tests)(/|$) - [F,L]
+    #
+    # vendor/ is denied for the same reason the nginx configs deny it: the rewrite
+    # below maps the prefix into public/vendor/, which does not exist, so nothing
+    # legitimate is served from it, while every request reaches real Composer
+    # package source under the webroot. The composer.json rule further down is
+    # anchored at the root and never covered these, so vendor/composer/installed.json
+    # served the exact version of every dependency to anyone who asked.
+    RewriteRule ^(\.git|\.github|app|bootstrap|config|database|deploy|node_modules|resources|routes|stubs|tests|vendor)(/|$) - [F,L]
 
     # storage/ is two things at once: the backend directory (logs, framework caches,
     # the `installed` marker) AND the /storage/media/... URL prefix for uploaded
