@@ -1,5 +1,32 @@
 # Changelog
 
+## v1.4.6 - 2026-09-07
+
+### Fixed
+- **Accounting reports added money up as floating point, so totals could be
+  wrong.** Every money column is stored to exactly two decimal places, so each
+  amount is a whole number of cents, but the reports read them into floating
+  point and summed those. Floating point cannot hold those values exactly, the
+  error grows with the number of accounts, and the totals were then compared
+  against a one cent tolerance: a ledger that genuinely balanced could be
+  reported as unbalanced, and a real imbalance smaller than a cent was hidden
+  by the same tolerance. Money is now added up as whole cents and compared
+  exactly.
+- **Accounts holding a cent or less disappeared from the accounting reports.**
+  The same code skipped any balance at or under a cent, which left those
+  accounts out of the report and out of its totals, so a one cent balance could
+  make a trial balance fail to balance with nothing on screen to explain it.
+  Every account with a balance is now listed, and only genuinely zero balances
+  are left out.
+
+  Both apply to the trial balance, the balance sheet, profit and loss, and the
+  ledger reports. The year-end closing entry is included, which matters most
+  because it writes its debit and credit totals onto a real journal entry.
+
+### Internal
+- No change to the web app; this release pins the module version carrying the
+  fix (`zerp/double-entry` v1.0.4).
+
 ## v1.4.5 - 2026-09-07
 
 ### Security
