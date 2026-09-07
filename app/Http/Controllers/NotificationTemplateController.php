@@ -23,8 +23,7 @@ class NotificationTemplateController extends Controller
                 $query->where('action', 'like', '%' . likeEscape($request->action) . '%');
             }
 
-            $sortField = $request->get('sort') ?: 'id';
-            $query->orderBy($sortField, $request->get('direction', 'asc'));
+            $query->sortSafe($request->get('sort'), $request->get('direction'), 'id', 'asc');
 
             $notificationTemplates = $query->paginate(perPage())->withQueryString();
 
